@@ -32,6 +32,10 @@ vi:
       delete_all: Xóa tất cả
       empty: Không tìm thấy danh mục
       new: Danh mục mới
+      lock_categories: "Khóa việc tạo danh mục"
+      locked_message: "Việc tạo danh mục đang bị khóa. Nhập liệu và đồng bộ ngân hàng vẫn có thể thêm danh mục."
+      merge: "Gộp danh mục"
+      unlock_categories: "Mở khóa việc tạo danh mục"
     new:
       new_category: Danh mục mới
     update:
@@ -40,6 +44,26 @@ vi:
       transfer: Chuyển khoản
       payment: Thanh toán
       trade: Giao dịch chứng khoán
+    locked: "Danh mục đang bị khóa. Hãy mở khóa để thêm danh mục mới."
+    toggle_lock:
+      locked: "Đã khóa danh mục"
+      unlocked: "Đã mở khóa danh mục"
+    merge:
+      title: "Gộp danh mục"
+      description: "Chọn một danh mục đích và các danh mục cần gộp vào đó. Các giao dịch và dòng ngân sách khớp sẽ chuyển sang danh mục đích."
+      target_label: "Gộp vào (đích)"
+      select_target: "Chọn danh mục đích..."
+      sources_label: "Danh mục cần gộp"
+      sources_hint: "Các danh mục đã chọn sẽ bị xóa sau khi giao dịch và dòng ngân sách của chúng chuyển sang danh mục đích. Đừng chọn danh mục đích làm nguồn."
+      submit: "Gộp mục đã chọn"
+    perform_merge:
+      success:
+        one: "Đã gộp thành công %{count} danh mục"
+        other: "Đã gộp thành công %{count} danh mục"
+      no_categories_selected: "Chưa chọn danh mục nào để gộp"
+      target_not_found: "Không tìm thấy danh mục đích"
+      invalid_categories: "Danh mục đã chọn không hợp lệ"
+      target_selected_as_source: "Hãy chọn các danh mục khác nhau cho đích và nguồn."
   category:
     dropdowns:
       show:

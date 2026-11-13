@@ -1,0 +1,16 @@
+---
+vi:
+  recurring_allocations:
+    over_allocation: "Việc đó sẽ phân bổ nhiều hơn số tiền của giao dịch"
+    missing_rate: "Chưa có tỷ giá; hãy nhập số tiền cụ thể"
+    already_allocated: "Giao dịch đó đã được áp dụng cho hóa đơn này"
+    entry_exhausted: "Toàn bộ số tiền của giao dịch đó đã được áp dụng cho các khoản đến hạn khác"
+    invalid: "Không thể ghi nhận khoản thanh toán"
+    create:
+      success: "Đã áp dụng khoản thanh toán"
+    destroy:
+      success: "Đã bỏ liên kết khoản thanh toán"
+    confirm:
+      success: "Đã áp dụng khoản thanh toán cho hóa đơn"
+    reject:
+      success: "Đã bỏ qua. Giao dịch đó sẽ không được gợi ý lại cho hóa đơn này."

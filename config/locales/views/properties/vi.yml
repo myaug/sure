@@ -3,6 +3,7 @@ vi:
   properties:
     edit:
       edit: Chỉnh sửa %{account}
+      title: "Nhập bất động sản thủ công"
     form:
       address_line1: Địa chỉ đường phố
       address_line1_placeholder: 123 Main St
@@ -24,6 +25,31 @@ vi:
     new:
       title: Nhập bất động sản thủ công
       next: "Tiếp theo"
+      avm_option: "Thêm qua %{provider}"
+      avm_title: "Thêm bất động sản qua %{provider}"
+      avm_description: "Nhập tên bất động sản và địa chỉ. %{provider} sẽ tra cứu thông tin chi tiết và giá trị thị trường ước tính cho bạn."
+      avm_us_only: "%{provider} chỉ hỗ trợ bất động sản tại Hoa Kỳ."
+      avm_uk_only: "%{provider} chỉ hỗ trợ bất động sản nhà ở tại Vương quốc Anh."
+      avm_uprn_label: "UPRN"
+      avm_uprn_placeholder: "100023336956"
+      avm_uprn_help: "Mã tham chiếu bất động sản duy nhất (tối đa 12 chữ số) xác định mọi địa chỉ ở Anh. Tìm trên findmyaddress.co.uk của GeoPlace hoặc hỏi hội đồng địa phương. %{provider} dùng mã này để định giá bất động sản miễn phí."
+      avm_county_label: "Hạt (không bắt buộc)"
+      avm_town_label: "Thị trấn hoặc thành phố"
+      avm_postcode_label: "Mã bưu chính"
+      avm_submit: "Tra cứu bất động sản"
+      avm_preview_title: "Xác nhận thông tin bất động sản"
+      avm_preview_description: "Đây là những gì %{provider} tìm thấy. Hãy xem lại chi tiết trước khi thêm bất động sản — chưa có gì được tạo."
+      avm_preview_no_record: "%{provider} không tìm thấy hồ sơ bất động sản tại địa chỉ này, nên giá trị hiển thị là ước tính dựa trên khu vực xung quanh. Hãy kiểm tra lại địa chỉ trước khi tiếp tục."
+      avm_preview_back: "Quay lại"
+      avm_preview_uprn: "UPRN"
+      avm_preview_range: "Khoảng ước tính"
+      avm_preview_confidence: "Độ tin cậy"
+      avm_confidence:
+        high: "Cao"
+        medium: "Trung bình"
+        low: "Thấp"
+      avm_attribution_chimnie: "Dữ liệu định giá từ Chimnie. Gồm dữ liệu OS © Crown copyright và quyền cơ sở dữ liệu, dữ liệu Royal Mail © Royal Mail copyright và quyền cơ sở dữ liệu, và dữ liệu HM Land Registry © Crown copyright và quyền cơ sở dữ liệu, được cấp phép theo Open Government Licence v3.0."
+      avm_preview_confirm: "Thêm bất động sản"
     address:
       title: "Nhập bất động sản thủ công"
       address_line1_label: "Địa chỉ dòng 1"
@@ -71,6 +97,10 @@ vi:
         unknown: Không xác định
         year_built: Năm xây dựng
         edit_account_details: "Chỉnh sửa thông tin tài khoản"
+        refresh_valuation: "Làm mới định giá"
+        valuation_source: "Định giá bởi %{provider}, cập nhật lần cuối %{date}"
+        link_valuation: "Tự động cập nhật giá trị bằng %{provider}"
+        link_valuation_description: "Giá trị bất động sản này chỉ được cập nhật thủ công."
     subtypes:
       apartment:
         short: Căn hộ
@@ -87,3 +117,19 @@ vi:
       agri_land:
         short: Đất nông nghiệp
         long: Đất nông nghiệp
+    avm_providers:
+      rentcast: "RentCast"
+      realie: "Realie"
+      chimnie: "Chimnie"
+    refresh_valuation:
+      queued: "Đã bắt đầu làm mới định giá. Giá trị mới sẽ hiển thị trong giây lát."
+      not_linked: "Bất động sản này chưa liên kết với nhà cung cấp định giá."
+      not_configured: "%{provider} chưa được cấu hình. Hãy thêm khóa API của nó trong Cài đặt → Tự lưu trữ để làm mới định giá này."
+    link_valuation:
+      linked: "Đã liên kết với %{provider} và cập nhật giá trị bất động sản."
+      link_failed: "%{provider} không thể định giá bất động sản này nên chưa liên kết. Hãy kiểm tra địa chỉ có đúng không rồi thử lại."
+      not_linkable: "Không thể liên kết bất động sản này với nhà cung cấp đó. Hãy kiểm tra địa chỉ đã đầy đủ và thuộc quốc gia được hỗ trợ, và tiền tệ tài khoản khớp với nhà cung cấp."
+    form_tabs:
+      address: "Địa chỉ"
+      overview: "Tổng quan"
+      value: "Giá trị"

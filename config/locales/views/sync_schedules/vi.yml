@@ -1,0 +1,19 @@
+---
+vi:
+  sync_schedules:
+    menu_item: "Tần suất đồng bộ"
+    intervals:
+      minutes: "Mỗi %{count} phút"
+      hours:
+        one: "Mỗi giờ"
+        other: "Mỗi %{count} giờ"
+    edit:
+      title: "Tần suất đồng bộ"
+      description: "Mỗi kết nối đồng bộ cùng lúc với đồng bộ của gia đình, mỗi ngày một lần với hầu hết nhà cung cấp. Hãy chọn một khoảng thời gian để đồng bộ thêm %{name} riêng trong ngày."
+      interval_label: "Đồng bộ"
+      no_schedule: "Chỉ đồng bộ thông thường"
+      hint: "Đồng bộ thường xuyên tính vào giới hạn tốc độ của nhà cung cấp, và một số nhà cung cấp tính phí theo từng yêu cầu."
+      save: "Lưu"
+    update:
+      updated: "Đã lưu tần suất đồng bộ."
+      cleared: "Đã bỏ tần suất đồng bộ. Kết nối trở lại đồng bộ thông thường."

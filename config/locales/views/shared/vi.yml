@@ -12,6 +12,13 @@ vi:
       title: Bạn có chắc không?
     money_field:
       label: Số tiền
+      above_max: "Hãy nhập số tiền tối đa %{max}."
+      below_min: "Hãy nhập số tiền tối thiểu %{min}."
+      invalid_amount: "Hãy nhập số tiền hoặc biểu thức hợp lệ."
+      operator_add: "Cộng"
+      operator_subtract: "Trừ"
+      operator_multiply: "Nhân"
+      operator_divide: "Chia"
     exchange_rate_tabs:
       calculate_rate_tab: Tính tỷ giá ngoại tệ
       convert_tab: Chuyển đổi với tỷ giá
@@ -40,3 +47,19 @@ vi:
       expense: Chi tiêu
       income: Thu nhập
       transfer: Chuyển khoản
+    preview: "Xem trước"
+    sync_toast:
+      message: "Có dữ liệu mới"
+      refresh: "Làm mới"
+    require_non_guest: "Khách không thể thực hiện thao tác này"
+    require_connector_owner: "Bạn chỉ có thể quản lý các kết nối do bạn thêm"
+    sidekiq_health_banner:
+      title: "Một số dữ liệu có thể đã cũ"
+      body: "Các tác vụ nền không được xử lý, nên số dư, tài sản ròng và đồng bộ tài khoản có thể cũ hoặc thiếu."
+      cta: "Xem tình trạng hệ thống"
+      reasons:
+        redis_unreachable: "Ứng dụng không kết nối được Redis. Hãy kiểm tra REDIS_URL và Redis đang chạy."
+        no_worker_processes: "Không có tiến trình Sidekiq worker nào được kết nối. Hãy khởi động container worker hoặc đơn vị systemd."
+        stale_heartbeat: "Sidekiq worker không báo nhịp tim gần đây. Có thể nó bị treo hoặc đã dừng."
+        ai_queues_not_polled: "Không có worker nào xử lý các hàng đợi AI (trò chuyện, phát hiện đơn vị bán hàng, phân loại). Hãy kiểm tra worker có nạp config/sidekiq.yml."
+        queue_backed_up: "Tác vụ cũ nhất trong hàng đợi đã chờ quá ngưỡng độ trễ cho phép. Worker vẫn chạy nhưng đang bị chậm."

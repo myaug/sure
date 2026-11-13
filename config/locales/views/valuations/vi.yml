@@ -21,6 +21,8 @@ vi:
       recalculate_notice: "Tất cả giao dịch và số dư trong tương lai sẽ được tính lại dựa trên %{change_or_update} này."
       change: thay đổi
       update: cập nhật
+      action_set: "đặt"
+      action_update: "cập nhật"
     create:
       account_updated: Tài khoản đã được cập nhật
     update:
@@ -58,3 +60,21 @@ vi:
       settings: Cài đặt
       opening_balance: "Số dư đầu kỳ"
       update_value: Cập nhật giá trị
+    names:
+      current_account_value: "Giá trị tài khoản hiện tại"
+      current_balance: "Số dư hiện tại"
+      current_loan_balance: "Dư nợ khoản vay hiện tại"
+      current_market_value: "Giá trị thị trường hiện tại"
+      manual_balance_update: "Cập nhật số dư thủ công"
+      manual_principal_update: "Cập nhật dư nợ gốc thủ công"
+      manual_value_update: "Cập nhật giá trị thủ công"
+      opening_account_value: "Giá trị tài khoản đầu kỳ"
+      opening_balance: "Số dư đầu kỳ"
+      original_principal: "Dư nợ gốc ban đầu"
+      original_purchase_price: "Giá mua ban đầu"
+    confirm_create:
+      confirm: "Xác nhận"
+      title: "Xác nhận số dư mới"
+    confirm_update:
+      title: "Cập nhật số dư"
+      update: "Cập nhật"

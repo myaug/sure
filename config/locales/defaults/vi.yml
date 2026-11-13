@@ -43,6 +43,8 @@ vi:
       long: "%d %B, %Y"
       short: "%d %b"
       short_with_year: '%d %b, %Y'
+      month_year: "%B %Y"
+      short_month_year: "%b %Y"
     month_names:
     -
     - Tháng một
@@ -75,6 +77,9 @@ vi:
       x_minutes: "%{count} phút"
       x_months: "%{count} tháng"
       x_seconds: "%{count} giây"
+      x_years:
+        one: "%{count} năm"
+        other: "%{count} năm"
     prompts:
       day: Ngày
       hour: Giờ
@@ -108,12 +113,16 @@ vi:
       too_long: quá dài (tối đa %{count} ký tự)
       too_short: quá ngắn (tối thiểu %{count} ký tự)
       wrong_length: độ dài không đúng (phải là %{count} ký tự)
+      in: "phải nằm trong %{count}"
+      model_invalid: "Kiểm tra dữ liệu thất bại: %{errors}"
     template:
       body: 'Có lỗi với các mục sau:'
       header: "%{count} lỗi ngăn không cho lưu %{model} này"
   helpers:
     select:
       prompt: Vui lòng chọn
+      search_placeholder: "Tìm kiếm"
+      default_label: "Chọn..."
     submit:
       create: Tạo %{model}
       submit: Lưu %{model}
@@ -134,6 +143,7 @@ vi:
       separator: ","
       significant: false
       strip_insignificant_zeros: false
+      round_mode: "default"
     human:
       decimal_units:
         format: "%n %u"
@@ -159,6 +169,8 @@ vi:
           kb: KB
           mb: MB
           tb: TB
+          eb: "EB"
+          pb: "PB"
     percentage:
       format:
         delimiter: ''
@@ -178,3 +190,19 @@ vi:
       long: "%d %B, %Y %H:%M"
       short: "%d %b %H:%M"
     pm: chiều
+  defaults:
+    brand_name: "%{brand_name}"
+    product_name: "%{product_name}"
+    common:
+      close: "Đóng"
+  global:
+    expand: "Mở rộng"
+  mcp:
+    errors:
+      invalid_session_id: "ID phiên MCP không hợp lệ"
+      unsupported_protocol_version: "Phiên bản giao thức MCP không được hỗ trợ: %{version}"
+  oauth:
+    registration:
+      invalid_redirect_uris: "redirect_uris phải dùng https, http loopback hoặc scheme URI của ứng dụng gốc"
+      invalid_client_name: "client_name không được chứa ký tự điều khiển hai chiều"
+      reserved_client_name: "client_name được dành riêng cho ứng dụng chính thức"

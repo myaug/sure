@@ -1,0 +1,21 @@
+---
+vi:
+  activerecord:
+    errors:
+      models:
+        monarch_import:
+          missing_columns: "Tệp %{file} thiếu các cột %{columns}. Đây có phải bản xuất đúng của Monarch không?"
+          malformed_csv: "Tệp %{file} không phải CSV đọc được: %{error}"
+          invalid_number: "%{value} không phải là số"
+          invalid_date: "%{value} không phải là ngày dạng 2024-01-31"
+          date_out_of_range: "%{value} nằm ngoài khoảng ngày Sure nhập (%{from} đến %{to})"
+          blank_account: "Một dòng không có tên tài khoản. Hãy kiểm tra tệp có phải bản xuất của Monarch không."
+          blank_transaction_id: "Một giao dịch không có Id. Hãy kiểm tra tệp có phải bản xuất giao dịch của Monarch không."
+          opening_balance_changed: "Số dư đầu kỳ của %{account} đã thay đổi trong khi nhập. Hãy xem lại lần nhập và xuất bản lại."
+          target_not_supported: "Sure không còn có thể nhập vào %{accounts}. Đích đến phải là tài khoản thủ công không có holding hay giao dịch mua bán. Hãy chọn đích khác và xuất bản lại."
+          no_accounts: "Các bản xuất không chứa tài khoản nào. Hãy kiểm tra bạn đã xuất đúng tệp từ Monarch."
+          files:
+            balances: "số dư"
+            transactions: "giao dịch"
+        import/monarch_account_mapping:
+          target_taken: "%{account} đã là đích của một tài khoản Monarch khác. Hãy chọn tài khoản khác cho %{monarch}, hoặc nhập thành tài khoản mới."

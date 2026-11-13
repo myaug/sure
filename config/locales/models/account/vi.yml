@@ -13,6 +13,9 @@ vi:
     name_desc:
       label: Tên (Z-A)
       label_short: Tên ↓
+    manual:
+      label: "Thủ công (kéo để sắp xếp)"
+      label_short: "Thủ công"
   activerecord:
     attributes:
       account:
@@ -22,6 +25,7 @@ vi:
         family_id: "%{moniker}"
         name: Tên
         subtype: Loại phụ
+        logo: "Logo"
     models:
       account: Tài khoản
       account/credit: Thẻ tín dụng
@@ -32,3 +36,10 @@ vi:
       account/other_liability: Nợ khác
       account/property: Bất động sản
       account/vehicle: Phương tiện
+    errors:
+      models:
+        account:
+          attributes:
+            logo:
+              invalid_content_type: "phải là ảnh PNG, JPEG, GIF, WebP hoặc ICO"
+              too_large: "phải nhỏ hơn %{max_size} MB"

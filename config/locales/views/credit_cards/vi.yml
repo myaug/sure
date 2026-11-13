@@ -13,5 +13,55 @@ vi:
       expiration_date: Ngày hết hạn
       minimum_payment: Thanh toán tối thiểu
       minimum_payment_placeholder: '100'
+      due_day: "Ngày đến hạn thanh toán"
+      statement_close_day: "Sao kê chốt vào ngày"
+      sophtron_balance_sign_auto: "Tự động"
+      sophtron_balance_sign_credit: "Có (ngân hàng nợ bạn)"
+      sophtron_balance_sign_debt: "Nợ (bạn nợ ngân hàng)"
+      sophtron_balance_sign_description: "Chỉ dùng ghi đè khi Sophtron báo dấu không rõ ràng. Chế độ tự động tiếp tục đảo dấu số dư và giao dịch thẻ tín dụng. Ghi đè cũng sửa dấu giao dịch của thẻ này ở lần đồng bộ tới."
+      sophtron_balance_sign_label: "Ý nghĩa số dư của Sophtron"
+      simplefin_balance_sign_auto: "Tự động"
+      simplefin_balance_sign_credit: "Có (ngân hàng nợ bạn)"
+      simplefin_balance_sign_debt: "Nợ (bạn nợ ngân hàng)"
+      simplefin_balance_sign_description: "Chỉ dùng ghi đè khi SimpleFIN báo dấu không rõ ràng. Chế độ tự động tiếp tục dùng lịch sử giao dịch và số dư của nhà cung cấp."
+      simplefin_balance_sign_label: "Ý nghĩa số dư của SimpleFIN"
+      statement_cycle_description: "Ngày trong tháng sao kê chốt và ngày đến hạn thanh toán. Khi đã đặt, tab Tổng quan hiển thị sao kê gần nhất là bao nhiêu và khoản đang tích lũy cho kỳ tiếp theo. Thẻ đã liên kết tự điền các thông tin này và giữ nguyên những gì bạn đặt thủ công."
+      treat_balance_as_available_credit_description: "Bật nếu ngân hàng báo số dư của thẻ này là hạn mức tín dụng còn lại thay vì số tiền còn nợ. Khi đó khoản nợ được suy ra từ hạn mức tín dụng ngân hàng báo, hoặc từ trường Hạn mức khả dụng nếu ngân hàng không cung cấp."
+      treat_balance_as_available_credit_label: "Số dư là hạn mức khả dụng"
     new:
       title: Nhập thông tin thẻ tín dụng
+    due:
+      in_days:
+        zero: "Đến hạn hôm nay"
+        one: "Đến hạn ngày mai"
+        other: "Đến hạn sau %{count} ngày"
+      overdue:
+        one: "Đến hạn hôm qua"
+        other: "Quá hạn %{count} ngày"
+    tabs:
+      overview:
+        above_minimum: "Sao kê này là %{balance}, cao hơn mức tối thiểu %{minimum}. Chỉ trả mức tối thiểu sẽ để lại dư nợ trên thẻ với lãi suất APR này."
+        annual_percentage_rate: "Lãi suất năm"
+        apr: "APR"
+        balance_carried_label: "Dư nợ chuyển kỳ"
+        charges: "Chi tiêu"
+        estimated_interest_label: "Lãi ước tính"
+        monthly_rate_label: "Lãi suất tháng"
+        per_month: "%{amount}/tháng"
+        closes_on: "Sao kê tiếp theo chốt ngày %{date}"
+        credit_toward_next: "Số tiền ghi có cho sao kê tiếp theo"
+        due_on: "Đến hạn %{date}"
+        edit_card_details: "Sửa thông tin thẻ"
+        payments_credits: "Thanh toán/Ghi có"
+        remaining_due: "Còn phải trả %{amount}"
+        scheduled_payment: "Thanh toán đã lên lịch %{amount} vào %{date}"
+        since_last_statement: "Kể từ sao kê trước"
+        statement_balance: "Dư nợ sao kê"
+        status_paid: "Đã trả"
+        status_partial: "Đã trả một phần"
+        multi_currency_unavailable: "Sao kê này cộng các khoản ghi nhận bằng nhiều hơn một loại tiền tệ, không thể tính tổng ở đây nếu thiếu tỷ giá cho từng loại. Số dư được để trống thay vì đoán."
+        no_cycle_description: "Hãy đặt ngày chốt sao kê và ngày đến hạn thanh toán, tab này sẽ hiển thị sao kê gần nhất là bao nhiêu và khoản đang tích lũy cho kỳ tiếp theo. Thẻ đã liên kết thường tự điền các thông tin này."
+        no_cycle_title: "Chưa đặt chu kỳ sao kê"
+        unknown: "Không rõ"
+    update:
+      sophtron_balance_sign_error: "Không thể áp dụng ý nghĩa số dư của Sophtron. Cài đặt trước đó được giữ nguyên. Vui lòng thử lại."

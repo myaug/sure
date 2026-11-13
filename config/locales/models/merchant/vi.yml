@@ -1,0 +1,13 @@
+---
+vi:
+  models:
+    merchant:
+      no_merchant: "Không có đơn vị bán hàng"
+  activerecord:
+    errors:
+      models:
+        family_merchant:
+          attributes:
+            logo:
+              invalid_content_type: "phải là ảnh JPEG, PNG hoặc WebP"
+              invalid_file_size: "dung lượng tệp phải nhỏ hơn %{max_megabytes}MB"

@@ -19,11 +19,15 @@ vi:
         save: Lưu
         tags_label: Nhãn
         transactions_section: Giao dịch
+        no_change: "(không thay đổi)"
+        reconciled_status_hint: "Chỉ áp dụng cho tài khoản nhập thủ công (không đồng bộ ngân hàng)."
+        reconciled_status_label: "Trạng thái đối soát"
     unknown_name: Giao dịch không xác định
     selection_bar:
       duplicate: Nhân đôi
       edit: Chỉnh sửa
       selected: đã chọn
+      reconcile: "Đối soát"
     form:
       details: Chi tiết
       account: Tài khoản
@@ -45,6 +49,18 @@ vi:
       submit: Thêm giao dịch
       tags_label: Nhãn
       transfer: Chuyển khoản
+      category_search_placeholder: "Tìm danh mục"
+      create_category: "Tạo \"%{name}\""
+      create_category_error: "Không thể tạo danh mục"
+      create_as_subcategory: "Thêm làm danh mục con…"
+      choose_parent: "Tạo \"%{name}\" trong:"
+      back_to_categories: "Quay lại"
+      create_tag: "Tạo"
+      create_merchant: "Tạo"
+      create_merchant_error: "Không thể tạo đơn vị bán hàng"
+      merchant_search_placeholder: "Tìm hoặc tạo đơn vị bán hàng"
+      no_matching_categories: "Không có danh mục phù hợp"
+      tag_search_placeholder: "Tìm hoặc tạo nhãn"
     create:
       created: Đã tạo giao dịch
     update:
@@ -103,6 +119,31 @@ vi:
       transfer_or_debt_payment: "Chuyển khoản hay Thanh toán nợ?"
       open_matcher: "Mở công cụ khớp"
       convert: "Chuyển đổi"
+      category_set_on_hidden_outflow: "Đây là phía nhận của một giao dịch chuyển khoản. Danh mục thuộc về phía chuyển đi, nằm trên tài khoản bạn không truy cập được, và chỉ có thể thay đổi ở đó."
+      category_set_on_outflow: "Đây là phía nhận của một giao dịch chuyển khoản. Danh mục thuộc về phía chuyển đi và chỉ có thể thay đổi ở đó, để ngân sách chỉ tính một lần."
+      create_bill: "Tạo hóa đơn"
+      applied_to_title: "Hóa đơn đã thanh toán"
+      applied_to_detail: "%{amount} cho hóa đơn đến hạn ngày %{date}"
+      applied_to_unreviewed: "Cần xem xét"
+      original_description: "Mô tả gốc"
+      payment_channel: "Kênh thanh toán"
+      transaction_code: "Mã giao dịch"
+      plaid_payment_meta_label: "Thông tin thanh toán · %{name}"
+      plaid_counterparty_label: "Đối tác %{index}"
+      provider_extra_fields:
+        by_order_of: "Theo lệnh của"
+        confidence_level: "Mức độ tin cậy"
+        entity_id: "ID thực thể"
+        logo_url: "URL logo"
+        name: "Tên"
+        payee: "Người nhận"
+        payer: "Người trả"
+        phone_number: "Số điện thoại"
+        ppd_id: "ID PPD"
+        reason: "Lý do"
+        reference_number: "Số tham chiếu"
+        type: "Loại"
+        website: "Trang web"
     activity_labels:
       buy: Mua
       sell: Bán
@@ -133,6 +174,8 @@ vi:
       payment_confirmed: Thanh toán đã được xác nhận
       reject_match: Từ chối khớp
       transfer_confirmed: Chuyển khoản đã được xác nhận
+      auto_matched_tooltip_html: "%{amount} trong %{account} ngày %{date}. Nhấn để xem lại."
+      auto_matched_tooltip_hidden: "Một giao dịch trong tài khoản bạn không xem được."
     transaction:
       pending: Đang chờ
       pending_tooltip: Giao dịch đang chờ — có thể thay đổi khi được đăng
@@ -145,6 +188,12 @@ vi:
       split: Phân chia
       split_tooltip: Giao dịch này đã được phân chia thành nhiều mục
       split_child_tooltip: Một phần của giao dịch phân chia
+      scheduled: "Đã lên lịch"
+      scheduled_tooltip: "Có ngày trong tương lai — sẽ không ảnh hưởng đến số dư của bạn cho đến lúc đó"
+      transfer_hint: "Chuyển khoản?"
+      transfer_hint_dismiss: "Không phải chuyển khoản"
+      transfer_hint_tooltip: "Một giao dịch khớp ở tài khoản khác có vẻ là phía còn lại của một lần chuyển khoản — nhấn để ghép chúng"
+      view_merchant: "Xem đơn vị bán hàng"
     merge_duplicate:
       success: Đã gộp giao dịch thành công
       failure: Không thể gộp giao dịch
@@ -164,6 +213,9 @@ vi:
       expenses: Chi tiêu
       inflow: Dòng tiền vào
       outflow: Dòng tiền ra
+      scheduled_count:
+        one: "bao gồm %{count} giao dịch đã lên lịch"
+        other: "bao gồm %{count} giao dịch đã lên lịch"
     header:
       edit_categories: Chỉnh sửa danh mục
       edit_imports: Chỉnh sửa nhập dữ liệu
@@ -234,6 +286,9 @@ vi:
         category: Danh mục
         tag: Nhãn
         merchant: Nhà cung cấp
+        reconcile_status: "Đối soát"
+        ai: "AI"
+        attachment: "Tệp đính kèm"
     convert_to_trade:
       title: Chuyển đổi thành giao dịch chứng khoán
       description: Chuyển giao dịch này thành giao dịch với thông tin chứng khoán
@@ -294,6 +349,10 @@ vi:
           transfer: Chuyển khoản
           confirmed: Đã xác nhận
           pending: Đang chờ
+          ai_current: "AI"
+          ai_history: "Lịch sử AI"
+          attachment_with: "Có tệp đính kèm"
+          attachment_without: "Không có tệp đính kèm"
         type_filter:
           expense: Chi tiêu
           income: Thu nhập
@@ -301,6 +360,22 @@ vi:
         status_filter:
           confirmed: Đã xác nhận
           pending: Đang chờ
+        account_filter:
+          filter_accounts: "Lọc tài khoản"
+        category_filter:
+          filter_category: "Lọc danh mục"
+        merchant_filter:
+          filter_merchants: "Lọc đơn vị bán hàng"
+        tag_filter:
+          filter_tags: "Lọc nhãn"
+        attachment_filter:
+          with: "Có tệp đính kèm"
+          without: "Không có tệp đính kèm"
+        ai_filter:
+          current: "AI"
+          current_description: "Danh mục vẫn là danh mục được gán tự động (AI hoặc Bayes)."
+          history: "Lịch sử AI"
+          history_description: "Từng được phân loại tự động nhưng danh mục đã được thay đổi sau đó."
       menu:
         account_filter: Tài khoản
         amount_filter: Số tiền
@@ -313,6 +388,7 @@ vi:
         status_filter: Trạng thái
         tag_filter: Nhãn
         type_filter: Loại
+        reconcile_status_filter: "Đối soát"
       search:
         equal_to: bằng
         greater_than: lớn hơn
@@ -339,3 +415,18 @@ vi:
         other: "Tệp (%{count})"
       browse_to_add: "Duyệt để thêm tệp"
       max_reached: "Đã đạt giới hạn tệp tối đa (%{count}/%{max}). Xóa tệp hiện có để tải lên tệp khác."
+    transaction_category:
+      set_on_outflow: "Danh mục thuộc về phía chuyển đi của giao dịch chuyển khoản này và chỉ có thể thay đổi ở đó"
+    reconcile:
+      success: "Đã đánh dấu là %{status}"
+      failure: "Không thể cập nhật trạng thái đối soát"
+      unavailable: "Gia đình này chưa bật tính năng đối soát"
+      not_manual_account: "Trạng thái đối soát chỉ áp dụng cho tài khoản nhập thủ công (không đồng bộ ngân hàng)"
+      statuses:
+        unreconciled: "Chưa đối soát"
+        cleared: "Đã xác nhận"
+        reconciled: "Đã đối soát"
+      badge:
+        unreconciled_tooltip: "Chưa được kiểm tra với sao kê. Nhấn để đánh dấu đã xác nhận."
+        cleared_tooltip: "Đã xác nhận trên sao kê, chưa đối soát đầy đủ. Nhấn để đánh dấu đã đối soát."
+        reconciled_tooltip: "Kỳ sao kê đã đối soát đầy đủ. Nhấn để đặt lại thành chưa đối soát."

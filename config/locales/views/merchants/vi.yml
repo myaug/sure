@@ -13,6 +13,9 @@ vi:
       name_placeholder: Tên nhà cung cấp
       website_placeholder: "Trang web (ví dụ: starbucks.com)"
       website_hint: Nhập trang web của nhà cung cấp để tự động hiển thị logo của họ
+      logo_label: "Logo"
+      logo_hint: "Ghi đè logo của trang web. JPEG, PNG hoặc WebP, tối đa %{max_megabytes}MB."
+      remove_logo_label: "Xóa logo đã tải lên"
     index:
       empty: Chưa có nhà cung cấp nào
       new: Nhà cung cấp mới
@@ -34,6 +37,12 @@ vi:
         merchant: Nhà cung cấp
         actions: Hành động
         source: Nguồn
+      import: "Nhập đơn vị bán hàng"
+      search_family_merchants: "Tìm đơn vị bán hàng của gia đình..."
+      search_provider_merchants: "Tìm đơn vị bán hàng của nhà cung cấp..."
+      no_family_merchants_found: "Không tìm thấy đơn vị bán hàng của gia đình phù hợp"
+      no_provider_merchants_found: "Không tìm thấy đơn vị bán hàng của nhà cung cấp phù hợp"
+      per_page: "mỗi trang"
     family_merchant:
       edit: Chỉnh sửa
       delete: Xóa
@@ -51,6 +60,8 @@ vi:
       sources_label: Nhà cung cấp cần hợp nhất
       sources_hint: Các nhà cung cấp được chọn sẽ được hợp nhất vào đích. Nhà cung cấp gia đình sẽ bị xóa, nhà cung cấp dịch vụ sẽ bị hủy liên kết.
       submit: Hợp nhất đã chọn
+      sources_search_placeholder: "Tìm đơn vị bán hàng..."
+      no_merchants_found: "Không tìm thấy đơn vị bán hàng phù hợp"
     new:
       title: Nhà cung cấp mới
     perform_merge:
@@ -71,3 +82,12 @@ vi:
     update:
       success: Nhà cung cấp đã được cập nhật thành công
       converted_success: Nhà cung cấp đã được chuyển đổi và cập nhật thành công
+  merchants:
+    show:
+      average_transaction: "Giao dịch trung bình"
+      edit: "Sửa đơn vị bán hàng"
+      first_transaction: "Giao dịch đầu tiên"
+      last_transaction: "Giao dịch gần nhất"
+      summary: "Tóm tắt"
+      total_spending: "Tổng chi tiêu"
+      total_transactions: "Tổng số giao dịch"

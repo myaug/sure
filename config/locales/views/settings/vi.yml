@@ -36,6 +36,10 @@ vi:
       appearance_label: Giao diện
       bank_sync_label: Đồng bộ ngân hàng
       debug_label: Gỡ lỗi
+      classifier_label: "Bộ phân loại"
+      background_jobs_label: "Tác vụ nền"
+      mcp_label: "MCP"
+      system_health_label: "Tình trạng hệ thống"
     settings_nav_link_large:
       next: Tiếp theo
       previous: Quay lại

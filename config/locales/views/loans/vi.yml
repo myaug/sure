@@ -13,6 +13,30 @@ vi:
       none: Không có
       subtype_prompt: Chọn loại khoản vay
       subtype_none: Không có
+      day_count_convention: "Cơ sở tính lãi"
+      day_count_convention_actual_365: "Thực tế/365"
+      day_count_convention_actual_actual: "Thực tế/thực tế"
+      day_count_convention_hint: "Cách bên cho vay đo mỗi kỳ so với một năm. Thực tế/365 tính theo số ngày của tháng và là chuẩn của khoản vay thế chấp ở Anh và Úc. 30/360 tính một phần mười hai cố định, là cơ sở Sure vẫn dùng từ trước đến nay."
+      day_count_convention_thirty_360: "30/360 (một phần mười hai cố định)"
+      rate_type_adjustable: "Điều chỉnh được"
+      rate_type_fixed: "Cố định"
+      rate_type_variable: "Thả nổi"
+      rate_changes: "Thay đổi lãi suất"
+      rate_changes_hint: "Mỗi dòng đặt lãi suất áp dụng từ ngày hiệu lực đến dòng kế tiếp. Nhập lại một ngày sẽ thay thế dòng đó thay vì thêm dòng thứ hai."
+      rate_changes_empty: "Chưa ghi nhận thay đổi lãi suất nào. Khoản vay chạy theo lãi suất ở trên."
+      rate_change_effective_date: "Ngày hiệu lực"
+      rate_change_rate: "Lãi suất"
+      rate_change_add: "Thêm thay đổi lãi suất"
+      rate_change_remove: "Xóa"
+      start_date: "Ngày giải ngân"
+      start_date_hint: "Ngày khoản vay được giải ngân. Lịch sử số dư của khoản vay mới bắt đầu từ ngày này, không phải ngày số dư đầu kỳ. Để trống để dùng ngày số dư đầu kỳ."
+      down_payment: "Tiền trả trước"
+      insurance_rate: "Tỷ lệ bảo hiểm"
+      insurance_rate_placeholder: "0.36"
+      insurance_rate_hint: "Tỷ lệ hằng năm, tính hằng tháng cùng với khoản trả nợ. Loại cố định tính trên số dư ban đầu; loại giảm dần tính trên số còn nợ."
+      insurance_rate_type: "Loại bảo hiểm"
+      insurance_rate_type_decreasing_life: "Giảm dần"
+      insurance_rate_type_level_term: "Cố định"
     new:
       title: Nhập thông tin khoản vay
     overview:
@@ -24,6 +48,7 @@ vi:
       term: Kỳ hạn
       type: Loại
       unknown: Không xác định
+      original_payoff_date: "Ngày tất toán ban đầu"
     tabs:
       overview:
         interest_rate: Lãi suất
@@ -35,3 +60,66 @@ vi:
         type: Loại
         unknown: Không xác định
         edit_loan_details: "Chỉnh sửa thông tin khoản vay"
+        insurance_rate_only: "%{rate} một năm"
+        leverage: "Đòn bẩy"
+        leverage_band_conservative: "Thận trọng"
+        leverage_band_high: "Cao"
+        leverage_band_moderate: "Vừa phải"
+        leverage_multiple: "%{ratio}x"
+        original_payoff_date: "Ngày tất toán ban đầu"
+        total_cost: "Tổng chi phí"
+        total_cost_with_insurance: "Tổng chi phí gồm bảo hiểm"
+        total_insurance: "Bảo hiểm"
+      extra_repayments:
+        amount_label: "Khoản trả thêm"
+        amount_placeholder: "0.00"
+        apply: "Áp dụng"
+        baseline_not_cleared: "Với mức trả hiện tại, khoản vay này không được tất toán vào kỳ hạn ban đầu và vẫn còn nợ %{balloon}, nên không có ngày sớm hơn hay khoản lãi tiết kiệm để so sánh. Với khoản trả thêm này, khoản vay được tất toán vào ngày nêu trên."
+        clear: "Xóa"
+        comparison_basis: "So với việc trả đúng mức hiện tại và không trả thêm, tính từ số dư hôm nay."
+        dated_note: "Các khoản trả thêm hằng tuần và hai tuần được tính vào kỳ trả nợ kế tiếp sau mỗi lần trả, nên số lãi tiết kiệm nếu có thì đang bị tính thấp."
+        extra_not_cleared: "Ngay cả với khoản trả thêm này, khoản vay vẫn không được tất toán vào kỳ hạn ban đầu. Hãy thử số tiền lớn hơn."
+        frequencies:
+          fortnightly: "Hai tuần một lần"
+          monthly: "Hằng tháng"
+          weekly: "Hằng tuần"
+        frequency_label: "Tần suất"
+        interest_saved: "Lãi tiết kiệm được"
+        intro: "Xem khoản vay được tất toán sớm hơn bao lâu và bạn tiết kiệm được bao nhiêu lãi nếu trả thêm một khoản mỗi tuần, hai tuần hoặc tháng ngoài các kỳ trả nợ."
+        invalid_amount: "Hãy nhập số tiền từ 0 trở lên, bằng chữ số."
+        invalid_frequency: "Hãy chọn hằng tuần, hai tuần một lần hoặc hằng tháng."
+        months_sooner:
+          zero: "Tất toán trong cùng tháng"
+          one: "Sớm hơn %{count} tháng"
+          other: "Sớm hơn %{count} tháng"
+        no_scheduled_repayments: "Khoản vay này không còn kỳ trả nợ nào được lên lịch, nhưng vẫn còn dư nợ, nên không có kỳ trả nợ nào để trả thêm."
+        not_applicable: "Khoản vay này không còn gì để trả, nên không có khoản trả thêm nào để mô phỏng."
+        payoff_with_extra: "Tất toán khi trả thêm"
+        total_cost: "Tổng chi phí từ hôm nay"
+        total_cost_not_cleared: "Không được tất toán vào kỳ hạn ban đầu"
+        total_cost_saved: "Ít hơn %{amount} so với khi không trả thêm"
+        variable_rate_notice: "Lãi suất khoản vay này thay đổi theo thời gian. Các con số này áp dụng những thay đổi lãi suất đã được ghi nhận; một thay đổi chưa ghi nhận sẽ làm số liệu dịch chuyển."
+      repayment_progress:
+        instalment: "Kỳ trả %{number} · %{date}"
+        insurance: "Bảo hiểm"
+        interest: "Lãi"
+        of_original: "trên %{amount}"
+        principal: "Gốc"
+        repaid: "Đã trả"
+        total: "Tổng"
+      schedule:
+        date: "Ngày"
+        description: "Dự kiến từ số dư, lãi suất và kỳ hạn ban đầu, bắt đầu %{start_date}. Các khoản trả thêm chưa được phản ánh."
+        variable_rate_notice: "Lãi suất khoản vay này thay đổi theo thời gian. Lịch trả nợ được tính lại tại mỗi thay đổi đã ghi nhận, giữ nguyên ngày tất toán ban đầu và điều chỉnh khoản trả mỗi kỳ; một thay đổi chưa ghi nhận sẽ làm các số liệu này dịch chuyển."
+        opening_payment: "Khoản trả đầu kỳ"
+        forecasted_payoff_date: "Ngày tất toán dự kiến"
+        forecasted_payoff_not_converged: "Không được tất toán với mức trả hiện tại"
+        interest: "Lãi"
+        monthly_payment: "Khoản trả hằng tháng"
+        not_applicable: "Không áp dụng"
+        number: "#"
+        payment: "Khoản trả"
+        principal: "Gốc"
+        remaining_balance: "Dư nợ còn lại"
+        total_cost: "Tổng chi phí"
+        total_interest: "Tổng lãi"

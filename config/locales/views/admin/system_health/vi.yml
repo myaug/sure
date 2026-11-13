@@ -1,0 +1,432 @@
+---
+vi:
+  admin:
+    system_health:
+      hosted_usage:
+        loading: "Đang tải mức sử dụng dịch vụ lưu trữ…"
+        title: "Mức sử dụng dịch vụ lưu trữ"
+        snapshot: "Ảnh chụp cơ sở dữ liệu chỉ đọc tại thời điểm %{time}"
+        summary:
+          trial_households_count: "Hộ gia đình dùng thử (30 ngày qua)"
+          trial_members_count: "Tài khoản thành viên dùng thử hiện tại"
+          trials_expiring_soon_count: "Gói dùng thử hết hạn trong 7 ngày tới"
+          cleanup_eligible_count: "Hộ gia đình đủ điều kiện dọn dẹp"
+          active_supporter_households_count: "Hộ gia đình ủng hộ đang hoạt động (cục bộ)"
+          supporter_subscription_count: "Dòng đăng ký liên kết Stripe"
+        summary_help: "Tổng số dùng thử gồm các gói đăng ký được ghi nhận trong 30 ngày qua. Tổng số gói sắp hết hạn, dọn dẹp và ủng hộ gồm mọi dòng hiện tại khớp, không bị giới hạn của bảng."
+        limitations_title: "Những con số này cho chúng ta biết điều gì"
+        limitations: "Các bảng hiện tại không giữ đầy đủ lịch sử dùng thử, thanh toán hay hoạt động phiên. Việc tạo gói đăng ký có thể phản ánh việc nhập dữ liệu. Tài khoản thành viên không được xác minh là những người duy nhất. Màn hình này không thay đổi dữ liệu hộ gia đình hay gói đăng ký nào. Việc đặt lại demo dùng chung xóa các hộ gia đình và phiên cũ, nên không thể dựng lại lịch sử khách truy cập."
+        trials:
+          title: "Hộ gia đình dùng thử gần đây"
+          description: "Các gói đăng ký được ghi nhận từ %{date} có giữ ngày kết thúc dùng thử, gồm cả gói dùng thử đã chuyển đổi. Hiển thị tối đa %{limit} hộ gia đình."
+          sessions_help: "Phiên là các bản ghi đăng nhập được giữ lại của người dùng đang bật, không phải người dùng đang trực tuyến hay lượt truy cập. Đăng xuất sẽ xóa một bản ghi. Thời điểm tạo gần nhất không phải thời điểm thấy lần cuối."
+          empty: "Không có hộ gia đình dùng thử nào được ghi nhận trong khoảng này"
+        cleanup:
+          title: "Điều kiện dọn dẹp"
+          description: "Khớp với phạm vi dọn dẹp hiện có: gói đăng ký tạm dừng hoặc đang dùng thử đã kết thúc hơn 14 ngày trước, hoặc không có gói đăng ký và hộ gia đình lâu hơn 45 + 14 ngày. Hiển thị tối đa %{limit} hộ gia đình."
+          eligibility_help: "Đăng nhập gần đây không ngăn việc khớp. Đủ điều kiện không xác nhận việc xóa; 90 ngày là thời gian lưu trữ, không phải ngưỡng dọn dẹp gói dùng thử."
+          disabled: "Việc dọn dẹp gói dùng thử theo lịch bị tắt ngoài chế độ được quản lý. Đây chỉ là các kết quả khớp phạm vi."
+          empty: "Không có hộ gia đình nào khớp phạm vi dọn dẹp"
+          reasons:
+            expired_trial_grace_elapsed: "Gói dùng thử đã kết thúc; đã hết 14 ngày ân hạn"
+            no_subscription_grace_elapsed: "Không có gói đăng ký; đã qua 45 + 14 ngày"
+        supporters:
+          title: "Trạng thái ủng hộ cục bộ"
+          description: "Các dòng đăng ký cục bộ hiện tại có ID khách hàng và gói đăng ký dạng Stripe; gói đăng ký demo giả lập bị loại. Trạng thái không xác minh khoản thanh toán đã nhận hay ngày thanh toán đầu tiên. Không có yêu cầu nào gửi đến Stripe."
+          empty: "Không có dòng đăng ký liên kết Stripe"
+        columns:
+          household: "ID hộ gia đình"
+          recorded_at: "Đăng ký được ghi nhận"
+          trial_ends_at: "Dùng thử kết thúc"
+          status: "Trạng thái hiện tại"
+          members: "Tài khoản thành viên"
+          retained_sessions: "Phiên đăng nhập được giữ lại"
+          recent_sessions: "Phiên được giữ lại tạo trong 30 ngày qua"
+          latest_session: "Đăng nhập được giữ lại gần nhất"
+          cleanup_eligible: "Đủ điều kiện dọn dẹp"
+          cleanup_reason: "Lý do"
+          subscription_rows: "Dòng đăng ký"
+        statuses:
+          unknown: "Không rõ"
+          incomplete: "Chưa hoàn tất"
+          incomplete_expired: "Chưa hoàn tất, đã hết hạn"
+          trialing: "Đang dùng thử"
+          active: "Đang hoạt động"
+          past_due: "Quá hạn"
+          canceled: "Đã hủy"
+          unpaid: "Chưa thanh toán"
+          paused: "Tạm dừng"
+          no_subscription: "Không có gói đăng ký"
+        not_recorded: "Chưa ghi nhận"
+        eligible: "Đủ điều kiện"
+        not_eligible: "Không đủ điều kiện"
+        synthetic_demo: "Demo giả lập"
+      push_notifications:
+        send_test: "Gửi thông báo đẩy thử nghiệm"
+        queueing: "Đang xếp hàng…"
+        title: "Thông báo đẩy"
+        requested_at: "Lần thử nghiệm gần nhất được yêu cầu lúc %{time}"
+        result_help: "APNs chấp nhận không xác nhận đã giao đến thiết bị của bạn. Hãy làm mới để xem kết quả của worker. Kết quả được giữ 24 giờ."
+        results_label: "Kết quả thử nghiệm"
+        device: "Thiết bị %{number}"
+        pending: "Đang chờ"
+        refresh: "Làm mới kết quả"
+        columns:
+          device: "Thiết bị"
+          environment: "Môi trường APNs"
+          status: "Kết quả"
+          checked_at: "Cập nhật lần cuối"
+        environments:
+          sandbox: "Sandbox"
+          production: "Sản xuất"
+        messages:
+          enqueue_failed: "Không thể xếp hàng thử nghiệm. Hãy kiểm tra Sidekiq và làm mới kết quả bên dưới."
+          ready: "Gửi thông báo thử nghiệm đến các thiết bị iOS đang bật đã đăng ký với tài khoản của bạn."
+          queued: "Đã xếp hàng thông báo thử nghiệm. Hãy làm mới kết quả bên dưới để kiểm tra trạng thái."
+          hosted_only: "Thông báo đẩy chỉ khả dụng ở chế độ được quản lý."
+          ineligible: "Chỉ siêu quản trị viên đang hoạt động mới có thể gửi thông báo thử nghiệm."
+          no_devices: "Hãy bật thông báo đẩy trong ứng dụng Sure trên iOS cho tài khoản này để gửi thử nghiệm."
+          disabled: "Việc gửi thông báo đẩy đã bị người vận hành tắt."
+          not_configured: "Chưa cấu hình thông tin xác thực APNs."
+          cooldown: "Vui lòng chờ 30 giây trước khi gửi thử nghiệm khác."
+          storage_unavailable: "Không thể lưu yêu cầu thử nghiệm. Hãy kiểm tra cấu hình bộ nhớ đệm dùng chung."
+        statuses:
+          queued: "Đang xếp hàng"
+          accepted: "APNs đã chấp nhận"
+          skipped: "Bỏ qua: không còn đủ điều kiện"
+          rejected: "APNs từ chối; hãy xem nhật ký gỡ lỗi thông báo đẩy"
+          unregistered: "Đăng ký thiết bị không còn hợp lệ"
+          retrying: "Đang thử lại sau lỗi tạm thời"
+          failed: "Thất bại; hãy xem nhật ký gỡ lỗi thông báo đẩy"
+          enqueue_failed: "Không thể xếp hàng; hãy kiểm tra Sidekiq"
+          expired: "Hết hạn mà không có kết quả cuối cùng"
+      push_notification:
+        title: "Thông báo thử nghiệm của Sure"
+        body: "Đây là thông báo đẩy thử nghiệm cho tài khoản Sure của bạn."
+      verify_worker_ai:
+        queued: "Đã xếp hàng kiểm tra worker. Kết quả sẽ hiện bên dưới khi một tiến trình worker nhận, thường trong vài giây."
+      optional_services:
+        title: "Dịch vụ tùy chọn"
+        description: "Các tích hợp tùy chọn của người vận hành. Dịch vụ chưa cấu hình chỉ mang tính thông tin. Các kiểm tra này chỉ xem cài đặt; chúng không kiểm tra kết nối, gửi sự kiện thử nghiệm hay thay đổi sự đồng ý về phân tích. Hãy mở rộng một dịch vụ để xem chi tiết thiết lập."
+        missing_settings: "Thiếu cài đặt: %{settings}"
+        statuses:
+          configured: "Đã cấu hình"
+          not_configured: "Chưa cấu hình"
+          incomplete: "Cấu hình chưa đầy đủ"
+          disabled: "Bị tắt trong tiến trình này"
+          not_checked: "Chưa xác minh"
+        notes:
+          environment_disabled: "Tích hợp đã nạp bị tắt cho môi trường Rails này."
+          explicitly_disabled: "SKYLIGHT_ENABLED tắt rõ ràng việc đo đạc."
+          self_hosted_checkout_disabled: "Thanh toán gói đăng ký và cổng thanh toán bị tắt ở chế độ tự lưu trữ. Webhook của Stripe vẫn có thể được cấu hình; không cần ID giá thanh toán ở đây."
+          browser_analytics_disabled: "Phân tích trên trình duyệt bị tắt cho môi trường này. Việc này không tắt máy khách phía máy chủ được cấu hình riêng."
+          shared_feedback_configured: "Phản hồi tự lưu trữ có dự án đi kèm riêng và được bật theo cấu hình của nó. Không cần POSTHOG_KEY của người vận hành. Không kiểm tra việc người dùng từ chối trên trình duyệt và sự sẵn có của SDK."
+          shared_feedback_disabled: "Dự án phản hồi tự lưu trữ riêng bị tắt bởi cài đặt phản hồi hoặc môi trường. Việc này không tắt phân tích do người vận hành sở hữu."
+          production_only: "Tích hợp này chỉ được dùng trong môi trường sản xuất theo cấu hình hiện tại của ứng dụng."
+        services:
+          langfuse:
+            title: "Langfuse"
+            description: "Báo cáo truy vết và đánh giá AI tùy chọn. Kiểm tra này không gửi dấu vết hay yêu cầu đánh giá nào."
+            guidance: "Hãy đặt LANGFUSE_PUBLIC_KEY và LANGFUSE_SECRET_KEY cùng nhau. LANGFUSE_HOST là tùy chọn. Hãy khởi động lại các dịch vụ bị ảnh hưởng sau khi đổi các cài đặt này."
+          sentry:
+            title: "Sentry"
+            description: "Báo cáo lỗi và hiệu năng tùy chọn. Bộ khởi tạo hiện tại chỉ bật báo cáo trong môi trường sản xuất."
+            guidance: "Hãy đặt SENTRY_DSN và khởi động lại các dịch vụ bị ảnh hưởng. Việc này kiểm tra cấu hình SDK đã nạp mà không ghi nhận lỗi hay gửi sự kiện nào."
+          skylight:
+            title: "Skylight"
+            description: "Đo đạc hiệu năng ứng dụng tùy chọn. Việc có cấu hình không xác nhận agent đang chạy hay báo cáo."
+            guidance: "Hãy đặt SKYLIGHT_AUTHENTICATION và đảm bảo Skylight được nạp trong môi trường Rails dự định. SKYLIGHT_ENABLED=false tắt việc đo đạc; riêng cờ đó không nạp gem. Hãy khởi động lại sau khi đổi."
+          stripe:
+            title: "Stripe"
+            description: "Thanh toán gói đăng ký và webhook thanh toán tùy chọn. Kiểm tra này không tạo máy khách Stripe, xác thực thông tin xác thực hay gửi yêu cầu thanh toán."
+            guidance: "Hãy đặt STRIPE_SECRET_KEY và STRIPE_WEBHOOK_SECRET cùng nhau. Thanh toán gói đăng ký được quản lý còn cần STRIPE_MONTHLY_PRICE_ID và STRIPE_ANNUAL_PRICE_ID."
+          posthog:
+            title: "PostHog"
+            description: "Phân tích tùy chọn do người vận hành sở hữu, dùng cấu hình được nạp khi khởi động. Đã cấu hình không có nghĩa là người dùng đã đồng ý với phân tích."
+            guidance: "Hãy đặt POSTHOG_KEY và POSTHOG_HOST không để trống, hoặc để trống host để dùng mặc định. Phân tích trên trình duyệt cần môi trường sản xuất hoặc POSTHOG_DEVELOPMENT_ENABLED trong phát triển. POSTHOG_FEEDBACK_ENABLED điều khiển phản hồi tự lưu trữ riêng, không phải phân tích của người vận hành."
+          logtail:
+            title: "Logtail"
+            description: "Chuyển tiếp nhật ký sản xuất tùy chọn. Khi chưa cấu hình, ứng dụng tiếp tục ghi nhật ký ra đầu ra chuẩn."
+            guidance: "Hãy đặt LOGTAIL_API_KEY và LOGTAIL_INGESTING_HOST cùng nhau và khởi động lại các dịch vụ bị ảnh hưởng. Kiểm tra này không phát ra nhật ký thử nghiệm nào."
+      configuration:
+        description: "Cấu hình mà tiến trình web này nhìn thấy. Các kiểm tra này không gửi email, liên hệ nhà cung cấp, hay tải tệp lên hoặc xuống. Đã cấu hình nghĩa là các cài đặt có mặt, không phải việc gửi, quyền truy cập nhà cung cấp hay quyền truy cập lưu trữ đã được xác minh."
+        statuses:
+          configured: "Đã cấu hình"
+          not_configured: "Chưa cấu hình"
+          incomplete: "Cấu hình chưa đầy đủ"
+          disabled: "Đã tắt"
+          not_checked: "Chưa xác minh"
+        settings_needed: "Cài đặt cần xem lại"
+        unknown_provider: "Lựa chọn nhà cung cấp không nhận ra"
+        provider_statuses:
+          configured: "Đã cấu hình"
+          not_configured: "Thiếu khóa API"
+          invalid: "Lựa chọn không hợp lệ"
+        configure_providers: "Mở cài đặt tự lưu trữ"
+        storage_backend: "Lưu trữ đã chọn: %{backend}"
+        storage_backends:
+          local: "Ổ đĩa cục bộ"
+          test: "Ổ đĩa thử nghiệm"
+          amazon: "Amazon S3"
+          cloudflare: "Cloudflare R2"
+          generic_s3: "Lưu trữ tương thích S3"
+          google: "Google Cloud Storage"
+          other: "Backend tùy chỉnh hoặc không nhận ra"
+        checks:
+          smtp:
+            title: "Email (SMTP)"
+            statuses:
+              configured: "Các cài đặt SMTP đã có."
+              not_configured: "Chưa cấu hình SMTP. Đặt lại mật khẩu, lời mời và các email hệ thống khác không thể gửi qua SMTP."
+              incomplete: "Một số cài đặt email bị thiếu hoặc chưa đầy đủ. Email hệ thống hoặc các liên kết trong đó có thể không hoạt động."
+              disabled: "Việc gửi email bị tắt trong cấu hình mailer đang chạy."
+              not_checked: "Tiến trình này dùng phương thức gửi khác SMTP, chẳng hạn bản xem trước phát triển. Việc gửi qua SMTP không được đánh giá."
+            guidance: "Không thể cấu hình SMTP trong giao diện quản trị. Hãy đặt các biến môi trường email cho cả dịch vụ web và worker, rồi khởi động lại cả hai. SMTP_USERNAME và SMTP_PASSWORD có thể cùng bỏ trống cho relay không xác thực."
+            issues:
+              address: "SMTP_ADDRESS"
+              port: "SMTP_PORT (số từ 1 đến 65535)"
+              sender: "EMAIL_SENDER (thay người gửi mặc định sender@sure.local)"
+              app_domain: "APP_DOMAIN (dùng trong liên kết email)"
+              authentication: "SMTP_USERNAME và SMTP_PASSWORD (cung cấp cả hai hoặc không cái nào)"
+          securities:
+            title: "Giá thị trường"
+            statuses:
+              configured: "Mọi nhà cung cấp giá thị trường đã bật đều có cấu hình."
+              not_configured: "Các nhà cung cấp giá thị trường đã bật thiếu khóa API. Tìm kiếm chứng khoán tự động và tra giá không khả dụng qua các nhà cung cấp này."
+              incomplete: "Ít nhất một nhà cung cấp giá thị trường đã bật thiếu cấu hình hoặc có lựa chọn không hợp lệ. Chứng khoán gán cho nhà cung cấp đó có thể không nhận được cập nhật giá."
+              disabled: "Không có nhà cung cấp giá thị trường nào được bật. Tìm kiếm chứng khoán tự động và tra giá không khả dụng."
+            guidance: "Hãy chọn nhà cung cấp và thêm các khóa API cần thiết trong cài đặt tự lưu trữ, hoặc cấu hình trong môi trường triển khai. Ghi đè từ môi trường được ưu tiên. Nhà cung cấp công khai không cần khóa API."
+          exchange_rates:
+            title: "Tỷ giá ngoại hối"
+            statuses:
+              configured: "Nhà cung cấp tỷ giá đã chọn có cấu hình."
+              not_configured: "Chưa cấu hình nhà cung cấp tỷ giá dùng được. Quy đổi tiền tệ tự động có thể không khả dụng khi thiếu tỷ giá đã lưu."
+            guidance: "Hãy chọn nhà cung cấp tỷ giá và thêm khóa API của nó nếu cần trong cài đặt tự lưu trữ, hoặc cấu hình trong môi trường triển khai. EXCHANGE_RATE_PROVIDER và các biến môi trường khóa API của nhà cung cấp được ưu tiên."
+            issues:
+              invalid_provider: "Không nhận ra nhà cung cấp tỷ giá đã chọn. Tra cứu tỷ giá tự động sẽ thất bại cho đến khi chọn nhà cung cấp được hỗ trợ."
+          storage:
+            title: "Tải tệp lên và lưu trữ"
+            statuses:
+              configured: "Các cài đặt lưu trữ đã có; ổ đĩa cục bộ không cần thông tin xác thực đám mây."
+              not_configured: "Backend lưu trữ đã chọn không có cấu hình tương ứng. Có thể không tải tệp lên được."
+              incomplete: "Các cài đặt lưu trữ cần thiết bị thiếu hoặc chưa đầy đủ. Việc tải lên hoặc lấy tệp có thể không hoạt động."
+              not_checked: "Backend này dùng cơ chế tự tìm thông tin xác thực bên ngoài hoặc cấu hình tùy chỉnh. Không thể xác định quyền truy cập chỉ từ các cài đặt này."
+            guidance: "Hãy xem lại ACTIVE_STORAGE_SERVICE và các cài đặt triển khai của backend đã chọn. Ổ đĩa cục bộ cần lưu trữ bền vững dùng chung cho dịch vụ web và worker. Đổi backend không di chuyển các tệp hiện có; hãy lên kế hoạch di chuyển riêng."
+            issues:
+              root: "Thư mục gốc lưu trữ cục bộ"
+              bucket: "Bucket lưu trữ"
+              region: "Vùng lưu trữ"
+              credentials: "Access key và secret key lưu trữ (cung cấp cả hai hoặc dùng cơ chế tự tìm thông tin xác thực bên ngoài)"
+              endpoint: "Endpoint lưu trữ (và CLOUDFLARE_ACCOUNT_ID cho R2)"
+      show:
+        title: "Tình trạng hệ thống"
+        tabs:
+          hosted_usage: "Sử dụng"
+          background_jobs: "Tác vụ"
+          ai: "AI"
+          configuration: "Cấu hình"
+        alert:
+          title: "Các tác vụ nền không chạy"
+        status_section_title: "Trạng thái Sidekiq"
+        status_section_description: "Trạng thái hiện tại của worker nền chạy đồng bộ, số dư và tính toán tài sản ròng."
+        counters_section_title: "Bộ đếm tác vụ"
+        counters_section_description: "Bộ đếm Sidekiq tổng hợp trên mọi hàng đợi."
+        queues_section_title: "Hàng đợi"
+        queues_section_description: "Độ sâu từng hàng đợi và tuổi của tác vụ cũ nhất. Độ trễ là số giây tác vụ cũ nhất đã chờ."
+        labels:
+          status: "Trạng thái"
+          processes: "Tiến trình worker"
+          last_heartbeat: "Nhịp tim gần nhất"
+          max_queue_latency: "Tuổi tác vụ cũ nhất"
+          enqueued: "Trong hàng đợi"
+          retries: "Thử lại"
+          failed: "Thất bại"
+          processed_total: "Tổng đã xử lý"
+          queue: "Hàng đợi"
+          size: "Kích thước"
+          latency: "Độ trễ"
+        values:
+          healthy: "Khỏe mạnh"
+          unhealthy: "Suy giảm"
+          time_ago: "%{time_ago} trước"
+          never: "Chưa bao giờ"
+          seconds: "%{seconds} giây"
+          no_queues: "Chưa có hàng đợi nào được đăng ký. Worker có thể không chạy."
+        ai:
+          run_checks: "Chạy lại các kiểm tra"
+          last_checked: "Các kiểm tra trực tiếp hoàn tất %{time_ago} trước. Kết quả được lưu đệm trong thời gian ngắn."
+          not_checked_help: "Hãy mở trực tiếp URL trạng thái AI hoặc chạy các kiểm tra để xác minh dịch vụ còn sống."
+          loading: "Đang chạy các kiểm tra trực tiếp…"
+          alerts:
+            custom_openai:
+              title: "Kiểm tra vector store được lưu trữ thất bại tại endpoint tùy chỉnh này"
+              message: "Endpoint đã cấu hình không qua được kiểm tra sống /v1/vector_stores. Hầu hết endpoint cục bộ và tương thích OpenAI không triển khai API đó. Trò chuyện và xử lý PDF vẫn có thể hoạt động; hãy dùng pgvector với endpoint embedding riêng cho thiết lập cục bộ thông thường. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            function_calling_unsupported:
+              title: "Mô hình không hỗ trợ gọi hàm"
+              message: "Endpoint phục vụ yêu cầu trò chuyện thông thường nhưng từ chối chính yêu cầu đó khi kèm tham số tools. Trợ lý AI đọc tài khoản, giao dịch và holding qua lời gọi hàm, nên trò chuyện sẽ tiếp tục lỗi — thường với lỗi 404 khó hiểu — cho đến khi dùng mô hình hỗ trợ tools. Hãy chọn mô hình mà nhà cung cấp ghi rõ hỗ trợ gọi hàm. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            function_calling_not_used:
+              title: "Mô hình trả lời mà không gọi công cụ được yêu cầu gọi"
+              message: "Endpoint chấp nhận tham số tools, nhưng mô hình trả lời bằng văn bản thay vì gọi công cụ kiểm tra tình trạng. Trợ lý AI không thể đọc dữ liệu tài chính nếu không gọi công cụ, nên trò chuyện có thể trả lời trống hoặc bằng số liệu bịa. Hãy ưu tiên mô hình mà nhà cung cấp ghi rõ hỗ trợ gọi hàm."
+            llm_probe_failed:
+              title: "Kiểm tra trực tiếp LLM thất bại"
+              message: "Sure không thể xác minh cả endpoint lẫn mô hình đã cấu hình. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            llm_model_not_available:
+              title: "Mô hình AI đã cấu hình không khả dụng"
+              message: "Endpoint có trả lời, nhưng không liệt kê hoặc phục vụ mô hình đã cấu hình. Hãy chọn mô hình đang hoạt động cho nhà cung cấp đã chọn, rồi chạy lại kiểm tra. Với Gemini qua lớp chuyển đổi tương thích OpenAI, hãy dùng mô hình được hỗ trợ hiện tại như gemini-3.8-flash."
+            pdf_text_extraction_failed:
+              title: "Kiểm tra trích xuất văn bản PDF giả lập thất bại"
+              message: "Sure không thể hoàn tất đường dẫn ưu tiên văn bản, vốn trích xuất văn bản PDF nhúng cục bộ và gửi cho mô hình đã cấu hình. Không có dữ liệu khách hàng nào được gửi. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            pdf_vision_processing_failed:
+              title: "Kiểm tra PDF vision/gốc giả lập thất bại"
+              message: "Sure không thể hoàn tất đường dẫn PDF dạng ảnh hoặc tài liệu gốc qua mô hình đã cấu hình. Không có dữ liệu khách hàng nào được gửi. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            vector_probe_failed:
+              title: "Kiểm tra trực tiếp tìm kiếm tài liệu thất bại"
+              message: "Sure không thể xác minh vector store đã chọn và mọi dịch vụ embedding cần thiết. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            pgvector_extension_not_enabled:
+              title: "Tiện ích mở rộng vector của PostgreSQL chưa được bật"
+              message: "Đã chọn bộ điều hợp pgvector, nhưng PostgreSQL chưa bật tiện ích mở rộng vector cho cơ sở dữ liệu này. Hãy dùng ảnh PostgreSQL có pgvector, rồi bật tiện ích mở rộng bằng quyền chủ sở hữu cơ sở dữ liệu hoặc siêu người dùng và chạy lại migration với VECTOR_STORE_PROVIDER=pgvector."
+            pgvector_table_not_found:
+              title: "Thiếu bảng vector_store_chunks"
+              message: "Tiện ích mở rộng pgvector đã bật, nhưng không tìm thấy bảng chunks. Hãy kiểm tra trạng thái migration, rồi chạy lại migration vector store với VECTOR_STORE_PROVIDER=pgvector để Sure tạo vector_store_chunks."
+            pgvector_probe_failed:
+              title: "Kiểm tra lưu trữ pgvector thất bại"
+              message: "Sure không thể truy vấn bảng chunks của pgvector. Hãy kiểm tra quyền PostgreSQL, tiện ích mở rộng vector và migration vector_store_chunks. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            embedding_dimensions_mismatch:
+              title: "Số chiều embedding không khớp"
+              message: "Endpoint embedding trả về vector có độ dài không khớp với EMBEDDING_DIMENSIONS. Hãy đặt EMBEDDING_MODEL và EMBEDDING_DIMENSIONS theo kích thước vector được ghi tài liệu của mô hình, khởi động lại Sure để môi trường được giữ, rồi sửa hoặc tạo lại cột/bảng embedding của pgvector và embedding lại tài liệu nếu dữ liệu hiện có dùng kích thước khác."
+            embedding_probe_timeout:
+              title: "Kiểm tra trực tiếp embedding hết thời gian"
+              message: "Endpoint embedding không trả lời trước AI_HEALTH_PROBE_TIMEOUT. Hãy tăng thời gian chờ kiểm tra tình trạng này nếu nhà cung cấp chậm, rồi khởi động lại Sure để môi trường được giữ ở mọi tiến trình. Nếu các lời gọi trò chuyện AI thông thường cũng hết thời gian, hãy tăng OPENAI_REQUEST_TIMEOUT riêng."
+            embedding_probe_failed:
+              title: "Kiểm tra trực tiếp embedding thất bại"
+              message: "Sure không thể tạo embedding thử nghiệm ngắn qua endpoint và mô hình đã cấu hình. Hãy kiểm tra EMBEDDING_URI_BASE, EMBEDDING_MODEL, EMBEDDING_ACCESS_TOKEN và nhật ký của nhà cung cấp embedding. Lỗi đã được ghi lại trong Cài đặt → Nhật ký gỡ lỗi và Rails.logger."
+            qdrant:
+              title: "Chưa triển khai hỗ trợ Qdrant"
+              message: "Bộ điều hợp Qdrant mới chỉ là khung, các thao tác tải tài liệu lên và tìm kiếm hiện thất bại. Hãy chọn OpenAI hoặc pgvector cho tìm kiếm tài liệu."
+            missing_vector_store:
+              title: "Chưa cấu hình vector store"
+              message: "Tài liệu đã tải lên không thể được lập chỉ mục hay tìm kiếm cho đến khi cấu hình bộ điều hợp vector store và các yêu cầu của nó."
+            unavailable_vector_store:
+              title: "Vector store đã chọn không khả dụng"
+              message: "Hãy kiểm tra các yêu cầu của bộ điều hợp bên dưới. Với pgvector, cơ sở dữ liệu phải có tiện ích mở rộng vector hoặc bảng vector_store_chunks có sẵn."
+          llm:
+            title: "LLM và xử lý PDF"
+            description: "Các kiểm tra trực tiếp xác minh mô hình đã cấu hình, yêu cầu nó thực hiện một lời gọi hàm đơn giản như trợ lý làm, rồi riêng biệt thử trích xuất văn bản và xử lý vision/gốc với một PDF giả lập một trang không có dữ liệu khách hàng. Giá trị thông tin xác thực không bao giờ được hiển thị."
+          vector_store:
+            title: "Vector store và tìm kiếm tài liệu"
+            description: "Kiểm tra trực tiếp truy vấn API vector store được lưu trữ, hoặc thử bảng pgvector và tạo một embedding ngắn mà không lưu nó."
+          labels:
+            selected_provider: "Nhà cung cấp đã chọn"
+            effective_provider: "Nhà cung cấp hiệu lực"
+            model: "Mô hình"
+            endpoint: "Endpoint"
+            function_calling: "Gọi hàm (tools)"
+            pdf_text_extraction: "Đường dẫn trích xuất văn bản PDF"
+            pdf_vision_processing: "Đường dẫn PDF vision/gốc"
+            llm_request_timeout: "Thời gian chờ yêu cầu LLM"
+            probe_request_timeout: "Thời gian chờ kiểm tra tình trạng"
+            openai_credentials: "Thông tin xác thực OpenAI"
+            openai_compatible_credentials: "Thông tin xác thực API tương thích OpenAI"
+            anthropic_credentials: "Thông tin xác thực Anthropic"
+            adapter: "Bộ điều hợp"
+            adapter_available: "Bộ điều hợp khả dụng"
+            pgvector_extension: "Tiện ích mở rộng vector của PostgreSQL"
+            pgvector_table: "Bảng vector chunks"
+            embedding_model: "Mô hình embedding"
+            embedding_endpoint: "Endpoint embedding"
+            embedding_dimensions: "Số chiều embedding"
+            function_calling_failure_reason: "Lý do gọi hàm thất bại"
+            pdf_text_extraction_failure_reason: "Lý do trích xuất văn bản thất bại"
+            pdf_vision_processing_failure_reason: "Lý do vision/gốc thất bại"
+            storage_probe: "Kiểm tra lưu trữ pgvector"
+            embedding_probe: "Kiểm tra endpoint embedding"
+            failure_reason: "Lý do thất bại"
+          providers:
+            openai: "OpenAI"
+            openai_compatible: "Tương thích OpenAI"
+            anthropic: "Anthropic"
+            ollama: "Ollama"
+            openrouter: "OpenRouter"
+            together: "Together"
+            kilo: "Kilo"
+            cloudflare: "Cloudflare"
+            custom_openai_compatible: "Endpoint tùy chỉnh"
+          adapters:
+            openai: "Vector store OpenAI được lưu trữ"
+            pgvector: "pgvector"
+            qdrant: "Qdrant"
+          values:
+            configured: "Đã cấu hình"
+            not_configured: "Chưa cấu hình"
+            fallback: "(dự phòng)"
+            not_set: "Chưa đặt"
+            "yes": "Có"
+            "no": "Không"
+            enabled: "Đã bật"
+            available_not_enabled: "Khả dụng, chưa bật"
+            not_available: "Không khả dụng"
+            available: "Khả dụng"
+            not_found: "Không tìm thấy"
+          function_calling_statuses:
+            supported: "Lời gọi công cụ trực tiếp thành công"
+            unsupported: "Không được nhà cung cấp/mô hình hiệu lực hỗ trợ"
+            not_used: "Tools được chấp nhận nhưng mô hình không gọi công cụ nào"
+            failing: "Kiểm tra trực tiếp thất bại"
+            not_checked: "Chưa kiểm tra"
+            unavailable: "Không khả dụng cho đến khi cấu hình nhà cung cấp LLM"
+          pdf_statuses:
+            supported: "Kiểm tra PDF giả lập đã qua"
+            failing: "Kiểm tra PDF giả lập thất bại"
+            unsupported: "Bị tắt hoặc không được nhà cung cấp/mô hình hiệu lực hỗ trợ"
+            not_checked: "Chưa kiểm tra"
+            unavailable: "Không khả dụng cho đến khi cấu hình nhà cung cấp LLM"
+          probe_statuses:
+            passing: "Kiểm tra trực tiếp đã qua"
+            failing: "Kiểm tra trực tiếp thất bại"
+            not_checked: "Chưa kiểm tra"
+            not_configured: "Chưa cấu hình"
+          vector_statuses:
+            passing: "Các kiểm tra trực tiếp đã qua"
+            failing: "Kiểm tra trực tiếp thất bại"
+            not_checked: "Chưa kiểm tra"
+            not_configured: "Chưa cấu hình"
+            scaffolded: "Mới là khung"
+            missing: "Chưa cấu hình"
+          failure_codes:
+            model_not_available: "Nhà cung cấp không trả về mô hình đã cấu hình"
+            no_tool_call: "Mô hình trả lời mà không gọi công cụ kiểm tra tình trạng"
+            tools_refused: "Dịch vụ phục vụ cùng yêu cầu khi không có tools và từ chối khi có tools"
+            invalid_response: "Dịch vụ trả về phản hồi không như mong đợi"
+            dimensions_mismatch: "Số chiều vector embedding không khớp với số chiều đã cấu hình"
+            extension_not_enabled: "Tiện ích mở rộng vector của PostgreSQL chưa được bật"
+            table_not_found: "Không tìm thấy bảng vector_store_chunks"
+            render_missing_binary: "Trình kết xuất pdftoppm (poppler-utils) không có trong container này"
+            timeout: "Dịch vụ không trả lời trước thời gian chờ kiểm tra"
+            request_failed: "Yêu cầu đến dịch vụ thất bại"
+            unsupported_provider: "Nhà cung cấp không hỗ trợ kiểm tra này"
+          worker:
+            title: "Xác minh worker"
+            description: "Các kiểm tra ở trên chạy từ tiến trình web này. Phần lớn công việc AI -- phản hồi của trợ lý, xử lý PDF, embedding, tự động phân loại và phát hiện đơn vị bán hàng -- thực ra chạy trong tiến trình Sidekiq worker, vốn có thể khác về truy cập mạng, DNS, quy tắc proxy, hoặc thậm chí thông tin xác thực được nạp. Hãy xếp hàng một kiểm tra để xác minh cấu hình và kết nối riêng của worker."
+            verify_button: "Xác minh cấu hình worker"
+            coverage_notice: "Mỗi kiểm tra xác minh đúng một tiến trình worker -- tiến trình nào lấy nó ra khỏi hàng đợi. Với nhiều hơn một bản sao worker, kết quả đạt không xác nhận mọi worker đều khỏe; hãy xếp hàng kiểm tra lần nữa để lấy mẫu worker khác."
+            empty:
+              title: "Chưa có worker nào báo cáo"
+              description: "Nhấn \"Xác minh cấu hình worker\" để xếp hàng một kiểm tra bất đồng bộ. Kết quả hiện ở đây khi một tiến trình worker nhận nó."
+            labels:
+              process: "Tiến trình worker"
+              checked_at: "Đã kiểm tra"
+              configuration: "Cấu hình"
+            configuration_statuses:
+              match: "Khớp với web"
+              mismatch: "Khác với web"
+            statuses:
+              passing: "Đạt"
+              failing: "Không đạt"
+              stale: "Đã cũ"
+            settings_origin:
+              title: "Cài đặt nào cần khởi động lại?"
+              database_backed: "Các cài đặt nhà cung cấp, mô hình và khóa API được đổi trong Cài đặt → Tự lưu trữ được lưu trong cơ sở dữ liệu. rails-settings-cached vô hiệu hóa bộ nhớ đệm dùng chung khi ghi, nên cả web và worker đều lấy giá trị mới cho yêu cầu hoặc tác vụ xếp hàng kế tiếp -- không cần khởi động lại."
+              env_backed: "Cấu hình embedding, và mọi giá trị chỉ được đặt qua biến môi trường, được cố định khi mỗi container khởi động. Rails không thể đổi môi trường của container khác, nên đổi chúng cần khởi động lại hoặc tạo lại cả dịch vụ web và worker -- và công cụ triển khai nào chỉ khởi động lại một trong hai (triển khai từng phần, Secret được cập nhật mà không khởi động lại pod) sẽ không nhận thay đổi."
+          local_setup:
+            title: "Thiết lập cục bộ được khuyến nghị"
+            description: "Chạy LLM qua endpoint tương thích OpenAI cục bộ của bạn, lưu vector tài liệu trong pgvector, và trỏ cài đặt embedding tới một endpoint embedding tương thích OpenAI. Ảnh PostgreSQL phải có tiện ích mở rộng vector, và số chiều embedding phải khớp với mô hình đã chọn."

@@ -29,6 +29,14 @@ vi:
         confirm_clear_cache:
           title: Xóa bộ nhớ đệm dữ liệu?
           body: Bạn có chắc chắn muốn xóa bộ nhớ đệm dữ liệu? Thao tác này sẽ xóa tất cả tỷ giá hối đoái, giá chứng khoán, số dư tài khoản và dữ liệu khác. Hành động này không thể hoàn tác.
+        demo_refresh: "Làm mới dữ liệu demo"
+        property_valuation_providers: "Nhà cung cấp định giá bất động sản"
+        instance_settings_restricted: "Thông tin xác thực nhà cung cấp, kết nối AI dùng chung và cài đặt đồng bộ áp dụng cho mọi gia đình trên hệ thống này, nên chỉ siêu quản trị viên mới có thể thay đổi. Trợ lý mà gia đình bạn dùng vẫn được đặt theo từng gia đình. Người có quyền truy cập máy chủ có thể nâng một người dùng lên siêu quản trị viên; hướng dẫn tự lưu trữ bằng Docker có lệnh này trong phần ghi chú nâng cấp."
+        reset_market_data: "Đặt lại dữ liệu thị trường cho mọi gia đình"
+        reset_market_data_warning: "Xóa các tỷ giá và giá chứng khoán mà nhà cung cấp có thể tải lại, nhập lại chúng, rồi đồng bộ mọi tài khoản. Tổng tiền ngoại tệ có thể hiển thị chưa quy đổi cho đến khi nhập xong."
+        confirm_reset_market_data:
+          title: "Đặt lại dữ liệu thị trường cho mọi gia đình?"
+          body: "Thao tác này xóa các tỷ giá và giá chứng khoán mà nhà cung cấp có thể tải lại, cho mọi gia đình trên hệ thống này, rồi nhập lại chúng. Cho đến khi nhập xong, số tiền ngoại tệ có thể hiển thị chưa quy đổi. Không thể hoàn tác."
       provider_selection:
         exchange_rate_title: Nhà cung cấp tỷ giá hối đoái
         exchange_rate_description: Chọn một nhà cung cấp để lấy tỷ giá hối đoái tiền tệ.
@@ -42,6 +50,8 @@ vi:
         requires_api_key_eodhd: yêu cầu khóa API, giới hạn 20 lần gọi/ngày
         requires_api_key_alpha_vantage: yêu cầu khóa API, giới hạn 25 lần gọi/ngày
         mfapi_hint: miễn phí, không cần khóa API -- chỉ quỹ tương hỗ Ấn Độ
+        ssi_fastconnect_hint: cần API key và API secret của SSI FastConnect -- cổ phiếu Việt Nam (HOSE, HNX, UPCoM)
+        fmarket_hint: miễn phí, không cần khóa API -- chứng chỉ quỹ mở Việt Nam (NAV), API công khai không chính thức
         binance_public_hint: miễn phí, không cần khóa API -- chỉ tiền điện tử (BTC, ETH, v.v.)
         moex_public_hint: miễn phí, không cần khóa API -- cổ phiếu, quỹ và trái phiếu Nga (MOEX), bao gồm tỷ giá RUB
         providers:
@@ -51,8 +61,15 @@ vi:
           eodhd: EODHD
           alpha_vantage: Alpha Vantage
           mfapi: MFAPI.in
+          fmarket: Fmarket
+          ssi_fastconnect: SSI FastConnect
           binance_public: Binance
           moex_public: MOEX
+          tinkoff_invest: "T-Invest (T-Bank)"
+          frankfurter: "Frankfurter"
+          mansa: "Mansa"
+        tinkoff_invest_hint: "cần token chỉ đọc -- giá cổ phiếu/quỹ/trái phiếu Nga + logo thương hiệu"
+        requires_api_key_mansa: "cần khóa API, gói miễn phí 100 lượt gọi/ngày -- các sàn châu Phi (NGX, JSE, NSE, GSE, BRVM và nhiều sàn khác)"
       assistant_settings:
         title: Trợ lý AI
         description: Chọn cách trợ lý trò chuyện phản hồi. Tích hợp sẵn sử dụng nhà cung cấp LLM đã cấu hình trực tiếp. Bên ngoài ủy thác cho tác nhân AI từ xa có thể gọi lại các công cụ tài chính của Sure qua MCP.
@@ -79,6 +96,15 @@ vi:
         confirm_disconnect:
           title: Ngắt kết nối trợ lý bên ngoài?
           body: Thao tác này sẽ xóa URL, token và ID tác nhân đã lưu, và chuyển về trợ lý tích hợp sẵn. Bạn có thể kết nối lại sau bằng cách nhập thông tin xác thực mới.
+        type_mcp_only: "Không có trong ứng dụng (kết nối agent của bạn qua MCP)"
+        mcp_only_help: "Trợ lý trong ứng dụng bị tắt cho mọi người trong hộ gia đình này. Các phím tắt AI của Hóa đơn và nội dung thông tin do AI viết cũng ngừng. MCP và phân loại nền vẫn khả dụng; hãy kết nối agent bên ngoài trong Cài đặt > MCP."
+        agent_discovery_configure_first: "Hãy lưu URL endpoint và API token hợp lệ để tải danh sách agent."
+        external_agent_required: "Hãy chọn một agent bên ngoài trước khi lưu."
+        external_agent_invalid: "Hãy chọn một agent do endpoint đã cấu hình trả về."
+        external_agent_reselect: "Endpoint đã thay đổi và agent đã chọn trước đó không có ở đó. Hãy chọn agent từ endpoint mới."
+        agent_discovery_error: "Không thể tải agent: %{error}"
+        external_info:
+          title: "Cấu hình AI bên ngoài"
       brand_fetch_settings:
         description: Nhập Client ID do Brandfetch cung cấp
         env_configured_message: Bạn đã cấu hình thành công Client ID Brandfetch qua biến môi trường BRAND_FETCH_CLIENT_ID.
@@ -94,6 +120,16 @@ vi:
       llm_provider_selector:
         max_items_per_call_label: Số mục tối đa mỗi lô (Tùy chọn)
         max_items_per_call_help: "Giới hạn trên cho lô phân loại tự động / phát hiện nhà cung cấp. Mặc định: 25. Với nhà cung cấp tương thích OpenAI, lô lớn hơn được tự động cắt để phù hợp với cửa sổ ngữ cảnh."
+        title: "Nhà cung cấp AI"
+        description: "Chọn LLM nào chạy trò chuyện AI, phát hiện đơn vị bán hàng và xử lý PDF. Phân loại giao dịch được cấu hình riêng bên dưới."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường LLM_PROVIDER."
+        provider_label: "Nhà cung cấp LLM đang dùng"
+        provider_openai: "OpenAI"
+        provider_anthropic: "Anthropic (Claude)"
+        provider_help: "Việc đổi nhà cung cấp có hiệu lực ở cuộc trò chuyện kế tiếp. Hãy cấu hình thông tin xác thực của nhà cung cấp đang dùng bên dưới."
+        not_configured_hint: "Hãy thêm khóa API %{provider} bên dưới để kích hoạt."
+        data_retention_heading: "Xử lý dữ liệu"
+        data_retention: "Dữ liệu đầu vào qua API mặc định không được dùng để huấn luyện mô hình; API do nhà cung cấp lưu trữ giữ dữ liệu khoảng 30 ngày vì mục đích tin cậy và an toàn. Endpoint tùy chỉnh hoặc tự lưu trữ theo chính sách của bạn."
       openai_settings:
         description: Nhập token truy cập và tùy chọn cấu hình nhà cung cấp tương thích OpenAI tùy chỉnh
         env_configured_message: Đã cấu hình thành công qua biến môi trường.
@@ -118,6 +154,16 @@ vi:
         max_response_tokens_label: Số token phản hồi tối đa (Tùy chọn)
         max_response_tokens_help: "Token dành cho phản hồi của mô hình. Mặc định: 512. Giảm để dành chỗ cho lịch sử dài hơn."
         title: OpenAI
+        model_function_calling_help: "Trợ lý AI đọc dữ liệu của bạn qua lời gọi hàm, nên hãy chọn mô hình mà nhà cung cấp ghi rõ là hỗ trợ tools/function calling. Mô hình không hỗ trợ sẽ làm trò chuyện lỗi với thông báo khó hiểu từ nhà cung cấp."
+        model_function_calling_link: "Kiểm tra mô hình đã cấu hình"
+        timeout_heading: "Thời gian chờ"
+        timeout_description: "Điều khiển mỗi lời gọi mô hình tương thích OpenAI được chạy bao lâu trước khi Sure bỏ cuộc. Hãy tăng nếu bạn chạy mô hình cục bộ trên phần cứng chậm."
+        openai_request_timeout_label: "Thời gian chờ yêu cầu, tính bằng giây (không bắt buộc)"
+        openai_request_timeout_help: "Mặc định: 60. Áp dụng cho mỗi yêu cầu HTTP tương thích OpenAI, gồm tự động phân loại, phát hiện đơn vị bán hàng, trò chuyện, xử lý PDF và các lời gọi vector store. OPENAI_REQUEST_TIMEOUT ghi đè trường này."
+        ai_response_timeout_label: "Thời gian chờ phản hồi, tính bằng giây (không bắt buộc)"
+        ai_response_timeout_help: "Mặc định: 90. Chỉ áp dụng cho bộ giám sát toàn lượt của trò chuyện, nên hãy tính như một tổng: (1 + ASSISTANT_MAX_TOOL_CALL_ITERATIONS) × thời gian chờ yêu cầu, cộng thời gian chạy công cụ và hàng đợi. AI_RESPONSE_TIMEOUT ghi đè trường này."
+        ai_health_probe_timeout_label: "Thời gian chờ kiểm tra tình trạng, tính bằng giây (không bắt buộc)"
+        ai_health_probe_timeout_help: "Mặc định: 5. Chỉ áp dụng cho các kiểm tra AI trực tiếp trong Cài đặt → Tình trạng hệ thống, không bao giờ áp dụng cho lời gọi AI thật. Hãy tăng nếu kiểm tra PDF báo hết thời gian với mô hình đám mây. AI_HEALTH_PROBE_TIMEOUT ghi đè trường này."
       yahoo_finance_settings:
         title: Yahoo Finance
         description: Yahoo Finance cung cấp quyền truy cập miễn phí vào giá cổ phiếu, tỷ giá hối đoái và dữ liệu tài chính mà không cần khóa API.
@@ -125,6 +171,14 @@ vi:
         status_inactive: Kết nối Yahoo Finance thất bại
         connection_failed: Không thể kết nối với Yahoo Finance
         troubleshooting: Kiểm tra kết nối internet và cài đặt tường lửa của bạn. Yahoo Finance có thể tạm thời không khả dụng.
+        status_healthy: "Yahoo Finance đang hoạt động bình thường."
+        status_rate_limited: "Yahoo Finance đang tạm thời giới hạn số yêu cầu."
+        rate_limited_title: "Đã chạm giới hạn tốc độ của Yahoo Finance."
+        rate_limited_message: "Không cần làm gì. Sure sẽ tránh kiểm tra tình trạng thêm trong 30 phút. Các thao tác giá và tỷ giá vẫn tiếp tục độc lập."
+        status_unavailable: "Yahoo Finance hiện không khả dụng."
+        unavailable_title: "Không thể xác minh Yahoo Finance."
+        unavailable_message: "Không kết nối được Yahoo Finance hoặc nhận phản hồi không như mong đợi. Hãy kiểm tra kết nối internet và thử lại sau."
+        status_unknown: "Đang kiểm tra tình trạng Yahoo Finance."
       tiingo_settings:
         title: Tiingo
         description: Nhập token API do Tiingo cung cấp. Gói miễn phí hỗ trợ 50 ký hiệu duy nhất mỗi giờ với hơn 30 năm dữ liệu lịch sử.
@@ -180,6 +234,12 @@ vi:
         invalid_sync_time: "Định dạng thời gian đồng bộ không hợp lệ. Vui lòng sử dụng định dạng HH:MM (ví dụ: 02:30)."
         invalid_llm_budget: "%{field} phải là số nguyên ≥ %{minimum}."
         scheduler_sync_failed: Đã lưu cài đặt, nhưng cập nhật lịch đồng bộ thất bại. Vui lòng thử lại hoặc kiểm tra nhật ký máy chủ.
+        invalid_demo_family: "Gia đình được chọn phải sở hữu email demo đã cấu hình."
+        select_demo_family: "Hãy chọn một gia đình demo dùng một lần trước."
+        invalid_anthropic_base_url: "Base URL của Anthropic phải là URL http(s)."
+        anthropic_model_required_for_base_url: "Cần có Mô hình Anthropic khi đặt Base URL tùy chỉnh."
+        invalid_jev_endpoint: "Endpoint của Jev phải là URL https. Chỉ chấp nhận http thuần với localhost."
+        invalid_categorization_rate: "%{field} phải là số từ 0 đến 1."
       disconnect_external_assistant:
         external_assistant_disconnected: Trợ lý bên ngoài đã bị ngắt kết nối
       clear_cache:
@@ -197,3 +257,118 @@ vi:
         include_pending_label: Bao gồm giao dịch đang chờ
         include_pending_description: Khi bật, các giao dịch đang chờ (chưa được ghi nhận) sẽ được nhập và tự động đối soát khi được đăng. Tắt nếu ngân hàng của bạn cung cấp dữ liệu đang chờ không đáng tin cậy.
         env_configured_message: Cài đặt này bị tắt vì biến môi trường nhà cung cấp (SIMPLEFIN_INCLUDE_PENDING hoặc PLAID_INCLUDE_PENDING) đã được đặt. Xóa nó để bật cài đặt này.
+        market_data_sync_label: "Bật nhập dữ liệu thị trường hằng ngày"
+        market_data_sync_description: "Khi bật, giá chứng khoán được nhập tự động mỗi ngày một lần (Thứ Hai đến Thứ Sáu) vào giờ chỉ định."
+        market_data_sync_time_label: "Giờ nhập dữ liệu thị trường (HH:MM)"
+        market_data_sync_time_description: "Chỉ định giờ trong ngày chạy nhập giá chứng khoán hằng ngày — ví dụ ngay sau khi sàn chính của bạn đóng cửa."
+      ssi_fastconnect_settings:
+        title: "SSI FastConnect Data"
+        description: "Nhập API key và API secret của dịch vụ SSI FastConnect mà bạn đã đăng ký. Cung cấp giá cuối ngày cho cổ phiếu và quỹ trên HOSE, HNX và UPCoM."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường SSI_FASTCONNECT_API_KEY và SSI_FASTCONNECT_API_SECRET."
+        api_key_label: "API key"
+        api_key_placeholder: "Nhập API key của SSI tại đây"
+        api_secret_label: "API secret"
+        api_secret_placeholder: "Nhập API secret của SSI tại đây"
+      demo_refresh_settings:
+        description: "Tự động làm mới chỉ gia đình demo được chọn. Toàn bộ dữ liệu và thông tin đăng nhập của nó sẽ bị xóa. Các gia đình khác không bị ảnh hưởng. Cần worker đang chạy với ít nhất 2 GiB RAM. Trước tiên hãy tạo một gia đình demo dùng một lần bằng trình tạo demo, rồi chọn ở đây. Đừng chọn gia đình của người dùng thật."
+        none: "Chưa chọn gia đình demo"
+        family_label: "Gia đình demo dùng một lần"
+        save_family: "Lưu gia đình demo"
+        enabled_label: "Bật làm mới gia đình demo hằng ngày"
+      anthropic_settings:
+        title: "Anthropic (Claude)"
+        description: "Nhập khóa API Anthropic của bạn. Có thể trỏ Base URL tới AWS Bedrock hoặc GCP Vertex."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường."
+        access_token_label: "Khóa API"
+        access_token_placeholder: "Nhập khóa API Anthropic của bạn"
+        base_url_label: "Base URL (không bắt buộc)"
+        base_url_placeholder: "https://api.anthropic.com (mặc định)"
+        model_label: "Mô hình mặc định (không bắt buộc)"
+        model_placeholder: "claude-sonnet-4-6 (mặc định)"
+        model_help: "Dùng cho trò chuyện và xử lý PDF. Các tác vụ hàng loạt (phân loại, phát hiện đơn vị bán hàng) mặc định dùng Haiku để tiết kiệm chi phí."
+      categorization_provider_selector:
+        title: "Phân loại giao dịch"
+        preview_pill: "Xem trước"
+        description: "Chọn nhà cung cấp nào phân loại giao dịch. Việc này tách biệt với nhà cung cấp AI ở trên, vốn xử lý trò chuyện và PDF."
+        env_notice: "Được đặt thành %{type} qua biến môi trường."
+        provider_label: "Nhà cung cấp phân loại"
+        provider_llm: "Nhà cung cấp AI (OpenAI hoặc Anthropic)"
+        provider_jev: "Jev (TypeSafe)"
+        provider_help: "Nhà cung cấp AI đọc một loạt giao dịch và trả về tên danh mục. Jev chọn từ danh sách danh mục của bạn và trả về độ tin cậy đã hiệu chỉnh cho từng giao dịch."
+        jev_configured: "Đã cấu hình khóa API Jev."
+        jev_not_configured: "Đã chọn Jev nhưng chưa cấu hình khóa API. Việc phân loại tiếp tục dùng nhà cung cấp AI cho đến khi bạn thêm khóa bên dưới."
+        data_retention_heading: "Chia sẻ dữ liệu"
+        data_retention_direct: "Mô tả giao dịch, số tiền và tên danh mục của bạn được gửi đến TypeSafe để phân loại. Hãy xem chính sách lưu giữ của họ trước khi bật với dữ liệu thật."
+        data_retention_proxied: "Mô tả giao dịch, số tiền và tên danh mục của bạn được gửi đến %{host}, nơi chuyển tiếp chúng tới TypeSafe. Hãy xem chính sách lưu giữ của cả hai nhà cung cấp trước khi bật với dữ liệu thật."
+        confidence_threshold_label: "Độ tin cậy tối thiểu (0–1)"
+        confidence_threshold_help: "Dưới độ tin cậy này, danh mục không được áp dụng và giao dịch để chưa phân loại, để lần chạy sau có thể thử lại. Không có gì bị bỏ đi. Đặt 0 để áp dụng mọi kết quả."
+        confidence_threshold_env_notice: "Bị khóa bởi biến môi trường CATEGORIZATION_CONFIDENCE_THRESHOLD."
+        shadow_rate_label: "Tỷ lệ so sánh song song (0–1)"
+        shadow_rate_help: "Chạy nhà cung cấp bạn KHÔNG chọn song song với nhà cung cấp đã chọn, ghi lại chỗ chúng bất đồng mà không đổi danh mục nào. Việc này nhân đôi chi phí API cho mỗi lần phân loại được lấy mẫu. Đặt 0 để tắt."
+        shadow_rate_env_notice: "Bị khóa bởi biến môi trường CATEGORIZATION_SHADOW_RATE."
+      categorization_shadow_results:
+        shadow_results_heading: "So sánh song song"
+        shadow_results_empty: "Chưa ghi nhận so sánh nào. Hãy đặt tỷ lệ so sánh song song lớn hơn 0 và chạy phân loại để thu thập."
+        shadow_results_summary: "Đồng thuận %{agreement}%% trên %{count} giao dịch được lấy mẫu."
+        shadow_disagreements_heading: "Các bất đồng gần nhất"
+        shadow_disagreement_row: "%{applied_provider} chọn %{applied_category}; %{shadow_provider} chọn %{shadow_category}."
+        shadow_disagreement_confidence: "(độ tin cậy %{confidence})"
+        shadow_no_disagreements: "Hai nhà cung cấp đồng thuận ở mọi giao dịch được lấy mẫu."
+        shadow_no_category: "không có danh mục"
+      jev_settings:
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường."
+        api_key_label: "Khóa API"
+        api_key_placeholder: "Nhập khóa API TypeSafe của bạn"
+        endpoint_label: "Endpoint (không bắt buộc)"
+        endpoint_placeholder: "https://api.typesafe.ai/v1/systemone (mặc định)"
+        model_label: "Mô hình (không bắt buộc)"
+        model_placeholder: "jev-latest (mặc định)"
+        model_help: "Mặc định dùng TypeSafe trực tiếp. Để dùng Jev qua OpenRouter, hãy đặt endpoint là https://openrouter.ai/api/alpha/decisions và mô hình là ~typesafe/jev-latest."
+      rentcast_settings:
+        title: "RentCast"
+        description: "Nhập khóa API RentCast để tra cứu thông tin bất động sản tại Hoa Kỳ và giá trị ước tính khi thêm bất động sản. Gói miễn phí giới hạn 50 yêu cầu API mỗi tháng, dùng chung cho tra cứu bất động sản và làm mới định giá hằng ngày. Với gói trả phí, hãy nâng mức trần bằng biến môi trường RENTCAST_MAX_REQUESTS_PER_MONTH."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường RENTCAST_API_KEY."
+        label: "Khóa API"
+        placeholder: "Nhập khóa API RentCast của bạn tại đây"
+        usage: "Đã dùng %{used} trên %{limit} yêu cầu hằng tháng"
+      realie_settings:
+        title: "Realie"
+        description: "Nhập khóa API Realie để tra cứu thông tin bất động sản tại Hoa Kỳ và giá trị ước tính khi thêm bất động sản. Gói miễn phí giới hạn 25 yêu cầu API mỗi tháng, dùng chung cho tra cứu bất động sản và làm mới định giá hằng ngày. Với gói trả phí, hãy nâng mức trần bằng biến môi trường REALIE_MAX_REQUESTS_PER_MONTH."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường REALIE_API_KEY."
+        label: "Khóa API"
+        placeholder: "Nhập khóa API Realie của bạn tại đây"
+        usage: "Đã dùng %{used} trên %{limit} yêu cầu hằng tháng"
+      chimnie_settings:
+        title: "Chimnie"
+        description: "Nhập khóa API Chimnie để định giá bất động sản nhà ở tại Anh theo UPRN. Tạo khóa miễn phí tại dashboard.chimnie.com (đăng ký cần email doanh nghiệp hoặc tên miền riêng; Gmail, Outlook và các địa chỉ tương tự không được chấp nhận). Định giá theo UPRN miễn phí và làm mới hằng tháng; Sure giới hạn ở 1.000 yêu cầu mỗi tháng, có thể đổi bằng biến môi trường CHIMNIE_MAX_REQUESTS_PER_MONTH."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường CHIMNIE_API_KEY."
+        label: "Khóa API"
+        placeholder: "Nhập khóa API Chimnie của bạn tại đây"
+        usage: "Đã dùng %{used} trên %{limit} yêu cầu hằng tháng"
+      tinkoff_invest_settings:
+        title: "T-Invest (T-Bank)"
+        description: "Nhập API token T-Invest chỉ đọc. Dùng để lấy logo thương hiệu cho chứng khoán (gồm quỹ và trái phiếu, kể cả khi MOEX định giá) và, khi được bật ở trên, giá các công cụ của Nga."
+        moex_only_notice: "Chưa bật cho giá ở trên — T-Invest được dùng để lấy logo thương hiệu cho mọi chứng khoán của bạn bất cứ khi nào đã cấu hình token, độc lập với ô chọn ở trên."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường TINKOFF_INVEST_API_KEY."
+        label: "API Token"
+        placeholder: "Nhập API token T-Invest của bạn tại đây"
+        show_details: "(xem chi tiết)"
+        step_1: "Mở T-Bank investments, rồi Settings, rồi API tokens (cần có tài khoản môi giới T-Bank đang mở)."
+        step_2: "Tạo token có quyền chỉ đọc."
+        step_3: "Sao chép token và dán bên dưới."
+      mansa_settings:
+        title: "Mansa"
+        description: "Nhập khóa API từ Mansa API. Hỗ trợ 20 sàn chứng khoán châu Phi, gồm NGX (Sàn Nigeria), JSE, NSE (Kenya), GSE (Ghana) và BRVM -- nhiều sàn trong số đó không nhà cung cấp nào khác ở đây hỗ trợ."
+        env_configured_message: "Đã cấu hình thành công qua biến môi trường MANSA_API_KEY."
+        label: "Khóa API"
+        placeholder: "Nhập khóa API Mansa của bạn tại đây"
+        show_details: "(xem chi tiết)"
+        step_1_html: "Truy cập <a href=\"https://mansaapi.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"underline\">mansaapi.com</a> và nhận khóa API miễn phí -- không cần thẻ."
+        step_2: "Sao chép khóa API và dán bên dưới."
+        rate_limit_warning: "Gói miễn phí của Mansa giới hạn 100 lượt gọi API mỗi ngày và chỉ có giá hiện tại -- giá lịch sử cần gói trả phí."
+      reset_market_data:
+        market_data_reset: "Đã xếp hàng đặt lại dữ liệu thị trường. Tỷ giá và giá sẽ được nhập lại, rồi mọi tài khoản sẽ đồng bộ."
+        market_data_reset_already_queued: "Việc đặt lại dữ liệu thị trường đã được xếp hàng hoặc đang chạy."
+        market_data_reset_failed: "Không thể xếp hàng đặt lại dữ liệu thị trường. Chưa có gì bị xóa; vui lòng thử lại."
+      ensure_admin:
+        not_authorized: "Bạn không có quyền thực hiện thao tác này"

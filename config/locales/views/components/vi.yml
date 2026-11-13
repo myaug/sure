@@ -68,14 +68,47 @@ vi:
           holdings_value: Giá trị danh mục
           remaining_principal_balance: Số dư gốc còn lại
           total_account_value: Tổng giá trị tài khoản
+          loan_remaining_balance: "Dư nợ còn lại"
+          total_gains: "Tổng lãi"
         views:
           cash: Tiền mặt
           holdings: Danh mục
           total_value: Tổng giá trị
+          gains: "Lãi / ROI"
         vs_available_history: so với lịch sử hiện có
+        loan:
+          actual: "Số dư đã ghi nhận"
+          scheduled: "Lịch ban đầu"
+          projected: "Dự kiến từ hôm nay"
+          today: "Hôm nay"
+          interactive_chart: "biểu đồ tương tác"
+          no_payoff: "không đạt với mức trả hiện tại"
+          aria_description: "Biểu đồ dư nợ khoản vay. Số dư đã ghi nhận %{current_balance}. Ngày tất toán theo lịch ban đầu %{scheduled_payoff_date}. Ngày tất toán dự kiến từ số dư hôm nay %{projected_payoff_date}."
+          aria_extra_payoff: "Ngày tất toán dự kiến khi trả thêm %{date}."
+          extra: "Khi trả thêm"
+          aria_actual_history_starts: "Lịch sử số dư đã ghi nhận bắt đầu từ %{date}."
+          aria_interest_share: "Trong các kỳ trả nợ năm đầu, khoảng %{first}% số tiền đã trả là lãi; trong năm cuối, khoảng %{last}%."
+          aria_interest_share_overall: "Trong toàn bộ các kỳ trả nợ, khoảng %{share}% số tiền đã trả là lãi."
+          aria_composition: "Chú giải trên mỗi kỳ trả nợ theo lịch tách nó thành %{principal} và %{interest}."
+          interest_share: "Tỷ trọng lãi"
+          principal_share: "Tỷ trọng gốc"
+          projected_payoff: "Tất toán dự kiến"
+          months_saved:
+            one: "Sớm hơn lịch %{count} tháng"
+            other: "Sớm hơn lịch %{count} tháng"
+          on_schedule: "Đúng lịch"
+          interest_saved: "Lãi tiết kiệm được"
+          not_converged: "Với mức trả hiện tại, số dư này không được tất toán vào kỳ hạn ban đầu; vẫn còn nợ %{balloon}."
+          projection_basis: "So sánh số dư đã ghi nhận hôm nay với số dư theo lịch cùng ngày. Khoản trả được ghi trước ngày theo lịch sẽ được tính là vượt tiến độ đến ngày đó; khoản ghi sau sẽ tính là chậm."
+          legend: "Các chuỗi trong biểu đồ"
+          since_start: "kể từ khi khoản vay bắt đầu"
       activity_date:
         balance_tooltip: "Số dư cuối ngày, sau tất cả giao dịch và điều chỉnh"
         no_balance_data: "Không có dữ liệu số dư cho ngày này"
+        projected: "Dự kiến"
+        projected_balance_tooltip: "Ước tính: số dư hiện tại cộng các khoản đã lên lịch đến ngày này"
+    period_picker:
+      aria_label: "Khoảng thời gian: %{period}"
   ds:
     alert:
       variants:
@@ -95,6 +128,9 @@ vi:
       trigger_label: Thêm thông tin
     link:
       opens_in_new_tab: (mở trong tab mới)
+    icon_picker:
+      no_matching_icons: "Không có biểu tượng phù hợp"
+      search_placeholder: "Tìm biểu tượng..."
   provider_sync_summary:
     title: Tóm tắt đồng bộ
     last_sync: "Đồng bộ lần cuối: %{time_ago} trước"

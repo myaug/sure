@@ -1,0 +1,9 @@
+---
+vi:
+  sure_import:
+    preflight:
+      missing_reference: "Dòng %{line} %{type} tham chiếu đến %{field} %{value} bị thiếu."
+      skipped_missing_reference: "Dòng %{line} %{type} tham chiếu đến %{field} %{value} bị thiếu. Dòng này sẽ bị bỏ qua khi nhập."
+      skipped_missing_merchant_reference: "Dòng %{line} %{type} tham chiếu đến một đơn vị bán hàng (%{value}) không có trong bản xuất này. Việc này có thể xảy ra với bản xuất được tạo trước khi Sure bổ sung đơn vị bán hàng do nhà cung cấp gán. Dòng này sẽ được nhập mà không có đơn vị bán hàng đó."
+      skipped_unnamed_recurring: "Dòng %{line} %{type} không có tên và tham chiếu đến một đơn vị bán hàng (%{value}) không có trong bản xuất này. Dòng này sẽ bị bỏ qua khi nhập."
+      provider_merchant_diff: "Dòng %{line} ProviderMerchant %{name} đã tồn tại với %{fields} khác. Đơn vị hiện có sẽ được giữ nguyên."

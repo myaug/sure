@@ -57,6 +57,8 @@ en:
         requires_api_key_eodhd: requires API key, 20 calls/day limit
         requires_api_key_alpha_vantage: requires API key, 25 calls/day limit
         mfapi_hint: free, no API key -- Indian mutual funds only
+        fmarket_hint: free, no API key -- Vietnamese open-end funds (NAV), unofficial public API
+        ssi_fastconnect_hint: requires an SSI FastConnect Data API key and secret -- Vietnamese stocks (HOSE, HNX, UPCoM)
         binance_public_hint: free, no API key -- crypto only (BTC, ETH, etc.)
         moex_public_hint: free, no API key -- Russian stocks, funds & bonds (MOEX), incl. RUB FX
         tinkoff_invest_hint: requires read-only token -- Russian stocks/funds/bonds prices + brand logos
@@ -68,6 +70,8 @@ en:
           eodhd: EODHD
           alpha_vantage: Alpha Vantage
           mfapi: MFAPI.in
+          fmarket: Fmarket
+          ssi_fastconnect: SSI FastConnect
           binance_public: Binance
           moex_public: MOEX
           tinkoff_invest: T-Invest (T-Bank)
@@ -263,6 +267,14 @@ en:
         step_1_html: 'Visit <a href="https://www.tiingo.com" target="_blank" rel="noopener noreferrer" class="underline">tiingo.com</a> and create a free account.'
         step_2_html: 'Go to the <a href="https://www.tiingo.com/account/api/token" target="_blank" rel="noopener noreferrer" class="underline">API Token</a> page.'
         step_3: Copy your API token and paste it below.
+      ssi_fastconnect_settings:
+        title: SSI FastConnect Data
+        description: Enter the API key and API secret of your SSI FastConnect registration. Provides end-of-day prices for stocks and funds on HOSE, HNX and UPCoM.
+        env_configured_message: Successfully configured through the SSI_FASTCONNECT_API_KEY and SSI_FASTCONNECT_API_SECRET environment variables.
+        api_key_label: API key
+        api_key_placeholder: Enter your SSI API key here
+        api_secret_label: API secret
+        api_secret_placeholder: Enter your SSI API secret here
       tinkoff_invest_settings:
         title: T-Invest (T-Bank)
         description: Enter a read-only T-Invest API token. Used to fetch brand logos for securities (incl. funds and bonds, even when MOEX prices them) and, when enabled above, prices for Russian instruments.

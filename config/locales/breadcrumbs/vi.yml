@@ -85,3 +85,12 @@ vi:
     users: Người dùng
     valuations: Định giá
     vehicles: Phương tiện
+    changelog: "Có gì mới"
+    classifier: "Bộ phân loại"
+    feedback: "Phản hồi"
+    mcp: "Máy chủ MCP"
+    monobank_items: "Monobank"
+    plan: "Kế hoạch"
+    portfolio: "Danh mục đầu tư"
+    redbark_items: "Redbark"
+    system_health: "Tình trạng hệ thống"

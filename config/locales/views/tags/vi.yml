@@ -24,3 +24,8 @@ vi:
       edit: Chỉnh sửa
     update:
       updated: Nhãn đã được cập nhật
+    menu:
+      label: "Sửa nhãn"
+    summary:
+      add: "Thêm nhãn"
+      title: "Nhãn: %{names}"

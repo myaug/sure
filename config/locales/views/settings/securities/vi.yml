@@ -39,6 +39,13 @@ vi:
         sso_confirm_body: Bạn có chắc muốn ngắt kết nối tài khoản %{provider}? Bạn có thể kết nối lại sau bằng cách đăng nhập với nhà cung cấp đó.
         sso_confirm_button: Ngắt kết nối
         sso_warning_message: Đây là phương thức đăng nhập duy nhất của bạn. Hãy đặt mật khẩu trong cài đặt bảo mật trước khi ngắt kết nối, nếu không bạn có thể bị khóa khỏi tài khoản.
+        encryption_warning:
+          title: "Thiếu khóa mã hóa"
+          intro: "Dữ liệu nhạy cảm (khóa API, token nhà cung cấp, bí mật MFA và thông tin cá nhân) đang được lưu không mã hóa. Để bật mã hóa, hãy đặt các khóa sau trong biến môi trường hoặc Rails credentials:"
+          generate: "Tạo một bộ khóa bằng: bin/rails db:encryption:init"
+        disable_mfa_password_label: "Xác nhận bằng mật khẩu của bạn"
+        disable_mfa_password_placeholder: "Nhập mật khẩu của bạn"
+        mfa_sso_only: "Xác thực hai yếu tố được quản lý qua nhà cung cấp danh tính của bạn."
   webauthn_credentials:
     code_already_used: Mã này đã được sử dụng. Hãy chờ mã tiếp theo từ ứng dụng xác thực của bạn.
     invalid_code: Mã này không hợp lệ. Hãy nhập mã hiện tại từ ứng dụng xác thực hoặc một mã dự phòng chưa dùng.

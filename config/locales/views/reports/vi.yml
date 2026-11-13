@@ -31,6 +31,9 @@ vi:
       next_year: "Năm tiếp"
       previous_decade: "Thập kỷ trước"
       next_decade: "Thập kỷ tiếp"
+      section_aria: "Mục %{title}. Nhấn Enter hoặc Space để nắm lấy và sắp xếp lại, rồi dùng phím mũi tên để di chuyển."
+      sections_aria: "Các mục báo cáo"
+      shortcut_hint: "%{action} (%{key})"
     invalid_date_range: "Ngày kết thúc không thể trước ngày bắt đầu. Các ngày đã được hoán đổi."
     summary:
       total_income: Tổng thu nhập
@@ -164,6 +167,7 @@ vi:
       holdings: Danh mục nắm giữ
       sell_trades: Giao dịch bán
       and_more: "+%{count} khác"
+      period_return: "Lợi nhuận trong kỳ"
     investment_flows:
       title: Dòng tiền đầu tư
       description: Theo dõi tiền chảy vào và ra khỏi tài khoản đầu tư qua đóng góp và rút tiền.
@@ -225,6 +229,7 @@ vi:
         weight: Tỷ trọng
         value: Giá trị
         return: Lợi nhuận
+        period_return: "Lợi nhuận trong kỳ"
       spending:
         title: Chi tiêu theo danh mục
         income: Thu nhập
@@ -233,3 +238,31 @@ vi:
         amount: Số tiền
         percent: "%"
         more_categories: "+ %{count} danh mục khác"
+    spending_vs_normal:
+      title: "Chi tiêu so với bình thường"
+      summary_html: "Đã chi %{total} trong kỳ này. Mức bình thường cho một kỳ dài như vậy là %{normal}, dựa trên %{baseline_start} đến %{baseline_end}."
+      summary_so_far_html: "Đã chi %{total} đến nay. Mức bình thường cho số ngày này là %{normal}, dựa trên %{baseline_start} đến %{baseline_end}."
+      no_history_html: "Đã chi %{total} trong kỳ này. Chưa có đủ lịch sử trước đó để nói thế nào là bình thường."
+      no_history_short: "Chưa có đủ lịch sử trước đó để so sánh."
+      no_spending: "Không có chi tiêu nào trong kỳ này."
+      no_changes: "Chi tiêu ở mọi danh mục đều ở mức bình thường."
+      treemap_title: "Tiền đã đi đâu"
+      changes_title: "Điều đã thay đổi"
+      direct: "%{category} (không có danh mục con)"
+      tooltip:
+        path: "%{parent} › %{category}"
+        total: "%{category}: %{amount}"
+        normal: "Bình thường: %{amount}"
+        more: "Nhiều hơn bình thường %{amount} (%{percent})"
+        less: "Ít hơn bình thường %{amount} (%{percent})"
+        more_no_percent: "Nhiều hơn bình thường %{amount}"
+        less_no_percent: "Ít hơn bình thường %{amount}"
+        no_normal: "Chưa có lịch sử trước đó để so sánh"
+        open: "Chọn để xem các giao dịch này"
+      legend:
+        less: "Ít hơn 50–100%"
+        slightly_less: "Ít hơn 15–50%"
+        normal: "Gần như bình thường"
+        slightly_more: "Nhiều hơn 15–50%"
+        more: "Nhiều hơn 50–100%"
+        much_more: "Nhiều hơn 100%+"

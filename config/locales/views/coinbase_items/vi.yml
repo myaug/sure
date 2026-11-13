@@ -65,6 +65,10 @@ vi:
       errors:
         only_manual: Chỉ tài khoản thủ công mới có thể liên kết với Coinbase
         invalid_coinbase_account: Tài khoản Coinbase không hợp lệ
+    select_accounts:
+      connection_unavailable: "Kết nối Coinbase đó không khả dụng. Hãy chọn một kết nối trong Cài đặt nhà cung cấp."
+      no_credentials_configured: "Hãy kết nối Coinbase trong Cài đặt nhà cung cấp trước khi thêm ví của nó."
+      select_connection: "Hãy chọn một kết nối Coinbase trong Cài đặt nhà cung cấp."
   coinbase_item:
     syncer:
       checking_credentials: Đang kiểm tra thông tin xác thực...

@@ -1,0 +1,16 @@
+---
+vi:
+  rule_notification_mailer:
+    digest:
+      subject:
+        one: "1 giao dịch mới khớp quy tắc của bạn trên %{product_name}"
+        other: "%{count} giao dịch mới khớp quy tắc của bạn trên %{product_name}"
+      heading:
+        one: "1 giao dịch mới khớp quy tắc của bạn"
+        other: "%{count} giao dịch mới khớp quy tắc của bạn"
+      intro: "Các giao dịch này khớp với quy tắc \"%{rule}\":"
+      date: "Ngày"
+      name: "Tên"
+      account: "Tài khoản"
+      amount: "Số tiền"
+      cta: "Xem giao dịch"

@@ -1,0 +1,5 @@
+---
+vi:
+  models:
+    investment_statement:
+      cash: "Tiền mặt"

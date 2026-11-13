@@ -19,6 +19,9 @@ vi:
       original_date: "Ngày:"
       original_amount: "Số tiền"
       split_number: "Phần #%{number}"
+      merchant_label: "Đơn vị bán hàng"
+      no_merchant: "(đơn vị bán hàng của giao dịch)"
+      tags_label: "Nhãn"
     create:
       success: Giao dịch đã được chia nhỏ thành công
       not_splittable: Giao dịch này không thể chia nhỏ.

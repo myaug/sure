@@ -1,0 +1,46 @@
+---
+vi:
+  settings:
+    background_jobs:
+      show:
+        page_title: "Tác vụ nền"
+        title: "Trạng thái worker"
+        subtitle: "Trạng thái chạy Sidekiq theo thời gian thực: tiến trình worker, độ sâu hàng đợi, và các tập thử lại/chết."
+        redis_unreachable: "Không có trạng thái Sidekiq (không kết nối được Redis). Không rõ tiến trình còn sống không, nên các thao tác bị tắt."
+        operations_title: "Thao tác đang chạy"
+        operations_subtitle: "Đồng bộ, nhập và xuất của mọi gia đình chưa đạt trạng thái kết thúc. Thao tác không hoạt động quá 30 phút mà không thấy tác vụ nào được coi là đã mất và có thể đánh dấu như vậy."
+        empty: "Không có thao tác nào đang chạy."
+        missing_value: "-"
+        stats:
+          workers: "Worker"
+          busy: "Đang bận"
+          enqueued: "Trong hàng đợi"
+          retries: "Thử lại"
+          scheduled: "Đã lên lịch"
+          dead: "Đã chết"
+          queue_label: "%{name}: %{size} · độ trễ %{latency} giây"
+        table:
+          type: "Thao tác"
+          family: "Gia đình"
+          status: "Trạng thái"
+          last_activity: "Hoạt động gần nhất"
+          liveness: "Tình trạng sống"
+          action: "Thao tác"
+      operation:
+        ago: "%{time} trước"
+        sync_label: "Đồng bộ · %{type}"
+        running: "Đang chạy"
+        queued: "Trong hàng đợi"
+        recent: "Gần đây"
+        unknown: "Không rõ"
+        stuck: "Bị kẹt — được coi là đã mất"
+        confirm: "Đánh dấu thao tác này là đã mất? Bản ghi sẽ chuyển sang trạng thái kết thúc để có thể thử lại. Dữ liệu bên dưới không bị động đến."
+        missing_value: "-"
+        actions:
+          mark_stale: "Đánh dấu cũ"
+          mark_failed: "Đánh dấu thất bại"
+          release_claim: "Giải phóng quyền nhận"
+      cancel:
+        cancelled: "Đã đánh dấu %{type} là đã mất."
+        not_cancellable: "Hiện chưa thể sửa thao tác này — tác vụ của nó có thể vẫn đang trong hàng đợi hoặc đang chạy. Hãy thử lại sau khi nó không hoạt động trong 30 phút."
+        cancelled_error: "Được quản trị viên đánh dấu thất bại — tác vụ nền được coi là đã mất."

@@ -41,6 +41,7 @@ vi:
     configurations:
       update:
         success: Đã cấu hình nhập dữ liệu thành công.
+        monarch_success: "Đã lưu lựa chọn tài khoản."
       account_import:
         leave_empty: Để trống
         default: Mặc định
@@ -130,6 +131,15 @@ vi:
       show:
         description: Chọn các cột tương ứng với từng trường trong CSV.
         title: Cấu hình nhập dữ liệu
+        template_found: "Đã tìm thấy cấu hình mẫu"
+        template_description: "Chúng tôi tìm thấy cấu hình từ lần nhập trước cho tài khoản này. Bạn có muốn áp dụng cho lần nhập này không?"
+        manually_configure: "Cấu hình thủ công"
+        apply_template: "Áp dụng mẫu"
+        sample_caption: "Dữ liệu mẫu từ tệp CSV bạn đã tải lên"
+      merchant_import:
+        button_label: "Tiếp tục"
+        description: "Tải lên tệp CSV chứa các đơn vị bán hàng của bạn. Chúng tôi sẽ tự động ánh xạ các cột cho bạn."
+        instructions: "Chọn tiếp tục để phân tích tệp CSV và chuyển sang bước làm sạch."
     confirms:
       sure_import:
         title: Xác nhận nhập dữ liệu
@@ -197,6 +207,9 @@ vi:
         upload_button: Tải NDJSON lên
         hint_html: Tải lên tệp <strong>all.ndjson</strong> từ tệp ZIP xuất dữ liệu
         ndjson_invalid: Phải là NDJSON hợp lệ với ít nhất một bản ghi
+      handle_qif_upload:
+        qif_uploaded: "Đã tải lên tệp QIF thành công."
+        qif_account_required: "Vui lòng chọn tài khoản cho lần nhập QIF"
   imports:
     mapping_labels:
       account_type: "Loại tài khoản"
@@ -236,12 +249,16 @@ vi:
       category_parent: "Danh mục cha"
       category_color: "Màu sắc"
       category_icon: "Biểu tượng Lucide"
+      merchant_color: "Màu sắc"
+      merchant_website: "URL trang web"
     update:
       account_saved: "Đã lưu tài khoản."
       invalid_account: "Không tìm thấy tài khoản."
+      account_locked: "Lần nhập này đã được xuất bản nên không thể đổi tài khoản. Hãy hoàn tác trước nếu bạn cần nhập vào nơi khác."
     publish:
       started: "Quá trình nhập đã bắt đầu trong nền."
       max_rows_exceeded: "Tệp nhập vượt quá số hàng tối đa là %{max}."
+      guest_new_categories_or_tags: "Khách không thể tạo danh mục hoặc nhãn. Hãy ánh xạ chúng sang những mục có sẵn hoặc để trống."
     revert:
       started: "Đang hoàn tác nhập dữ liệu trong nền."
     apply_template:
@@ -294,6 +311,7 @@ vi:
       pdf_import: "Nhập PDF"
       document_import: "Nhập tài liệu"
       sure_import: "Nhập từ Sure"
+      merchant_import: "Nhập đơn vị bán hàng"
     steps:
       upload: Tải lên
       configure: Cấu hình
@@ -302,6 +320,8 @@ vi:
       confirm: Xác nhận
       select: Chọn
       progress: "Bước %{step} trong %{total}"
+      accounts: "Tài khoản"
+      label: "Bước %{step}"
     empty:
       message: Không tìm thấy nhập dữ liệu.
     index:
@@ -327,6 +347,7 @@ vi:
           pdf_import: "PDF"
           document_import: "Tài liệu"
           sure_import: "Sure"
+          merchant_import: "Đơn vị bán hàng"
         status:
           in_progress: Đang xử lý
           uploading: Đang xử lý hàng
@@ -339,6 +360,8 @@ vi:
           confirm_revert: Thao tác này sẽ xóa các giao dịch đã nhập, nhưng bạn vẫn có thể xem lại và nhập lại dữ liệu bất cứ lúc nào.
           delete: Xóa
           view: Xem
+          mark_failed: "Đánh dấu thất bại"
+          confirm_mark_failed: "Lần nhập này đã không hoạt động một thời gian và tác vụ nền có thể đã bị gián đoạn. Đánh dấu thất bại để bạn thử lại? Dữ liệu đã nhập sẽ không được giữ lại."
       empty: Chưa có nhập dữ liệu.
     new:
       description: Nhập từ công cụ tài chính hoặc tải lên tệp dữ liệu thô.
@@ -361,6 +384,7 @@ vi:
       resume: Tiếp tục nhập %{type}
       sources: Nguồn
       title: Nhập mới
+      import_merchants: "Nhập đơn vị bán hàng"
     create:
       file_too_large: Tệp quá lớn. Kích thước tối đa là %{max_size}MB.
       invalid_file_type: Loại tệp không hợp lệ. Vui lòng tải lên tệp CSV.
@@ -375,6 +399,8 @@ vi:
       document_upload_failed: Không thể tải tài liệu lên kho vector. Vui lòng thử lại.
       invalid_ndjson_file_type: Loại hoặc định dạng tệp không hợp lệ. Vui lòng tải lên tệp xuất .ndjson hoặc .json hợp lệ.
       document_provider_not_configured: Chưa cấu hình kho vector để tải tài liệu lên.
+      missing_upload: "Chúng tôi không nhận được tệp của bạn. Vui lòng tải lên lại."
+      duplicate_pdf_unavailable: "Tệp PDF này đã được lưu thành một sao kê mà bạn không có quyền truy cập."
     show:
       finalize_upload: Vui lòng hoàn tất tải lên tệp.
       finalize_mappings: Vui lòng hoàn tất ánh xạ trước khi tiếp tục.
@@ -386,8 +412,32 @@ vi:
       empty_summary: Chúng tôi không tìm thấy bản ghi nào có thể nhập trong tệp này.
       publish_import: Xuất bản nhập
       back_to_imports: Quay lại nhập dữ liệu
+      missing_merchant_warning_title: "Một số đơn vị bán hàng bị thiếu trong tệp xuất này"
+      missing_merchant_warning_description:
+        one: "1 tham chiếu đơn vị bán hàng trong tệp này trỏ đến một đơn vị không có trong tệp. Việc này có thể xảy ra với tệp xuất được tạo trước khi Sure bổ sung đơn vị bán hàng do nhà cung cấp gán. Bạn vẫn có thể xuất bản lần nhập này — bản ghi bị ảnh hưởng sẽ được nhập mà không có đơn vị bán hàng, và bạn có thể gắn nhãn sau."
+        other: "%{count} tham chiếu đơn vị bán hàng trong tệp này trỏ đến những đơn vị không có trong tệp. Việc này có thể xảy ra với tệp xuất được tạo trước khi Sure bổ sung đơn vị bán hàng do nhà cung cấp gán. Bạn vẫn có thể xuất bản lần nhập này — các bản ghi bị ảnh hưởng sẽ được nhập mà không có đơn vị bán hàng, và bạn có thể gắn nhãn sau."
+      skipped_recurring_description:
+        one: "1 giao dịch định kỳ không có tên và thiếu đơn vị bán hàng nên sẽ bị bỏ qua. Các giao dịch định kỳ được phát hiện tự động sẽ được tạo lại sau khi nhập."
+        other: "%{count} giao dịch định kỳ không có tên và thiếu đơn vị bán hàng nên sẽ bị bỏ qua. Các giao dịch định kỳ được phát hiện tự động sẽ được tạo lại sau khi nhập."
+      reused_taxonomy_notice_title: "Một số danh mục, nhãn hoặc đơn vị bán hàng đã tồn tại"
+      reused_taxonomy_notice_description:
+        one: "1 danh mục, nhãn hoặc đơn vị bán hàng trong tệp này đã có trong tài khoản của bạn (ví dụ từ danh mục mặc định lúc làm quen). Mục này sẽ được dùng lại và cập nhật theo dữ liệu của tệp thay vì tạo bản trùng."
+        other: "%{count} danh mục, nhãn hoặc đơn vị bán hàng trong tệp này đã có trong tài khoản của bạn (ví dụ từ danh mục mặc định lúc làm quen). Các mục này sẽ được dùng lại và cập nhật theo dữ liệu của tệp thay vì tạo bản trùng."
+      provider_merchant_diff_title: "Một số đơn vị bán hàng đã tồn tại với thông tin khác"
+      provider_merchant_diff_description:
+        one: "1 đơn vị bán hàng trong tệp này đã tồn tại với thông tin khác. Đơn vị hiện có sẽ được giữ nguyên và giá trị trong tệp sẽ không được áp dụng."
+        other: "%{count} đơn vị bán hàng trong tệp này đã tồn tại với thông tin khác. Các đơn vị hiện có sẽ được giữ nguyên và giá trị trong tệp sẽ không được áp dụng."
+      provider_merchant_diff_summary: "Xem điểm khác biệt"
+      provider_merchant_diff_none: "không có"
+      provider_merchant_diff_fields:
+        website_url: "Trang web"
+        name: "Tên"
+        provider_merchant_id: "Mã nhà cung cấp"
+      provider_merchant_diff_row: "%{field}: giữ %{kept}, tệp có %{imported}"
     errors:
       custom_column_requires_inflow: "Nhập cột tùy chỉnh yêu cầu phải chọn cột dòng vào"
+      interrupted: "Tiến trình nền bị gián đoạn trước khi hoàn tất. Dữ liệu đã nhập đã được hoàn lại — bạn có thể thử lại an toàn."
+      presumed_lost: "Đã đánh dấu thất bại vì tác vụ nền được cho là đã mất. Dữ liệu đã nhập đã được hoàn lại — bạn có thể thử lại an toàn."
     document_types:
       bank_statement: Sao kê ngân hàng
       credit_card_statement: Sao kê thẻ tín dụng
@@ -433,3 +483,32 @@ vi:
       review_transactions: Xem xét giao dịch
       select_account_to_continue: Vui lòng chọn tài khoản ở trên để tiếp tục.
       unknown_document_type: Không xác định
+      source_statement: "Sao kê nguồn"
+      errors:
+        provider_not_configured: "Chưa cấu hình nhà cung cấp AI"
+        provider_no_pdf_support: "Nhà cung cấp AI không hỗ trợ xử lý PDF"
+      view_summary: "Xem tóm tắt nhập liệu"
+      already_recorded_note:
+        one: "%{count} giao dịch đã có trong tài khoản này và đã được khớp với sao kê."
+        other: "%{count} giao dịch đã có trong tài khoản này và đã được khớp với sao kê."
+      complete_fully_reconciled:
+        one: "Mọi giao dịch trên sao kê này đã có sẵn trong tài khoản của bạn. %{count} giao dịch đã được khớp và đánh dấu đã đối soát — không cần nhập gì."
+        other: "Mọi giao dịch trên sao kê này đã có sẵn trong tài khoản của bạn. Cả %{count} giao dịch đã được khớp và đánh dấu đã đối soát — không cần nhập gì."
+    configuration_locked: "Dữ liệu của lần nhập này đã nằm trong Sure nên không thể thay đổi tệp và lựa chọn. Hãy thử lại để hoàn tất, hoặc xóa để bắt đầu lại."
+    summary:
+      title: "Tóm tắt nhập liệu"
+      subtitle: "Kết quả của từng giao dịch trên sao kê này trong %{account}."
+      subtitle_no_account: "Kết quả của từng giao dịch trên sao kê này."
+      extracted: "Tìm thấy trên sao kê"
+      already_recorded: "Đã được ghi nhận"
+      already_recorded_hint: "Đã khớp với giao dịch mà tài khoản này có sẵn và được đánh dấu đã đối soát."
+      imported: "Đã nhập mới"
+      awaiting_review: "Đang chờ nhập"
+      fully_reconciled:
+        one: "Không cần nhập gì — giao dịch duy nhất trên sao kê đã có sẵn."
+        other: "Không cần nhập gì — cả %{count} giao dịch đã có sẵn."
+      statement_evidence_html: "Đã đối soát với %{statement}."
+      close: "Đóng"
+    cancel:
+      cancelled: "Đã đánh dấu lần nhập là thất bại. Bạn có thể thử lại từ trang nhập liệu."
+      not_cancellable: "Hiện chưa thể đánh dấu lần nhập này là thất bại — tác vụ nền có thể vẫn đang chạy. Hãy thử lại sau khi nó không hoạt động trong một giờ."

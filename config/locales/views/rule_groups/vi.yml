@@ -1,0 +1,23 @@
+---
+vi:
+  rule_groups:
+    new:
+      title: "Nhóm quy tắc mới"
+    edit:
+      title: "Đổi tên nhóm \"%{name}\""
+    form:
+      name_label: "Tên"
+      name_placeholder: "ví dụ: Đi chợ"
+      hint: "Nhóm chỉ giúp sắp xếp danh sách quy tắc. Các quy tắc vẫn chạy từ trên xuống dưới."
+    create:
+      success: "Đã tạo nhóm"
+    update:
+      success: "Đã đổi tên nhóm"
+    destroy:
+      success: "Đã xóa nhóm. Các quy tắc của nó vẫn giữ nguyên, không thuộc nhóm nào."
+    activation:
+      activated: "Tất cả quy tắc trong \"%{name}\" đang bật"
+      deactivated: "Tất cả quy tắc trong \"%{name}\" đang tắt"
+      partially_switched:
+        one: "1 quy tắc không thể chuyển đổi. Hãy mở nó để xem lý do."
+        other: "%{count} quy tắc không thể chuyển đổi. Hãy mở chúng để xem lý do."

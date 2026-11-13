@@ -43,3 +43,26 @@ vi:
         preview:
           title: Bật tính năng xem trước
           description: Chọn tham gia các tính năng đang phát triển được gắn thẻ xem trước hoặc canary.
+        transactions_title: "Giao dịch"
+        transactions_subtitle: "Cấu hình cách giao dịch hoạt động"
+        manual_reconciliation: "Đối soát thủ công"
+        manual_reconciliation_hint: "Hiển thị điều khiển đối soát trên tài khoản nhập thủ công. Tài khoản có đồng bộ ngân hàng dùng đối soát theo sao kê."
+        default_account_order_hint: "Với chế độ Thủ công, hãy kéo tài khoản trong thanh bên để đặt thứ tự."
+        rule_suggestions: "Gợi ý quy tắc"
+        rule_suggestions_hint: "Đề nghị tạo quy tắc sau khi bạn đổi danh mục của giao dịch"
+        budget_title: "Ngân sách"
+        budget_subtitle: "Cấu hình cách ngân sách của bạn hoạt động"
+        investment_contributions_as_spending: "Tính đầu tư là chi tiêu"
+        investment_contributions_as_spending_hint: "Tiền chuyển vào tài khoản đầu tư được tính là chi tiêu trong ngân sách, báo cáo và biểu đồ dòng tiền. Hãy tắt để hiển thị là đã đầu tư."
+        personal_budgets: "Ngân sách cá nhân"
+        personal_budgets_hint: "Bật ngân sách riêng cho từng thành viên trong gia đình."
+        household_budget_enabled: "Ngân sách hộ gia đình"
+        household_budget_enabled_hint: "Giữ một ngân sách chung của hộ gia đình bên cạnh ngân sách cá nhân. Hãy tắt để chỉ dùng ngân sách cá nhân."
+        budget_sharing_title: "Chia sẻ ngân sách"
+        budget_sharing_subtitle: "Cho phép thành viên khác xem hoặc sửa ngân sách cá nhân của bạn"
+        budget_sharing_no_members: "Không có thành viên nào khác trong %{moniker} của bạn để chia sẻ"
+        budget_sharing_permission_label: "Quyền truy cập của %{name}"
+        budget_sharing_permissions:
+          none: "Không có quyền"
+          read_only: "Chỉ xem"
+          read_write: "Có thể sửa"

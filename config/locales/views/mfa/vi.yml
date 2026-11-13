@@ -12,9 +12,11 @@ vi:
       code_already_used: Mã này đã được sử dụng. Vui lòng nhập mã tiếp theo từ ứng dụng xác thực của bạn.
       invalid_code: Mã xác minh không hợp lệ. Vui lòng thử lại.
       setup_failed: Đã xảy ra lỗi khi bật xác thực hai yếu tố. Vui lòng thử lại.
+      invalid_password: "Mật khẩu không đúng. Vui lòng thử lại."
     disable:
       failure: Đã xảy ra lỗi khi tắt xác thực hai yếu tố. Vui lòng thử lại.
       success: Xác thực hai yếu tố đã bị tắt
+      invalid_password: "Mật khẩu không đúng. Vui lòng thử lại."
     new:
       code_label: Mã xác minh
       code_placeholder: Nhập mã 6 chữ số
@@ -28,6 +30,8 @@ vi:
       verify_button: Xác minh và bật 2FA
       verify_description: Nhập mã 6 chữ số từ ứng dụng xác thực của bạn
       verify_title: 2. Nhập mã xác minh
+      password_label: "Xác nhận bằng mật khẩu của bạn"
+      password_placeholder: "Nhập mật khẩu của bạn"
     verify:
       description: Nhập mã từ ứng dụng xác thực của bạn để tiếp tục
       or: hoặc
@@ -42,3 +46,4 @@ vi:
       invalid_credential: Không thể xác minh passkey hoặc khóa bảo mật đó. Vui lòng thử lại.
     webauthn_options:
       unavailable: Không có passkey hoặc khóa bảo mật nào cho tài khoản này.
+    local_password_required: "Xác thực hai yếu tố cần mật khẩu cục bộ. Mật khẩu của bạn được quản lý qua nhà cung cấp danh tính."

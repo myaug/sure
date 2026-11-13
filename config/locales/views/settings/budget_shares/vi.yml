@@ -1,0 +1,6 @@
+---
+vi:
+  settings:
+    budget_shares:
+      update:
+        success: "Đã cập nhật cài đặt chia sẻ ngân sách"

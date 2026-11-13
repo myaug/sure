@@ -10,6 +10,7 @@ vi:
     create:
       failure: Không thể gửi lời mời
       success: Lời mời đã được gửi thành công
+      own_email: "Bạn không thể tự mời chính mình."
     destroy:
       failure: Đã xảy ra sự cố khi xóa lời mời.
       not_authorized: Bạn không được phép quản lý lời mời.
@@ -24,3 +25,27 @@ vi:
       submit: Gửi lời mời
       subtitle: Gửi lời mời để tham gia tài khoản %{moniker} của bạn trên %{product_name}
       title: Mời ai đó
+    bulk_create:
+      download: "Tải báo cáo"
+      errors:
+        email_not_queued: "Đã lưu lời mời nhưng không thể xếp email vào hàng đợi. Hãy xóa và thử lại."
+        processing_failed: "Không thể xử lý lời mời. Hãy kiểm tra xem có lời mời đang chờ nào không trước khi thử lại."
+      invalid_role: "Lời mời hàng loạt chỉ có thể gửi cho thành viên và khách."
+      invite_more: "Mời thêm"
+      no_emails: "Hãy nhập ít nhất một địa chỉ email."
+      status:
+        invalid: "Không thể mời"
+        link_only: "Sẵn sàng chia sẻ"
+        sent: "Đã gửi lời mời"
+      summary: "Đã gửi %{sent}, sẵn sàng chia sẻ %{link_only}, thất bại %{invalid}."
+      title: "Kết quả lời mời"
+      too_many: "Bạn có thể mời tối đa %{max} người cùng lúc. Vui lòng gửi ít hơn."
+    bulk_new:
+      emails_label: "Địa chỉ email"
+      emails_placeholder: "Nhập các địa chỉ email, cách nhau bằng dấu phẩy hoặc xuống dòng"
+      role_guest: "Khách"
+      role_label: "Vai trò"
+      role_member: "Thành viên"
+      submit: "Gửi lời mời"
+      subtitle: "Mời nhiều người tham gia tài khoản %{moniker} của bạn trên %{product_name}"
+      title: "Mời nhiều người"

@@ -40,4 +40,9 @@ vi:
         actions:
           delete: Xóa
           download: Tải xuống
+          mark_failed: "Đánh dấu thất bại"
+          confirm_mark_failed: "Bản xuất này đã không hoạt động một thời gian và tác vụ nền có thể đã bị gián đoạn. Đánh dấu thất bại? Bạn có thể tạo bản xuất mới ngay."
       empty: Chưa có bản xuất nào.
+    cancel:
+      cancelled: "Đã đánh dấu bản xuất là thất bại. Bạn có thể tạo bản xuất mới ngay."
+      not_cancellable: "Hiện chưa thể đánh dấu bản xuất này là thất bại — tác vụ nền có thể vẫn đang chạy. Hãy thử lại sau khi nó không hoạt động trong một giờ."

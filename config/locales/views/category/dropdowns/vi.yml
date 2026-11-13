@@ -10,3 +10,9 @@ vi:
         no_categories: Không tìm thấy danh mục nào
         recent: Gần đây
         search_placeholder: Tìm kiếm
+        assign_error: "Đã tạo danh mục nhưng không thể gán. Hãy chọn Tạo lần nữa để thử lại."
+        back: "Quay lại"
+        choose_parent: "Tạo \"%{name}\" trong:"
+        create: "Tạo \"%{name}\""
+        create_as_subcategory: "Thêm làm danh mục con…"
+        create_error: "Không thể tạo danh mục đó. Vui lòng thử lại."

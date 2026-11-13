@@ -1,0 +1,10 @@
+---
+vi:
+  activerecord:
+    models:
+      rule_group:
+        one: "Nhóm"
+        other: "Nhóm"
+    attributes:
+      rule_group:
+        name: "Tên"

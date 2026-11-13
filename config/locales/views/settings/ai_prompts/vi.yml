@@ -10,9 +10,35 @@ vi:
         main_system_prompt:
           title: Câu lệnh hệ thống chính
           subtitle: Hướng dẫn cốt lõi xác định cách trợ lý AI hoạt động trong tất cả cuộc trò chuyện
+          label: "Lời nhắc hệ thống của trò chuyện"
         transaction_categorizer:
           title: Phân loại giao dịch
           subtitle: AI tự động phân loại giao dịch dựa trên các danh mục bạn định nghĩa
         merchant_detector:
           title: Phát hiện nhà cung cấp
           subtitle: AI xác định và làm phong phú dữ liệu giao dịch với thông tin nhà cung cấp
+        save: "Lưu lời nhắc"
+        save_confirm:
+          title: "Lưu lời nhắc AI tùy chỉnh?"
+          body: "Lời nhắc tùy chỉnh thay thế hướng dẫn hệ thống và các rào chắn an toàn có sẵn (chẳng hạn hạn chế tư vấn tài chính) cho gia đình của bạn."
+          dont_show_again: "Không hiện lại cảnh báo này"
+          cancel: "Hủy"
+          confirm: "Xác nhận"
+        insight_dig_in:
+          title: "Tìm hiểu sâu thông tin"
+          subtitle: "Tin nhắn đầu tiên khi bạn tìm hiểu sâu một thông tin với AI"
+          label: "Tin nhắn tìm hiểu sâu"
+      prompt_field:
+        provider_label: "Nhà cung cấp"
+        prompt_label: "Lời nhắc"
+        provider_openai: "OpenAI"
+        provider_anthropic: "Anthropic"
+        reset: "Đặt lại về mặc định"
+        reset_confirm_title: "Đặt lại về lời nhắc mặc định?"
+        reset_confirm_body: "Thao tác này sẽ bỏ lời nhắc tùy chỉnh của bạn và khôi phục hướng dẫn mặc định có sẵn."
+        status_custom: "Đang dùng lời nhắc tùy chỉnh của bạn"
+        status_default: "Đang dùng mặc định có sẵn"
+        format_risk: "Lời nhắc %{provider} của bạn đã bỏ ví dụ {\"%{key}\": ...}. Mỗi yêu cầu vẫn đòi hỏi dạng đó nên việc phân tích thường vẫn đúng, nhưng một lời nhắc ghi đè yêu cầu định dạng đầu ra khác sẽ làm hỏng nó."
+      update:
+        success: "Đã cập nhật lời nhắc AI"
+        multiple_errors: "Nhiều lời nhắc quá dài (tối đa %{count} ký tự)"

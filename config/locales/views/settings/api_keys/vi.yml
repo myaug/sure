@@ -64,6 +64,7 @@ vi:
           regenerate_key: "Tạo khóa mới"
           revoke_key: "Thu hồi khóa"
           revoke_confirmation: "Bạn có chắc chắn muốn thu hồi khóa API này? Hành động này không thể hoàn tác và sẽ ngay lập tức vô hiệu hóa tất cả ứng dụng đang sử dụng khóa này."
+          back_to_keys: "Quay lại Khóa API"
       new:
         title: "Tạo khóa API"
         create_new_api_key: "Tạo khóa API mới"
@@ -114,3 +115,20 @@ vi:
         usage_instructions: "Sử dụng khóa API bằng cách bao gồm nó trong tiêu đề X-Api-Key:"
         copy_key: "Sao chép khóa API"
         continue: "Tiếp tục đến Cài đặt khóa API"
+      shared:
+        active: "Đang hoạt động"
+        created_ago: "Tạo %{time} trước"
+        last_used_ago: "Dùng lần cuối %{time} trước"
+        never_used: "Chưa từng dùng"
+        scope_read_only: "Chỉ đọc"
+        scope_read_write: "Đọc/Ghi"
+      index:
+        title: "Khóa API"
+        subtitle: "Quản lý khóa API để truy cập dữ liệu của bạn bằng chương trình."
+        new_key: "Khóa API mới"
+        empty_heading: "Chưa có khóa API nào"
+        empty_description: "Hãy tạo khóa API để truy cập dữ liệu của bạn bằng chương trình."
+        revoke_key: "Thu hồi"
+        revoke_confirmation: "Bạn có chắc muốn thu hồi \"%{name}\"? Việc này sẽ vô hiệu hóa ngay mọi ứng dụng đang dùng khóa này."
+      key_reveal:
+        copied: "Đã sao chép!"

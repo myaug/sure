@@ -1,0 +1,53 @@
+---
+vi:
+  recurring_occurrences:
+    history_status:
+      paid: "Đã trả"
+      skipped: "Đã bỏ qua"
+      missed: "Bỏ lỡ"
+      scheduled: "Mở"
+    show:
+      due_on: "Đến hạn %{date}"
+      paid_of: "Đã trả %{paid} trên %{expected}"
+      paid_headline: "Đã trả %{amount}"
+      remaining: "Còn %{amount}"
+      settled: "Đã trả đủ"
+      overpaid: "nhiều hơn dự kiến"
+      skipped: "Đã bỏ qua"
+      missed: "Đánh dấu bỏ lỡ"
+      payments: "Thanh toán"
+      manual_payment: "Thanh toán thủ công"
+      unlink: "Bỏ liên kết"
+      review_heading: "Xem lại khoản thanh toán"
+      find_heading: "Tìm khoản thanh toán"
+      add_heading: "Thêm khoản thanh toán khác"
+      other_matches: "Các kết quả khớp có thể khác"
+      no_ranked_candidates: "Chưa có gì ở đây trông giống khoản thanh toán cho hóa đơn này."
+      search_all: "Tìm trong tất cả giao dịch"
+      search_placeholder: "Tìm giao dịch"
+      no_candidates: "Không có giao dịch lân cận nào để liên kết."
+      no_search_results: "Không có gì khớp với %{query}."
+      link_payment: "Liên kết khoản thanh toán"
+      not_this_one: "Không phải khoản này"
+      cant_find: "Không tìm thấy giao dịch?"
+      manual_explainer: "Ghi lại khoản thanh toán bạn biết đã xảy ra khi không có giao dịch nào ở đây khớp với nó."
+      manual_amount_label: "Số tiền"
+      manual_date_label: "Ngày"
+      record_payment: "Ghi nhận thanh toán"
+      mark_paid: "Đánh dấu đã trả"
+      mark_paid_hint: "Tất toán phần còn lại mà không ghi nhận giao dịch."
+      skip: "Bỏ qua"
+      snooze_week: "Hoãn một tuần"
+      reopen: "Mở lại"
+      view_bill: "Xem hóa đơn"
+    mark_paid:
+      success: "Đã đánh dấu hóa đơn là đã trả"
+    skip:
+      success: "Đã bỏ qua hóa đơn"
+    reopen:
+      success: "Đã mở lại hóa đơn"
+    snooze:
+      success: "Đã hoãn đến %{date}"
+      invalid_date: "Không đọc được ngày đó"
+    override_amount:
+      success: "Đã cập nhật số tiền dự kiến"

@@ -1,0 +1,34 @@
+---
+vi:
+  portfolios:
+    empty_state:
+      add_account: "Thêm tài khoản đầu tư"
+      description: "Các tài khoản chứng khoán, hưu trí và tiền số bạn đưa vào tài chính và báo cáo sẽ hiển thị tại đây cùng số dư."
+      title: "Chưa có tài khoản đầu tư để hiển thị"
+    crypto:
+      by_chain: "Theo mạng"
+      by_token: "Theo token"
+      by_venue: "Theo sàn hoặc ví"
+      chain: "Mạng"
+      exchange_balance: "Số dư trên sàn"
+      history_truncated: "Chưa đọc được toàn bộ giao dịch chuyển của %{accounts}. Số dư vẫn đầy đủ."
+      official_rate: "Tỷ giá chính thức: 1 USD = %{rate} %{currency} (%{date})"
+      stablecoin_note: "Stablecoin được định giá theo tỷ giá USD chính thức, không theo giá P2P (thường cao hơn)."
+      stablecoin_share: "%{share}% tiền số của bạn"
+      stablecoin_title: "Mức tiếp xúc stablecoin"
+      stale: "Các tài khoản này được định giá bằng tỷ giá cũ hơn: %{accounts}."
+      token: "Token"
+      total: "Giá trị tiền số"
+      unconverted: "%{currencies} chưa có tỷ giá sang %{currency}, nên các khoản nắm giữ đó không được tính vào tổng."
+      unpriced: "Chưa có giá cho %{assets}. Chúng chỉ được theo dõi theo số lượng và không tính vào tổng."
+      value: "Giá trị"
+      venue: "Sàn hoặc ví"
+      weight: "Tỷ trọng"
+    sections:
+      accounts: "Tài khoản"
+      crypto: "Tiền số"
+    show:
+      section_aria: "Mục %{title}. Nhấn Enter hoặc Space để nắm lấy và sắp xếp lại, rồi dùng phím mũi tên để di chuyển."
+      sections_aria: "Các mục của danh mục đầu tư"
+      subtitle: "Các tài khoản đầu tư của bạn và giá trị của từng tài khoản."
+      title: "Danh mục đầu tư"

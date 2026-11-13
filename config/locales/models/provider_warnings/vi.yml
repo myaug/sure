@@ -2,3 +2,28 @@
 vi:
   provider_warnings:
     limited_investment_data: "Dữ liệu đầu tư từ nhà cung cấp này còn hạn chế. Nhãn hoạt động (Mua, Bán, Cổ tức) không khả dụng, có thể ảnh hưởng đến độ chính xác của ngân sách. Hãy cân nhắc tạo quy tắc để loại trừ hoặc phân loại các giao dịch đầu tư."
+    lunchflow_accounts_failed:
+      one: "Nhập từ Lunchflow: %{count} tài khoản cập nhật thất bại"
+      other: "Nhập từ Lunchflow: %{count} tài khoản cập nhật thất bại"
+    lunchflow_transactions_failed:
+      one: "Nhập từ Lunchflow: lấy giao dịch thất bại cho %{count} tài khoản"
+      other: "Nhập từ Lunchflow: lấy giao dịch thất bại cho %{count} tài khoản"
+    lunchflow_import_error: "Nhập từ Lunchflow: %{error}"
+    truelayer_accounts_failed:
+      one: "Nhập từ TrueLayer: %{count} tài khoản cập nhật thất bại"
+      other: "Nhập từ TrueLayer: %{count} tài khoản cập nhật thất bại"
+    truelayer_transactions_failed:
+      one: "Nhập từ TrueLayer: lấy giao dịch thất bại cho %{count} tài khoản"
+      other: "Nhập từ TrueLayer: lấy giao dịch thất bại cho %{count} tài khoản"
+    truelayer_balances_failed:
+      one: "Nhập từ TrueLayer: lấy số dư thất bại cho %{count} tài khoản"
+      other: "Nhập từ TrueLayer: lấy số dư thất bại cho %{count} tài khoản"
+    truelayer_processing_failed:
+      one: "Nhập từ TrueLayer: %{count} tài khoản không thể xử lý"
+      other: "Nhập từ TrueLayer: %{count} tài khoản không thể xử lý"
+    truelayer_entries_failed:
+      one: "Nhập từ TrueLayer: %{count} giao dịch không thể nhập"
+      other: "Nhập từ TrueLayer: %{count} giao dịch không thể nhập"
+    truelayer_scheduling_failed:
+      one: "Nhập từ TrueLayer: không thể lên lịch cập nhật số dư cho %{count} tài khoản"
+      other: "Nhập từ TrueLayer: không thể lên lịch cập nhật số dư cho %{count} tài khoản"

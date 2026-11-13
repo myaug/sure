@@ -3,6 +3,9 @@ vi:
   transfers:
     create:
       success: Chuyển khoản đã được tạo
+      exchange_rate_unavailable: "Chưa có tỷ giá cho các loại tiền tệ và ngày đã chọn"
+      date_invalid: "không hợp lệ"
+      stale_form: "Biểu mẫu này đã được gửi với thông tin khác. Vui lòng tải lại trang và thử lại."
     destroy:
       success: Chuyển khoản đã được xóa
     form:
@@ -19,6 +22,9 @@ vi:
       submit: Tạo chuyển khoản
       to: Đến
       transfer: Chuyển khoản
+      bank_charges: "Phí ngân hàng"
+      outgoing_fee: "Phí chuyển đi"
+      incoming_fee: "Phí nhận về"
     new:
       title: Chuyển khoản mới
     show:
@@ -41,5 +47,10 @@ vi:
       uncategorized: Chưa phân loại
       total: '[Total]'
       transfer_amount: '[Transfer amount]'
+      investment_contribution_subtitle: "Tính khoản chuyển này là chi tiêu trong ngân sách và báo cáo. Hãy tắt khi tài khoản môi giới hoặc tiền số chỉ đổi tiền sang loại tiền tệ khác."
+      investment_contribution_title: "Góp vốn đầu tư"
+      bank_charges: "Phí ngân hàng"
+      source_fee: "Phí bên gửi"
+      destination_fee: "Phí bên nhận"
     update:
       success: Chuyển khoản đã được cập nhật

@@ -50,3 +50,6 @@ vi:
         remove_invitation: Xóa lời mời
         remove_member: Xóa thành viên
         save: Lưu
+        invite_multiple: "Thêm nhiều thành viên"
+        resend_confirmation_link: "yêu cầu gửi lại email xác nhận"
+        unconfirmed_email_notice_html: "Bạn đã yêu cầu đổi email thành %{email}. Hãy vào email của bạn và xác nhận để thay đổi có hiệu lực. Nếu chưa nhận được email, hãy kiểm tra thư mục spam, hoặc %{resend_link}."

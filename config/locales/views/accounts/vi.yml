@@ -21,6 +21,9 @@ vi:
       default_label: Mặc định
       delete: Xóa tài khoản
       sharing: Chia sẻ
+      exclude_from_reports: "Loại khỏi mọi báo cáo"
+      include_in_reports: "Đưa vào báo cáo"
+      excluded_from_reports_indicator: "Đã loại khỏi báo cáo"
     chart:
       data_not_available: Dữ liệu không khả dụng cho khoảng thời gian đã chọn
     create:
@@ -47,12 +50,24 @@ vi:
       institution_domain_placeholder: "ví dụ: vietcombank.com.vn"
       notes_label: Ghi chú
       notes_placeholder: Lưu thêm thông tin như số tài khoản, mã định tuyến, IBAN, v.v.
+      institution_domain_hint: "Dùng để tìm biểu tượng của tổ chức."
+      institution_domain_missing_logo_key_hint: "Dùng để tìm biểu tượng của tổ chức. Logo Brandfetch không khả dụng vì chưa cấu hình Brandfetch client ID."
+      institution_domain_settings_link: "Thêm trong cài đặt Tự lưu trữ"
+      logo_label: "Biểu tượng"
+      logo_hint: "Hoặc tải lên ảnh PNG, JPEG, GIF, WebP hoặc ICO của bạn, tối đa 1 MB. Ảnh này thay thế logo Brandfetch."
+      exclude_from_reports: "Loại khỏi mọi báo cáo"
+      enable_category_matcher_label: "Bật khớp danh mục"
+      enable_category_matcher_hint: "Khi bật, danh mục do nhà cung cấp gợi ý sẽ được áp dụng cho các giao dịch được nhập. Tắt để các giao dịch mới không có danh mục."
     index:
       accounts: Tài khoản
       manual_accounts:
         other_accounts: Tài khoản khác
       new_account: Tài khoản mới
       sync: Đồng bộ tất cả
+      financekit_accounts:
+        title: "Apple Wallet"
+        description: "Quản lý kết nối Apple Wallet và đồng bộ trong ứng dụng Sure trên iOS."
+      cancel_sync: "Hủy đồng bộ"
     sync_all:
       syncing: "Đang đồng bộ tài khoản..."
     new:
@@ -61,6 +76,8 @@ vi:
         select: Chọn
         navigate: Điều hướng
         close: Đóng
+        next: "Tiếp"
+        previous: "Trước"
       method_selector:
         connected_entry: Liên kết tài khoản
         connected_entry_eu: Liên kết tài khoản EU
@@ -76,6 +93,8 @@ vi:
         holdings: Danh mục nắm giữ
         overview: Tổng quan
         statements: Sao kê
+        extra_repayments: "Trả nợ thêm"
+        schedule: "Lịch trả nợ"
       activity:
         amount: Số tiền
         balance: Số dư
@@ -114,8 +133,11 @@ vi:
         manage: Quản lý tài khoản
         sharing: Chia sẻ
         statements: Sao kê
+        exclude_from_reports: "Loại khỏi mọi báo cáo"
+        include_in_reports: "Đưa vào báo cáo"
     update:
       success: "Đã cập nhật tài khoản %{type}"
+      logo_not_applied: "Tài khoản đã được lưu, nhưng không thể tải biểu tượng đã chọn. Hãy thử lại hoặc tải lên biểu tượng của bạn."
     sidebar:
       missing_data: Thiếu dữ liệu lịch sử
       missing_data_description: "%{product} sử dụng nhà cung cấp bên thứ ba để lấy tỷ giá hối đoái lịch sử, giá chứng khoán và nhiều hơn nữa. Dữ liệu này cần thiết để tính số dư tài khoản lịch sử chính xác."
@@ -128,6 +150,14 @@ vi:
       new_debt: Nợ mới
       new_account: Tài khoản mới
       new_account_group: "Nhóm %{account_group} mới"
+      expand_all: "Mở rộng tất cả"
+      collapse_all: "Thu gọn tất cả"
+      reorder_account: "Di chuyển %{account}"
+      reorder_hint: "Kéo để sắp xếp lại. Với bàn phím, nhấn Enter rồi dùng phím mũi tên."
+      sort_mode:
+        start: "Sắp xếp tài khoản"
+        hint: "Kéo tài khoản bằng tay nắm để sắp xếp lại."
+        done: "Xong"
     types:
       depository: Tiền mặt
       investment: Đầu tư
@@ -175,6 +205,7 @@ vi:
       warning_transactions_kept: Tất cả giao dịch và số dư hiện có sẽ được giữ nguyên
       warning_can_delete: Sau khi hủy liên kết, bạn có thể xóa tài khoản nếu cần
       confirm_button: Xác nhận và hủy liên kết
+      warning_wallet_connection: "Tất cả tài khoản trong kết nối Apple Wallet này sẽ bị hủy liên kết. Giao dịch và số dư của chúng sẽ được giữ lại. Bạn có thể kết nối lại qua ứng dụng Sure trên iOS bằng thiết lập Wallet mới."
     unlink:
       success: "Tài khoản đã được hủy liên kết thành công. Bây giờ là tài khoản thủ công."
       not_linked: "Tài khoản chưa được liên kết với nhà cung cấp"
@@ -185,6 +216,44 @@ vi:
       description: "Chọn nhà cung cấp bạn muốn dùng để liên kết %{account_name}"
       already_linked: "Tài khoản đã được liên kết với nhà cung cấp"
       no_providers: "Hiện không có nhà cung cấp nào được cấu hình"
+    reconciliation_indicator:
+      matched: "Tất cả giao dịch đã được đối soát"
+      needs_attention: "Có giao dịch cần đối soát"
+    scheduled_balance_tooltip:
+      description: "Số dư của bạn sau khi tất cả giao dịch đã lên lịch được ghi nhận"
+      current: "Số dư hiện tại"
+      scheduled: "Đã lên lịch"
+      projected: "Số dư dự kiến"
+    logo_caption:
+      appstore: "Từ App Store"
+      brandfetch: "Từ Brandfetch"
+      duckduckgo: "Từ DuckDuckGo"
+      google: "Từ Google"
+      googleplay: "Từ Google Play"
+      none: "Chưa có biểu tượng"
+      rustore: "Từ RuStore"
+      uploaded: "Do bạn tải lên"
+      yandex: "Từ Yandex"
+    logo_field:
+      current: "hiện tại"
+      domain_needed: "Hãy nhập tên miền của tổ chức, ví dụ techcombank.com.vn, để chọn biểu tượng."
+      empty: "Không tìm thấy biểu tượng nào cho tên miền này. Hãy tải lên biểu tượng của bạn bên dưới."
+      pick: "Chọn biểu tượng"
+      pending: "Sẽ áp dụng khi bạn lưu"
+      remove: "Xóa"
+      removal: "Sẽ được xóa khi bạn lưu; biểu tượng tự động sẽ quay lại"
+      searching: "Đang tìm kiếm…"
+    logo_options:
+      size: "%{size} px"
+      sources:
+        appstore: "App Store"
+        brandfetch: "Brandfetch"
+        duckduckgo: "DuckDuckGo"
+        google: "Google"
+        googleplay: "Google Play"
+        rustore: "RuStore"
+        yandex: "Yandex"
+      stored: "Biểu tượng đã lưu"
 
   email_confirmations:
     new:

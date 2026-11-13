@@ -17,6 +17,8 @@ vi:
       action_label_to: "%{label} thành %{value}"
       all_past_and_future: Tất cả %{resource} trong quá khứ và tương lai
       on_or_after: "%{resource} từ ngày %{date} trở đi"
+      stop_processing: "Dừng"
+      stop_processing_hint: "Các quy tắc bên dưới không thay đổi giao dịch đã khớp với quy tắc này."
     form:
       rule_name_label: Tên quy tắc (tùy chọn)
       rule_name_placeholder: Nhập tên cho quy tắc này
@@ -26,6 +28,14 @@ vi:
       all_past_and_future: Tất cả %{resource} trong quá khứ và tương lai
       starting_from: Bắt đầu từ
       then: THÌ
+      stop_processing_label: "Dừng xử lý các quy tắc tiếp theo"
+      stop_processing_description: "Các quy tắc bên dưới trong danh sách không thay đổi giao dịch mà quy tắc này khớp."
+      group_label: "Nhóm (không bắt buộc)"
+      group_select_label: "Nhóm"
+      no_group: "Không có nhóm"
+      new_group_label: "Hoặc nhóm mới"
+      new_group_placeholder: "Tên nhóm mới"
+      group_hint: "Nhóm chỉ giúp sắp xếp danh sách. Một quy tắc trong nhóm chạy ở vị trí của nhóm trong danh sách."
     index:
       page_title: Quy tắc
       delete_all_rules: Xóa tất cả quy tắc
@@ -34,6 +44,14 @@ vi:
       rules_heading: Quy tắc
       no_rules_title: Chưa có quy tắc
       no_rules_description: Thiết lập quy tắc để thực hiện hành động trên giao dịch và dữ liệu khác mỗi lần đồng bộ tài khoản.
+      order_hint: "Các quy tắc chạy từ trên xuống dưới, kể cả quy tắc trong nhóm. Khi một quy tắc đã đặt một trường cho giao dịch, các quy tắc bên dưới không thay đổi trường đó. Nhãn được thêm bởi mọi quy tắc khớp. Kéo quy tắc và nhóm để đổi thứ tự."
+      new_group: "Nhóm mới"
+      reorder_group: "Di chuyển nhóm %{name}. Nhấn Enter hoặc Space để nắm lấy, rồi dùng phím mũi tên để di chuyển."
+      filters:
+        no_matches: "Không có quy tắc nào khớp với tìm kiếm hoặc bộ lọc."
+        drag_disabled: "Sắp xếp bị tắt khi đang tìm kiếm hoặc lọc. Hãy đặt lại chúng để đổi thứ tự."
+      fold_rule: "Thu gọn hoặc mở rộng quy tắc %{name}"
+      reorder_rule: "Di chuyển quy tắc %{name}. Nhấn Enter hoặc Space để nắm lấy, rồi dùng phím mũi tên để di chuyển."
     confirm:
       title: Xác nhận thay đổi
       title_with_name: "Xác nhận thay đổi cho \"%{name}\""
@@ -46,8 +64,28 @@ vi:
       cost_warning: Bạn có thể phát sinh chi phí, hãy kiểm tra với nhà cung cấp mô hình để biết giá mới nhất.
       view_usage_history: Xem lịch sử sử dụng
       confirm_changes: Xác nhận thay đổi
+      rules_above_notice:
+        one: "Quy tắc đang bật phía trên nó chạy trước, nên kết quả giống như khi chạy đầy đủ."
+        other: "%{count} quy tắc đang bật phía trên nó chạy trước, nên kết quả giống như khi chạy đầy đủ."
     actions:
       value_placeholder: Nhập một giá trị
+      to_label: "thành"
+      split:
+        type_fixed: "Số tiền cố định"
+        type_percentage: "Phần trăm"
+        type_label: "Loại chia"
+        add_split: "Thêm phần chia"
+        name_placeholder: "Tên phần chia"
+        share_label: "Số tiền hoặc phần trăm chia"
+        category_label: "Danh mục của phần chia"
+        merchant_label: "Đơn vị bán hàng của phần chia"
+        tags_label: "Nhãn của phần chia"
+        remove_split: "Xóa phần chia"
+        hint: "Các phần chia cố định được trừ trước, theo số tiền chính xác. Các phần chia phần trăm sau đó chia phần còn lại. Nếu mọi phần chia ở đây đều dùng số tiền cố định, hãy thêm điều kiện khớp đúng số tiền giao dịch (ví dụ Số tiền = 42.00), vì mọi giao dịch khớp cần có cùng tổng để các số tiền cố định cộng lại đúng. Quy tắc chia không thể có hành động khác."
+        fixed_summary_label: "cố định"
+        summary:
+          one: "%{count} phần chia"
+          other: "%{count} phần chia"
     update:
       success: Đã cập nhật quy tắc
     destroy:
@@ -100,6 +138,72 @@ vi:
         expense: Chi tiêu
         transfer: Chuyển khoản
         equal_to: Bằng
+      operators:
+        contains: "Chứa"
+        does_not_contain: "Không chứa"
+        starts_with: "Bắt đầu bằng"
+        ends_with: "Kết thúc bằng"
+        matches_regex: "Khớp biểu thức chính quy"
+        equal_to: "Bằng"
+        is_equal_to: "Bằng"
+        not_equal_to: "Không bằng"
+        is_empty: "Để trống"
+        is_not_empty: "Không để trống"
+        greater_than: "Lớn hơn"
+        greater_or_equal_to: "Lớn hơn hoặc bằng"
+        less_than: "Nhỏ hơn"
+        less_than_or_equal_to: "Nhỏ hơn hoặc bằng"
+    notification_baseline_timed_out: "Quy tắc này vẫn đang tắt. Việc kiểm tra những giao dịch nó đã khớp mất quá nhiều thời gian, và nếu không kiểm tra thì nó sẽ gửi email cho tất cả. Hãy đơn giản hóa các điều kiện rồi bật lại."
+    category_rule_cta:
+      close: "Đóng"
+      create_rule: "Tạo quy tắc"
+      description: "Luôn phân loại các giao dịch tương tự?"
+      not_today: "Để sau"
+      turn_off_suggestions: "Tắt gợi ý quy tắc"
+      message: "Đã cập nhật thành %{category_name}"
+    classifier_rules:
+      category_classifier: "Bộ phân loại danh mục"
+      merchant_matcher: "Bộ khớp đơn vị bán hàng"
+    filters:
+      search_label: "Tìm quy tắc"
+      search_placeholder: "Tìm theo tên, điều kiện và hành động"
+      reset: "Đặt lại"
+      button: "Lọc"
+      done: "Xong"
+      active_label: "Bộ lọc đang dùng"
+      remove: "Bỏ bộ lọc %{filter}"
+      status:
+        label: "Trạng thái"
+        all: "Mọi trạng thái"
+        active: "Đang bật"
+        inactive: "Đang tắt"
+      action_type:
+        label: "Hành động"
+        all: "Mọi hành động"
+      condition_type:
+        label: "Điều kiện"
+        all: "Mọi điều kiện"
+      account:
+        label: "Tài khoản"
+        all: "Mọi tài khoản"
+      group:
+        label: "Nhóm"
+        all: "Mọi nhóm"
+        none: "Không có nhóm"
+    group:
+      rules_count:
+        one: "1 quy tắc"
+        other: "%{count} quy tắc"
+      inactive_count:
+        one: "1 đang tắt"
+        other: "%{count} đang tắt"
+      empty: "Nhóm này chưa có quy tắc nào. Hãy chọn nhóm trong biểu mẫu của một quy tắc."
+      activate_all: "Bật tất cả quy tắc"
+      deactivate_all: "Tắt tất cả quy tắc"
+      rename: "Đổi tên"
+      delete: "Xóa nhóm"
+      delete_confirm_title: "Xóa nhóm \"%{name}\"?"
+      delete_confirm_body: "Các quy tắc vẫn giữ nguyên vị trí, không thuộc nhóm nào. Không quy tắc nào bị xóa."
   rule:
     conditions:
       condition_group:
@@ -109,3 +213,5 @@ vi:
         any: bất kỳ
         of_the_following_conditions: trong các điều kiện sau
         add_condition: Thêm điều kiện
+      condition:
+        value_placeholder: "Nhập giá trị"

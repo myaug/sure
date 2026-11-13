@@ -26,6 +26,7 @@ vi:
         other: "Đã nhập %{count} tài khoản"
       none_selected: Chưa chọn tài khoản nào
       no_accounts: Không có tài khoản nào để nhập
+      invalid_sync_start_date: "Ngày bắt đầu đồng bộ phải là ngày hợp lệ trong quá khứ."
     binance_item:
       provider_name: Binance
       syncing: Đang đồng bộ...
@@ -62,6 +63,10 @@ vi:
       errors:
         only_manual: Chỉ tài khoản thủ công mới có thể liên kết với Binance
         invalid_binance_account: Tài khoản Binance không hợp lệ
+    select_accounts:
+      connection_unavailable: "Kết nối Binance đó không khả dụng. Hãy chọn một kết nối trong Cài đặt nhà cung cấp."
+      no_credentials_configured: "Hãy kết nối Binance trong Cài đặt nhà cung cấp trước khi thêm tài khoản của nó."
+      select_connection: "Hãy chọn một kết nối Binance trong Cài đặt nhà cung cấp."
   binance_item:
     syncer:
       checking_credentials: Đang kiểm tra thông tin xác thực...

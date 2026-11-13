@@ -1,0 +1,29 @@
+---
+vi:
+  providers:
+    truelayer:
+      description: "Kết nối với ngân hàng ở Anh qua TrueLayer"
+    property_valuation:
+      not_configured: "Nhà cung cấp dữ liệu bất động sản này chưa được cấu hình."
+      missing_fields: "Vui lòng nhập tên và địa chỉ đầy đủ tại Hoa Kỳ (đường, thành phố, bang và mã ZIP)."
+      missing_fields_gb: "Vui lòng nhập tên, địa chỉ đường phố, mã bưu chính và UPRN của bất động sản."
+      preview_expired: "Bản xem trước bất động sản này đã hết hạn — vui lòng tra cứu lại địa chỉ."
+      entry_name: "Định giá %{provider}"
+    rentcast:
+      errors:
+        no_valuation: "RentCast không trả về giá trị ước tính cho địa chỉ này."
+        not_found: "RentCast không tìm thấy bất động sản khớp với địa chỉ này."
+    realie:
+      errors:
+        no_property: "Realie không trả về bất động sản nào cho địa chỉ này."
+        no_valuation: "Realie không trả về định giá cho bất động sản này."
+        not_found: "Realie không tìm thấy bất động sản khớp với địa chỉ này."
+        location_mismatch: "Realie khớp với một bất động sản ở thành phố hoặc mã ZIP khác. Vui lòng kiểm tra lại địa chỉ."
+    chimnie:
+      errors:
+        invalid_uprn: "UPRN là số có tối đa 12 chữ số. Vui lòng kiểm tra UPRN và thử lại."
+        no_estimate: "Chimnie không có giá trị ước tính cho bất động sản này."
+        not_found: "Chimnie không tìm thấy bất động sản có UPRN này."
+        unsupported_property: "Chimnie chỉ định giá bất động sản nhà ở; UPRN này thuộc bất động sản thương mại hoặc hỗn hợp."
+        unauthorized: "Chimnie từ chối khóa API. Hãy kiểm tra khóa trong Cài đặt → Tự lưu trữ."
+        insufficient_balance: "Số dư tài khoản Chimnie của bạn quá thấp cho yêu cầu này."

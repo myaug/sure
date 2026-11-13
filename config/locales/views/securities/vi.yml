@@ -11,5 +11,8 @@ vi:
       eodhd: EODHD
       alpha_vantage: Alpha Vantage
       mfapi: MFAPI.in
+      fmarket: Fmarket
+      ssi_fastconnect: SSI FastConnect
       binance_public: Binance
       moex_public: MOEX
+      mansa: "Mansa"
