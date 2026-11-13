@@ -1,0 +1,35 @@
+<div class="space-y-4">
+  <div>
+    <h2 class="font-medium mb-1"><%= t(".title") %></h2>
+    <% if ENV["SSI_FASTCONNECT_API_KEY"].present? && ENV["SSI_FASTCONNECT_API_SECRET"].present? %>
+      <p class="text-sm text-secondary"><%= t(".env_configured_message") %></p>
+    <% else %>
+      <p class="text-secondary text-sm mb-4"><%= t(".description") %></p>
+    <% end %>
+  </div>
+
+  <%= styled_form_with model: Setting.new,
+                       url: settings_hosting_path,
+                       method: :patch,
+                       data: {
+                         controller: "auto-submit-form",
+                         "auto-submit-form-trigger-event-value": "blur"
+                       } do |form| %>
+    <% id_from_env = ENV["SSI_FASTCONNECT_API_KEY"].present? %>
+    <% secret_from_env = ENV["SSI_FASTCONNECT_API_SECRET"].present? %>
+    <%= form.text_field :ssi_fastconnect_api_key,
+                        label: t(".api_key_label"),
+                        type: "password",
+                        placeholder: t(".api_key_placeholder"),
+                        value: (id_from_env || Setting.ssi_fastconnect_api_key.present?) ? "********" : "",
+                        disabled: id_from_env,
+                        data: { "auto-submit-form-target": "auto" } %>
+    <%= form.text_field :ssi_fastconnect_api_secret,
+                        label: t(".api_secret_label"),
+                        type: "password",
+                        placeholder: t(".api_secret_placeholder"),
+                        value: (secret_from_env || Setting.ssi_fastconnect_api_secret.present?) ? "********" : "",
+                        disabled: secret_from_env,
+                        data: { "auto-submit-form-target": "auto" } %>
+  <% end %>
+</div>

@@ -17,7 +17,7 @@ class Portfolio::SectionRegistry
   # The built-in section keys, in declaration order. The preferences
   # endpoint accepts only these, so a saved order or collapsed set cannot
   # carry arbitrary strings into the user's preferences.
-  KEYS = %w[accounts].freeze
+  KEYS = %w[accounts crypto].freeze
 
   attr_reader :statement, :period, :as_of, :user, :extra_sections
 
@@ -71,6 +71,14 @@ class Portfolio::SectionRegistry
           locals: shared_locals.merge(accounts: accounts_for_cards),
           visible: accounts_for_cards.any?,
           collapsible: true
+        },
+        {
+          key: "crypto",
+          title: "portfolios.sections.crypto",
+          partial: "portfolios/crypto",
+          locals: shared_locals.merge(exposure: crypto_exposure),
+          visible: crypto_exposure.any?,
+          collapsible: true
         }
       ]
     end
@@ -83,6 +91,10 @@ class Portfolio::SectionRegistry
       @accounts_for_cards ||= statement.investment_accounts.with_attached_logo
         .includes(:accountable, :plaid_account, :simplefin_account, account_providers: :provider)
         .alphabetically.order(:id).to_a
+    end
+
+    def crypto_exposure
+      @crypto_exposure ||= Portfolio::CryptoExposure.new(statement)
     end
 
     def shared_locals

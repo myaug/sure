@@ -23,12 +23,17 @@ class Onchain::EvmAdapter
   # thousands of tokens looking credible, while holding value separates them.
   DUST_VALUE = 1.to_d
 
-  attr_reader :chain, :explorer_url, :etherscan_chain_id
+  attr_reader :chain, :explorer_url, :etherscan_chain_id, :rpc_url, :rpc_tokens
 
-  def initialize(chain:, explorer_url:, etherscan_chain_id: nil, credentials: {})
+  # A network with a public Blockscout indexer is configured with `explorer_url`.
+  # One without (BNB Smart Chain) is configured with `rpc_url` and the curated
+  # `rpc_tokens` it can read balances for; see Provider::EvmRpc.
+  def initialize(chain:, explorer_url: nil, etherscan_chain_id: nil, rpc_url: nil, rpc_tokens: [], credentials: {})
     @chain = chain.to_s
     @explorer_url = explorer_url
     @etherscan_chain_id = etherscan_chain_id
+    @rpc_url = rpc_url
+    @rpc_tokens = rpc_tokens
     @credentials = credentials
   end
 
@@ -79,8 +84,8 @@ class Onchain::EvmAdapter
   # have to map onto the chain-agnostic ones.
   def provider_error_classes
     [
-      [ Provider::Blockscout::RateLimitError, Provider::Etherscan::RateLimitError ],
-      [ Provider::Blockscout::Error, Provider::Etherscan::Error ]
+      [ Provider::Blockscout::RateLimitError, Provider::Etherscan::RateLimitError, Provider::EvmRpc::RateLimitError ],
+      [ Provider::Blockscout::Error, Provider::Etherscan::Error, Provider::EvmRpc::Error ]
     ]
   end
 
@@ -107,7 +112,13 @@ class Onchain::EvmAdapter
       Onchain::Chains.find!(chain)
     end
 
+    def rpc_only?
+      rpc_url.present?
+    end
+
     def keyless_backend
+      return @keyless_backend ||= Provider::EvmRpc.new(chain: chain, rpc_url: rpc_url, tokens: rpc_tokens) if rpc_only?
+
       @keyless_backend ||= Provider::Blockscout.new(
         chain: chain,
         base_url: explorer_url,
@@ -119,6 +130,12 @@ class Onchain::EvmAdapter
     # reads with the detection budget rather than the sync's: one short attempt,
     # no retry.
     def detection_backend
+      if rpc_only?
+        return @detection_backend ||= Provider::EvmRpc.new(
+          chain: chain, rpc_url: rpc_url, tokens: rpc_tokens, request_timeout: Onchain::DetectionBudget.timeout
+        )
+      end
+
       @detection_backend ||= Provider::Blockscout.new(
         chain: chain,
         base_url: explorer_url,

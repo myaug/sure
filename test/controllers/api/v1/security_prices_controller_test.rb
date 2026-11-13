@@ -366,6 +366,9 @@ class Api::V1::SecurityPricesControllerTest < ActionDispatch::IntegrationTest
   # The sync the import queues, run for real: the trade-backed holding is
   # rebuilt at the imported close rather than purged.
   test "the queued sync revalues the position at the imported close" do
+    # The close and the position are both AUD, so the account is too: a price in
+    # another currency with no rate would rightly leave the position unpriced.
+    @account.update_columns(currency: "AUD")
     security = offline_security_held_by(@account)
 
     with_self_hosting do

@@ -160,6 +160,19 @@ class Provider::Registry
         Provider::Mfapi.new
       end
 
+      def ssi_fastconnect
+        api_key = ENV["SSI_FASTCONNECT_API_KEY"].presence || Setting.ssi_fastconnect_api_key # pipelock:ignore
+        api_secret = ENV["SSI_FASTCONNECT_API_SECRET"].presence || Setting.ssi_fastconnect_api_secret # pipelock:ignore
+
+        return nil unless api_key.present? && api_secret.present?
+
+        Provider::SsiFastconnect.new(api_key, api_secret)
+      end
+
+      def fmarket
+        Provider::Fmarket.new
+      end
+
       def binance_public
         Provider::BinancePublic.new
       end
@@ -235,7 +248,7 @@ class Provider::Registry
       when :exchange_rates
         %i[twelve_data yahoo_finance moex_public frankfurter]
       when :securities
-        %i[twelve_data yahoo_finance tiingo eodhd alpha_vantage mfapi binance_public moex_public tinkoff_invest mansa]
+        %i[twelve_data yahoo_finance tiingo eodhd alpha_vantage mfapi fmarket ssi_fastconnect binance_public moex_public tinkoff_invest mansa]
       when :llm
         %i[openai anthropic]
       when :classification

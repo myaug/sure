@@ -5,8 +5,28 @@ en:
       add_account: Add an investment account
       description: Brokerage, retirement and crypto accounts you include in your finances and reports are listed here with their balance.
       title: No investment accounts to show
+    crypto:
+      by_chain: By network
+      by_token: By token
+      by_venue: By exchange or wallet
+      chain: Network
+      exchange_balance: Exchange balance
+      history_truncated: "Not every transfer could be read for %{accounts}. Balances are complete."
+      official_rate: "Official rate: 1 USD = %{rate} %{currency} (%{date})"
+      stablecoin_note: Stablecoins are valued at the official USD exchange rate, not at peer-to-peer prices, which are usually higher.
+      stablecoin_share: "%{share}% of your crypto"
+      stablecoin_title: Stablecoin exposure
+      stale: "These accounts were valued with an older exchange rate: %{accounts}."
+      token: Token
+      total: Crypto value
+      unconverted: "%{currencies} has no exchange rate into %{currency}, so those holdings are left out of the totals."
+      unpriced: "No price is available for %{assets}. They are tracked by quantity and left out of the totals."
+      value: Value
+      venue: Exchange or wallet
+      weight: Share
     sections:
       accounts: Accounts
+      crypto: Crypto
     show:
       section_aria: "%{title} section. Press Enter or Space to grab for reordering, then use arrow keys to move."
       sections_aria: Portfolio sections

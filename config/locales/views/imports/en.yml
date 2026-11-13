@@ -626,6 +626,7 @@ en:
         one: "%{count} transaction from your statement isn't in this account yet. Review and publish it to add it."
         other: "%{count} transactions from your statement aren't in this account yet. Review and publish them to add them."
       transactions_extracted: Transactions Extracted
+      balance_mismatch: "The statement balances do not add up: opening balance plus the extracted transactions differs from the closing balance by %{difference}. Some transactions may be missing, duplicated or have the wrong sign. Check them before importing."
       transactions_extracted_count:
         one: "%{count} transaction"
         other: "%{count} transactions"

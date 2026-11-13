@@ -5,6 +5,7 @@ en:
       arbitrum: Arbitrum
       base: Base
       bitcoin: Bitcoin
+      bsc: BNB Smart Chain
       cosmos: Cosmos Hub
       ethereum: Ethereum
       gnosis: Gnosis
@@ -12,6 +13,7 @@ en:
       polkadot: Polkadot
       polygon: Polygon
       solana: Solana
+      tron: TRON
     institution_name: Self-custody wallets
   onchain_wallet_item:
     movement:

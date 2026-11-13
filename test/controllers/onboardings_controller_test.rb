@@ -147,6 +147,39 @@ class OnboardingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "select[name='user[family_attributes][currency]'] option[selected][value='CAD']"
   end
 
+  test "preferences page suggests Vietnamese defaults for a Vietnam family" do
+    @family.update!(country: "VN", currency: "USD", locale: "en", timezone: nil, date_format: "%m-%d-%Y")
+
+    get preferences_onboarding_url
+
+    assert_response :success
+    assert_select "select[name='user[family_attributes][locale]'] option[selected][value='vi']"
+    assert_select "select[name='user[family_attributes][currency]'] option[selected][value='VND']"
+    assert_select "select[name='user[family_attributes][date_format]'] option[selected][value='%d/%m/%Y']"
+    assert_select "input[type='hidden'][name='user[family_attributes][timezone]'][value='Asia/Ho_Chi_Minh']"
+  end
+
+  test "preferences page keeps defaults unchanged for families outside Vietnam" do
+    @family.update!(country: "CA", timezone: nil)
+
+    get preferences_onboarding_url
+
+    assert_response :success
+    assert_select "select[name='user[family_attributes][locale]'] option[selected][value='vi']", count: 0
+    assert_select "input[name='user[family_attributes][timezone]']", count: 0
+  end
+
+  test "preferences page does not override saved preferences for a Vietnam family" do
+    @family.update!(country: "VN", locale: "en", date_format: "%m-%d-%Y", timezone: nil)
+    @user.update!(set_onboarding_preferences_at: Time.current)
+
+    get preferences_onboarding_url
+
+    assert_response :success
+    assert_select "select[name='user[family_attributes][date_format]'] option[selected][value='%m-%d-%Y']"
+    assert_select "input[name='user[family_attributes][timezone]']", count: 0
+  end
+
   test "preferences page shows date formatting example" do
   get preferences_onboarding_url
   assert_response :success

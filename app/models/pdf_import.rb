@@ -278,6 +278,25 @@ class PdfImport < Import
     extracted_data.present? && extracted_data["transactions"].present?
   end
 
+  # Opening balance plus the extracted movements should equal the closing
+  # balance. A gap means the extraction dropped, duplicated or mis-signed rows,
+  # so the review screen warns before anything is written. Only checked for bank
+  # statements, where credits are positive: a card statement's balance runs the
+  # other way. Nil when the statement lacks the figures or when it reconciles.
+  def balance_discrepancy
+    return unless bank_statement? && has_extracted_transactions?
+
+    opening = BankStatementAmount.parse(extracted_data["opening_balance"])
+    closing = BankStatementAmount.parse(extracted_data["closing_balance"])
+    return if opening.nil? || closing.nil?
+
+    movements = extracted_transactions.sum { |txn| BankStatementAmount.parse(txn["amount"]).to_d }
+    difference = closing.to_d - (opening.to_d + movements)
+    return if difference.abs < BigDecimal("0.5")
+
+    { opening: opening, closing: closing, movements: movements.to_f, difference: difference.to_f }
+  end
+
   def extracted_transactions
     extracted_data&.dig("transactions") || []
   end

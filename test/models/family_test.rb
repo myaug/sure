@@ -317,6 +317,18 @@ class FamilyTest < ActiveSupport::TestCase
     assert_equal "USD", Family.default_currency_for_country("unknown")
   end
 
+  test "market profile suggests Vietnamese defaults only for Vietnam" do
+    assert_equal({ locale: "vi", timezone: "Asia/Ho_Chi_Minh", date_format: "%d/%m/%Y" }, Family.market_profile_for_country("vn"))
+    assert_equal "VND", Family.default_currency_for_country("VN")
+    assert_equal({}, Family.market_profile_for_country("US"))
+    assert_equal({}, Family.market_profile_for_country(nil))
+
+    profile = Family.market_profile_for_country("VN")
+    assert_includes I18n.available_locales.map(&:to_s), profile[:locale]
+    assert_includes Family::DATE_FORMATS.map(&:last), profile[:date_format]
+    assert ActiveSupport::TimeZone[profile[:timezone]]
+  end
+
   test "available_merchants includes family merchants without transactions" do
     family = families(:dylan_family)
 

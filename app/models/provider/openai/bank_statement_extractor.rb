@@ -184,13 +184,7 @@ class Provider::Openai::BankStatementExtractor
     end
 
     def parse_amount(amount)
-      return nil if amount.nil?
-
-      if amount.is_a?(Numeric)
-        amount.to_f
-      else
-        amount.to_s.gsub(/[^0-9.\-]/, "").to_f
-      end
+      BankStatementAmount.parse(amount)
     end
 
     def infer_category(txn)
@@ -202,7 +196,7 @@ class Provider::Openai::BankStatementExtractor
         Extract bank statement data as JSON. Return:
         {"bank_name":"...","account_holder":"...","account_number":"last 4 digits","statement_period":{"start_date":"YYYY-MM-DD","end_date":"YYYY-MM-DD"},"opening_balance":0.00,"closing_balance":0.00,"transactions":[{"date":"YYYY-MM-DD","description":"...","amount":-0.00}]}
 
-        Rules: Negative amounts for debits/expenses, positive for credits/deposits. Dates as YYYY-MM-DD. Extract ALL transactions. JSON only, no markdown.
+        Rules: Negative amounts for debits/expenses, positive for credits/deposits. Dates as YYYY-MM-DD. Extract ALL transactions. #{BankStatementAmount::LOCALE_HINTS} JSON only, no markdown.
       INSTRUCTIONS
     end
 
@@ -211,7 +205,7 @@ class Provider::Openai::BankStatementExtractor
         Extract transactions from bank statement text as JSON. Return:
         {"transactions":[{"date":"YYYY-MM-DD","description":"...","amount":-0.00}]}
 
-        Rules: Negative amounts for debits/expenses, positive for credits/deposits. Dates as YYYY-MM-DD. Extract ALL transactions. JSON only, no markdown.
+        Rules: Negative amounts for debits/expenses, positive for credits/deposits. Dates as YYYY-MM-DD. Extract ALL transactions. #{BankStatementAmount::LOCALE_HINTS} JSON only, no markdown.
       INSTRUCTIONS
     end
 end

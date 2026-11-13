@@ -78,7 +78,7 @@ class OnchainWalletAccountTest < ActiveSupport::TestCase
     odd = @item.onchain_wallet_accounts.new(
       chain: OnchainTestHelper::FAKE_CHAIN,
       wallet_address: OnchainTestHelper::FAKE_ADDRESS,
-      asset_kind: "trc20",
+      asset_kind: "cw20",
       contract_address: "0xccc",
       symbol: "FUSD",
       decimals: 6,

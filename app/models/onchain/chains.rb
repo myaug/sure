@@ -23,7 +23,7 @@ module Onchain
     # (see CreateOnchainWalletItemsAndAccounts). Registering a chain whose
     # tokens don't fit one of these would silently lose DB-level uniqueness,
     # so `register` refuses it.
-    INDEXED_TOKEN_KINDS = %w[erc20 spl].freeze
+    INDEXED_TOKEN_KINDS = %w[erc20 spl trc20].freeze
 
     # Token kinds whose contract identifier carries no case: an EVM contract is
     # hex, so 0xAbC and 0xabc are one token. An SPL mint is a Base58 public key
@@ -81,16 +81,33 @@ module Onchain
     # Every EVM network shares one adapter; what makes them different is data.
     # `etherscan_chain_id` is set only where a family-supplied Etherscan key is
     # accepted, which today is Ethereum alone.
+    BSC_TOKENS = [
+      { contract: "0x55d398326f99059ff775485246999027b3197955", symbol: "USDT", name: "Tether USD", decimals: 18 },
+      { contract: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", symbol: "USDC", name: "USD Coin", decimals: 18 },
+      { contract: "0xe9e7cea3dedca5984780bafc599bd69add087d56", symbol: "BUSD", name: "Binance USD", decimals: 18 },
+      { contract: "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409", symbol: "FDUSD", name: "First Digital USD", decimals: 18 },
+      { contract: "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", symbol: "BTCB", name: "Bitcoin BEP2", decimals: 18 },
+      { contract: "0x2170ed0880ac9a755fd29b2688956bd959f933f8", symbol: "ETH", name: "Ethereum Token", decimals: 18 },
+      { contract: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", symbol: "WBNB", name: "Wrapped BNB", decimals: 18 }
+    ].freeze
+
     EVM = [
       { key: ETHEREUM, symbol: "ETH",  name: "Ethereum", explorer_url: "https://eth.blockscout.com",      etherscan_chain_id: "1" },
       { key: "base",     symbol: "ETH",  name: "Ethereum", explorer_url: "https://base.blockscout.com" },
       { key: "arbitrum", symbol: "ETH",  name: "Ethereum", explorer_url: "https://arbitrum.blockscout.com" },
       { key: "optimism", symbol: "ETH",  name: "Ethereum", explorer_url: "https://optimism.blockscout.com" },
       { key: "polygon",  symbol: "POL",  name: "Polygon",  explorer_url: "https://polygon.blockscout.com" },
-      { key: "gnosis",   symbol: "XDAI", name: "xDai",     explorer_url: "https://gnosis.blockscout.com" }
+      { key: "gnosis",   symbol: "XDAI", name: "xDai",     explorer_url: "https://gnosis.blockscout.com" },
+      # No public token indexer exists for BNB Smart Chain, so it is read over
+      # JSON-RPC for the native coin and the tokens below (USDT, USDC and BUSD
+      # are what Vietnamese holders keep on BEP-20). Etherscan v2 chain id 56
+      # lets a family-supplied key add transfer history.
+      { key: "bsc", symbol: "BNB", name: "BNB", rpc_url: "https://bsc-dataseed.binance.org", etherscan_chain_id: "56", rpc_tokens: BSC_TOKENS }
     ].freeze
 
     SOLANA = "solana"
+
+    TRON = "tron"
 
     COSMOS = "cosmos"
 
@@ -113,7 +130,9 @@ module Onchain
           adapter_options: {
             chain: evm[:key],
             explorer_url: evm[:explorer_url],
-            etherscan_chain_id: evm[:etherscan_chain_id]
+            etherscan_chain_id: evm[:etherscan_chain_id],
+            rpc_url: evm[:rpc_url],
+            rpc_tokens: evm[:rpc_tokens]
           }.compact
         )
       end,
@@ -122,6 +141,13 @@ module Onchain
         native: NativeAsset.new(symbol: "SOL", name: "Solana", decimals: 9),
         token_kind: "spl",
         adapter_class_name: "Onchain::SolanaAdapter",
+        adapter_options: {}
+      ),
+      Definition.new(
+        key: TRON,
+        native: NativeAsset.new(symbol: "TRX", name: "TRON", decimals: 6),
+        token_kind: "trc20",
+        adapter_class_name: "Onchain::TronAdapter",
         adapter_options: {}
       ),
       Definition.new(

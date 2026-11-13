@@ -238,6 +238,40 @@ class BinanceAccount::ProcessorTest < ActiveSupport::TestCase
     assert_equal 164.78, trade.entryable.fee.to_f
   end
 
+  test "a VND P2P buy pairs its funding leg with the bank transfer instead of leaving a spend" do
+    @family.update!(currency: "VND")
+    @account.update!(currency: "VND")
+    bank = Account.create!(family: @family, name: "Techcombank", balance: 0, currency: "VND", accountable: Depository.create!)
+    bank_outflow = bank.entries.create!(
+      date: Date.new(2026, 5, 2), name: "CK mua USDT", amount: 2_600_000, currency: "VND", entryable: Transaction.new
+    )
+
+    provider = mock
+    @item.stubs(:binance_provider).returns(provider)
+    @ba.stubs(:binance_item).returns(@item)
+    provider.stubs(:get_spot_trades).returns([])
+    provider.stubs(:get_futures_trades).returns([])
+    provider.stubs(:get_all_p2p_trades).returns([
+      {
+        "orderNumber" => "VN1", "createTime" => Time.utc(2026, 5, 2, 5).to_i * 1000, "tradeType" => "BUY",
+        "asset" => "USDT", "fiat" => "VND", "totalPrice" => "2600000", "unitPrice" => "26000", "amount" => "100"
+      }
+    ])
+    Security.create!(ticker: "CRYPTO:USDT", name: "Tether", price_provider: "binance_public")
+
+    BinanceAccount::Processor.new(@ba).process
+    @family.auto_match_transfers!
+
+    funding = @account.entries.find_by!(external_id: "binance_p2p_VN1_funding")
+    transfer = Transfer.find_by!(inflow_transaction_id: funding.entryable_id)
+    assert_equal bank_outflow.entryable_id, transfer.outflow_transaction_id
+    assert transfer.pending?, "a P2P match stays pending until the user confirms it"
+
+    buy = @account.entries.find_by!(external_id: "binance_p2p_VN1")
+    assert_equal 26_000, buy.entryable.price.to_i, "cost basis is the real P2P unit price in VND"
+    assert_equal "VND", buy.currency
+  end
+
   test "skips processing if P2P external_id already exists" do
     @family.update!(currency: "USD")
     @account.update!(currency: "USD")

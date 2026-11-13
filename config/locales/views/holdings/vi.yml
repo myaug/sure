@@ -74,6 +74,7 @@ vi:
       cancel: Hủy
       remap_security: Lưu
       provider_disabled_warning: "Cập nhật giá tạm dừng — nhà cung cấp %{provider} đã bị tắt. Chuyển sang nhà cung cấp khác bên dưới hoặc bật lại trong Cài đặt."
+      official_rate_note: "Stablecoin này được định giá theo tỷ giá chính thức USD/%{currency} của từng ngày, không theo giá P2P (thường cao hơn)."
       truncated_history_warning: "Lịch sử giá chỉ khả dụng từ %{date} trở đi. Các ngày trước đó không có dữ liệu từ nhà cung cấp đã chọn."
       switch_provider_label: Chuyển nhà cung cấp
       switch_provider_description: "%{provider} đã bị tắt. Tìm kiếm chứng khoán này từ nhà cung cấp khác đã bật."

@@ -1,0 +1,21 @@
+---
+vi:
+  onchain:
+    chains:
+      arbitrum: Arbitrum
+      base: Base
+      bitcoin: Bitcoin
+      bsc: BNB Smart Chain
+      cosmos: Cosmos Hub
+      ethereum: Ethereum
+      gnosis: Gnosis
+      optimism: Optimism
+      polkadot: Polkadot
+      polygon: Polygon
+      solana: Solana
+      tron: TRON
+    institution_name: Ví tự quản
+  onchain_wallet_item:
+    movement:
+      received: "Đã nhận %{quantity} %{symbol}"
+      sent: "Đã gửi %{quantity} %{symbol}"

@@ -48,6 +48,30 @@ class HoldingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "##{dom_id(holding)} p", text: "0.000000000000000148 shares"
   end
 
+  test "labels a stablecoin holding valued at the official rate in a non-USD account" do
+    account = accounts(:crypto)
+    account.update_columns(currency: "VND")
+    security = Security.create!(ticker: "CRYPTO:USDT", name: "Tether", exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC, offline: true)
+    holding = account.holdings.create!(security: security, date: Date.current, qty: 10, price: 25_741, amount: 257_410, currency: "VND")
+
+    get holding_path(holding)
+
+    assert_response :success
+    assert_select "div", text: /#{Regexp.escape(I18n.t("holdings.show.official_rate_note", currency: "VND"))}/
+  end
+
+  test "omits the official rate note for non-stablecoin crypto" do
+    account = accounts(:crypto)
+    account.update_columns(currency: "VND")
+    security = Security.create!(ticker: "CRYPTO:BTC", name: "Bitcoin", exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC, offline: true)
+    holding = account.holdings.create!(security: security, date: Date.current, qty: 1, price: 2_000_000_000, amount: 2_000_000_000, currency: "VND")
+
+    get holding_path(holding)
+
+    assert_response :success
+    assert_no_match(/official USD\/VND/, response.body)
+  end
+
   test "destroys holding and associated entries" do
     assert_difference -> { Holding.count } => -1,
                       -> { Entry.count } => -1 do

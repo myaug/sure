@@ -11,6 +11,35 @@ class PortfoliosControllerTest < ActionDispatch::IntegrationTest
     ensure_tailwind_build
   end
 
+  test "shows the crypto section with stablecoin exposure and the official rate in VND" do
+    @family.update!(currency: "VND")
+    account = accounts(:crypto)
+    account.update_columns(currency: "VND")
+    account.holdings.destroy_all
+    ExchangeRate.create!(from_currency: "USD", to_currency: "VND", date: Date.current, rate: 25_000)
+    security = Security.create!(ticker: "CRYPTO:USDT", name: "Tether", exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC, offline: true)
+    account.holdings.create!(security: security, date: Date.current, qty: 100, price: 25_000, amount: 2_500_000, currency: "VND")
+    junk = Security.create!(ticker: "CRYPTO:JUNK", name: "Junk", exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC, offline: true)
+    account.holdings.create!(security: junk, date: Date.current, qty: 5, price: 0, amount: 0, currency: "VND")
+
+    get portfolio_path
+
+    assert_response :success
+    assert_select "#portfolio-crypto"
+    assert_select "#portfolio-crypto h3", text: I18n.t("portfolios.crypto.stablecoin_title")
+    assert_select "#portfolio-crypto", text: /1 USD = 25,000 VND/
+    assert_select "#portfolio-crypto", text: /JUNK/
+  end
+
+  test "omits the crypto section when the family holds no crypto" do
+    accounts(:crypto).holdings.destroy_all
+
+    get portfolio_path
+
+    assert_response :success
+    assert_select "#portfolio-crypto", count: 0
+  end
+
   test "redirects users without preview access to the dashboard" do
     disable_preview(@user)
 

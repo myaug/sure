@@ -288,6 +288,21 @@ class Family < ApplicationRecord
     normalize_currency_code(country_currency) || "USD"
   end
 
+  # Onboarding defaults for countries with a dedicated market profile. Currency
+  # is not listed because it already follows the country's ISO currency. Values
+  # are suggestions only; the user can change every one of them.
+  MARKET_PROFILES = {
+    "VN" => { locale: "vi", timezone: "Asia/Ho_Chi_Minh", date_format: "%d/%m/%Y" }.freeze
+  }.freeze
+
+  def self.market_profile_for_country(country)
+    MARKET_PROFILES.fetch(country.to_s.upcase, {})
+  end
+
+  def market_profile
+    self.class.market_profile_for_country(country)
+  end
+
   def self.default_currency_by_country
     LanguagesHelper::COUNTRY_MAPPING.keys.index_with { |country| default_currency_for_country(country) }
   end

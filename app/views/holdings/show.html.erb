@@ -36,6 +36,14 @@
             ) %>
           </div>
         <% end %>
+        <% if @holding.security.usd_stablecoin? && @holding.account.currency != "USD" %>
+          <div class="px-3 pt-2">
+            <%= render DS::Alert.new(
+              message: t(".official_rate_note", currency: @holding.account.currency),
+              variant: :info
+            ) %>
+          </div>
+        <% end %>
         <dl class="space-y-3 px-3 py-2">
           <div data-controller="holding-security-remap">
             <div class="flex items-center justify-between text-sm">

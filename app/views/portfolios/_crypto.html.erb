@@ -1,0 +1,64 @@
+<%# locals: (exposure:, statement:, period:, as_of:) %>
+
+<div id="portfolio-crypto" class="space-y-4">
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <div>
+      <p class="text-sm text-secondary"><%= t(".total") %></p>
+      <p class="text-2xl font-semibold text-primary privacy-sensitive"><%= format_money(Money.new(exposure.total, exposure.currency)) %></p>
+    </div>
+    <% if (rate = exposure.usd_rate) %>
+      <%= render DS::Pill.new(
+            label: t(".official_rate", currency: rate.currency, rate: number_with_delimiter(number_with_precision(rate.value, precision: 2, strip_insignificant_zeros: true)), date: l(rate.date, format: :short)),
+            tone: :neutral, marker: false, size: :md
+          ) %>
+    <% end %>
+  </div>
+
+  <% if exposure.unpriced.any? %>
+    <%= render DS::Alert.new(variant: :warning, message: t(".unpriced", assets: exposure.unpriced.to_sentence)) %>
+  <% end %>
+  <% if exposure.unconverted.any? %>
+    <%= render DS::Alert.new(variant: :warning, message: t(".unconverted", currencies: exposure.unconverted.to_sentence, currency: exposure.currency)) %>
+  <% end %>
+  <% if exposure.stale_accounts.any? %>
+    <%= render DS::Alert.new(variant: :warning, message: t(".stale", accounts: exposure.stale_accounts.to_sentence)) %>
+  <% end %>
+  <% if exposure.history_truncated_accounts.any? %>
+    <%= render DS::Alert.new(variant: :info, message: t(".history_truncated", accounts: exposure.history_truncated_accounts.to_sentence)) %>
+  <% end %>
+
+  <% if exposure.stablecoin_share %>
+    <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-3">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 class="font-medium text-primary"><%= t(".stablecoin_title") %></h3>
+        <p class="text-sm text-secondary">
+          <span class="privacy-sensitive"><%= format_money(Money.new(exposure.stablecoin_total, exposure.currency)) %></span>
+          · <%= t(".stablecoin_share", share: exposure.stablecoin_share) %>
+        </p>
+      </div>
+      <p class="text-xs text-secondary"><%= t(".stablecoin_note") %></p>
+      <% if exposure.stablecoins.any? %>
+        <%= render DS::Table.new(rows: exposure.stablecoins, inset: true, label: t(".stablecoin_title")) do |table| %>
+          <% table.with_column(t(".token"), row_header: true) { |segment| segment.name.to_s } %>
+          <% table.with_column(t(".value"), numeric: true, class: "privacy-sensitive") { |segment| format_money(segment.amount) } %>
+          <% table.with_column(t(".weight"), numeric: true) { |segment| "#{segment.weight}%" } %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 @4xl:grid-cols-3 gap-3">
+    <% { "by_token" => [ t(".token"), exposure.by_token ],
+         "by_venue" => [ t(".venue"), exposure.by_venue ],
+         "by_chain" => [ t(".chain"), exposure.by_chain ] }.each do |key, (heading, segments)| %>
+      <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-3">
+        <h3 class="font-medium text-primary"><%= t(".#{key}") %></h3>
+        <%= render DS::Table.new(rows: segments, inset: true, label: t(".#{key}")) do |table| %>
+          <% table.with_column(heading, row_header: true) { |segment| segment.name.presence || t(".exchange_balance") } %>
+          <% table.with_column(t(".value"), numeric: true, class: "privacy-sensitive") { |segment| format_money(segment.amount) } %>
+          <% table.with_column(t(".weight"), numeric: true) { |segment| "#{segment.weight}%" } %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

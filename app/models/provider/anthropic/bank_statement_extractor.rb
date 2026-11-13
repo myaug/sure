@@ -141,6 +141,7 @@ class Provider::Anthropic::BankStatementExtractor
           - Negative amounts for debits / expenses, positive for credits / deposits
           - Dates in YYYY-MM-DD
           - Use null for any field you cannot read; do not invent values
+          - #{BankStatementAmount::LOCALE_HINTS}
       INSTRUCTIONS
     end
 
@@ -207,8 +208,6 @@ class Provider::Anthropic::BankStatementExtractor
     end
 
     def parse_amount(amount)
-      return nil if amount.nil?
-      return amount.to_f if amount.is_a?(Numeric)
-      amount.to_s.gsub(/[^0-9.\-]/, "").to_f
+      BankStatementAmount.parse(amount)
     end
 end

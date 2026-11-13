@@ -39,10 +39,13 @@ class Holding::PortfolioCache
 
     price_money = Money.new(price.price, price.currency)
 
+    # No rate for the day: the price is unknown in the account's currency, not
+    # equal to its number in another one. Returning nil marks the holding as
+    # unpriced instead of showing e.g. a USD amount as VND.
     begin
       converted_amount = price_money.exchange_to(account.currency, date: date).amount
     rescue Money::ConversionError
-      converted_amount = price.price
+      return nil
     end
 
     Security::Price.new(

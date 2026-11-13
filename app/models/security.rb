@@ -126,11 +126,16 @@ class Security < ApplicationRecord
     kind == "cash"
   end
 
-  # True when this security represents a crypto asset. Today the only signal
-  # is the Binance ISO MIC — when we add a second crypto provider, extend
-  # this check rather than duplicating the test at every call site.
+  # True when this security represents a crypto asset, whichever provider priced
+  # it. Identity lives in CryptoAsset so a second provider extends one list.
   def crypto?
-    exchange_operating_mic == Provider::BinancePublic::BINANCE_MIC
+    CryptoAsset.mic?(exchange_operating_mic)
+  end
+
+  # A crypto security pegged to the US dollar (USDT, USDC...). Valued at the
+  # official USD rate, not at a P2P quote.
+  def usd_stablecoin?
+    crypto? && CryptoAsset.usd_stablecoin?(crypto_base_asset)
   end
 
   # Strips the display-currency suffix from a crypto ticker (BTCUSD -> BTC,

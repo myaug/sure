@@ -381,3 +381,19 @@ XBOT:
 MISX:
   name: Moscow Exchange
   country: RU
+
+# Vietnam
+# HOSE and HNX are ISO 10383 operating MICs; UPCoM is the HNX segment XHNX.
+XSTC:
+  name: HOSE
+  country: VN
+HSTC:
+  name: HNX
+  country: VN
+XHNX:
+  name: UPCoM
+  country: VN
+# Project-local code (not ISO 10383) for open-end funds priced by NAV on Fmarket.
+FMKT:
+  name: Fmarket
+  country: VN

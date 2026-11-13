@@ -153,6 +153,25 @@ class PdfImportTest < ActiveSupport::TestCase
     assert_equal "Coffee Shop", @import_with_rows.extracted_transactions.first["name"]
   end
 
+  test "balance_discrepancy is nil when the statement reconciles" do
+    import = vietnamese_statement(opening: 10_000_000, closing: 17_400_000, amounts: [ 8_000_000, "-600.000" ])
+
+    assert_nil import.balance_discrepancy
+  end
+
+  test "balance_discrepancy reports a gap from a dropped or mis-signed row" do
+    import = vietnamese_statement(opening: 10_000_000, closing: 17_400_000, amounts: [ 8_000_000 ])
+
+    assert_in_delta(-600_000.0, import.balance_discrepancy[:difference], 0.01)
+  end
+
+  test "balance_discrepancy is nil without balances or for non bank statements" do
+    assert_nil vietnamese_statement(opening: nil, closing: 1, amounts: [ 1 ]).balance_discrepancy
+    card = vietnamese_statement(opening: 0, closing: 5, amounts: [ 1 ])
+    card.document_type = "credit_card_statement"
+    assert_nil card.balance_discrepancy
+  end
+
   test "extracted_transactions returns empty array when no data" do
     assert_equal [], @import.extracted_transactions
   end
@@ -299,6 +318,17 @@ class PdfImportTest < ActiveSupport::TestCase
   end
 
   private
+    def vietnamese_statement(opening:, closing:, amounts:)
+      @import.tap do |import|
+        import.document_type = "bank_statement"
+        import.extracted_data = {
+          "opening_balance" => opening,
+          "closing_balance" => closing,
+          "transactions" => amounts.map { |amount| { "date" => "2026-05-02", "name" => "GD", "amount" => amount } }
+        }
+      end
+    end
+
 
     def create_pdf_statement(account: accounts(:depository))
       AccountStatement.create_from_upload!(

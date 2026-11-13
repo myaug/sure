@@ -216,6 +216,19 @@ class SecurityTest < ActiveSupport::TestCase
     assert_not offline.crypto?
   end
 
+  test "crypto? also recognizes the offline Binance MIC" do
+    assert Security.new(ticker: "CRYPTO:BTC", exchange_operating_mic: "XBNC").crypto?
+  end
+
+  test "usd_stablecoin? is true only for USD-pegged crypto" do
+    mic = Provider::BinancePublic::BINANCE_MIC
+
+    assert Security.new(ticker: "CRYPTO:USDT", exchange_operating_mic: mic).usd_stablecoin?
+    assert Security.new(ticker: "USDCUSD", exchange_operating_mic: mic).usd_stablecoin?
+    assert_not Security.new(ticker: "CRYPTO:BTC", exchange_operating_mic: mic).usd_stablecoin?
+    assert_not Security.new(ticker: "USDT", exchange_operating_mic: "XNAS").usd_stablecoin?
+  end
+
   test "crypto_base_asset strips the display-currency suffix" do
     %w[USD EUR JPY BRL TRY].each do |quote|
       sec = Security.new(ticker: "BTC#{quote}", exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC)

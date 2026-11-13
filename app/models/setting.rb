@@ -92,6 +92,9 @@ class Setting < RailsSettings::Base
   field :eodhd_api_key, type: :string, default: ENV["EODHD_API_KEY"]
   field :alpha_vantage_api_key, type: :string, default: ENV["ALPHA_VANTAGE_API_KEY"]
   field :tinkoff_invest_api_key, type: :string, default: ENV["TINKOFF_INVEST_API_KEY"]
+  # SSI FastConnect V3 (Vietnamese equities): an API key and secret pair.
+  field :ssi_fastconnect_api_key, type: :string, default: ENV["SSI_FASTCONNECT_API_KEY"]
+  field :ssi_fastconnect_api_secret, type: :string, default: ENV["SSI_FASTCONNECT_API_SECRET"]
   # Mansa API (mansaapi.com) — African exchanges, including NGX (Nigeria),
   # which none of the providers above cover. See Provider::Mansa.
   field :mansa_api_key, type: :string, default: ENV["MANSA_API_KEY"]
@@ -115,6 +118,8 @@ class Setting < RailsSettings::Base
       eodhd_api_key
       alpha_vantage_api_key
       tinkoff_invest_api_key
+      ssi_fastconnect_api_key
+      ssi_fastconnect_api_secret
       mansa_api_key
       rentcast_api_key
       realie_api_key

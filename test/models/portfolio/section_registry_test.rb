@@ -13,7 +13,7 @@ class Portfolio::SectionRegistryTest < ActiveSupport::TestCase
     sections = registry.sections
 
     assert_equal Portfolio::SectionRegistry::KEYS, sections.map { |s| s[:key] }
-    assert_equal %w[portfolios/accounts], sections.map { |s| s[:partial] }
+    assert_equal %w[portfolios/accounts portfolios/crypto], sections.map { |s| s[:partial] }
     assert sections.all? { |s| s[:collapsible] }
 
     # Every partial gets its locals passed in: none of them reaches for
@@ -50,7 +50,7 @@ class Portfolio::SectionRegistryTest < ActiveSupport::TestCase
   test "orders sections by the user's saved order, appending anything it omits" do
     @user.update_section_preferences("portfolio", order: %w[stub])
 
-    assert_equal %w[stub accounts], registry(extra_sections: [ stub_section ]).sections.map { |s| s[:key] }
+    assert_equal %w[stub accounts crypto], registry(extra_sections: [ stub_section ]).sections.map { |s| s[:key] }
   end
 
   test "a saved order that repeats a key renders that section once" do
@@ -58,19 +58,19 @@ class Portfolio::SectionRegistryTest < ActiveSupport::TestCase
 
     keys = registry(extra_sections: [ stub_section ]).sections.map { |s| s[:key] }
 
-    assert_equal %w[stub accounts], keys
+    assert_equal %w[stub accounts crypto], keys
   end
 
   test "ignores keys in the saved order that no longer exist" do
     @user.update_section_preferences("portfolio", order: %w[gone accounts])
 
-    assert_equal %w[accounts], registry.sections.map { |s| s[:key] }
+    assert_equal %w[accounts crypto], registry.sections.map { |s| s[:key] }
   end
 
   test "appends extra sections after the built-ins" do
     sections = registry(extra_sections: [ stub_section ]).sections
 
-    assert_equal %w[accounts stub], sections.map { |s| s[:key] }
+    assert_equal %w[accounts crypto stub], sections.map { |s| s[:key] }
   end
 
   private

@@ -39,7 +39,7 @@ class Provider::BinancePublic < Provider
   # the few stablecoin/USDT pairs that do exist (USDCUSDT, etc.) hover at ~1.0
   # with sub-cent noise — synthesizing a flat 1.0 USD price is both accurate
   # enough and avoids surfacing transient depeg ticks from market data.
-  USD_STABLECOINS = %w[USDT USDC BUSD DAI FDUSD TUSD USDP PYUSD].freeze
+  USD_STABLECOINS = CryptoAsset::USD_STABLECOINS
 
   # Trailing separator between base and quote in a stored pair ticker
   # ("BTC-USD", "BTC/USD", "BTC_USD"), stripped so parse_ticker builds a valid
@@ -48,7 +48,7 @@ class Provider::BinancePublic < Provider
 
   # Symbol prefix applied by holdings processors (CoinStats, Coinbase, Kraken,
   # Binance, SimpleFIN, Lunchflow) to distinguish crypto from stock tickers.
-  CRYPTO_PREFIX = "CRYPTO:".freeze
+  CRYPTO_PREFIX = CryptoAsset::TICKER_PREFIX
 
   def initialize
     # No API key required — public market data only.

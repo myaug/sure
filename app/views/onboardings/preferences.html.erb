@@ -11,6 +11,7 @@
 <% currency_override = Family.normalize_currency_code(params[:currency]) %>
 <% saved_currency = @user.family.primary_currency_code if @user.set_onboarding_preferences_at? %>
 <% selected_currency = currency_override || saved_currency || @user.family.default_currency_for_country %>
+<% market_profile = @user.set_onboarding_preferences_at? ? {} : @user.family.market_profile %>
 
 <div class="grow max-w-lg w-full mx-auto bg-surface flex flex-col justify-center md:py-0 py-6 px-4 md:px-0"
   data-controller="onboarding"
@@ -84,7 +85,7 @@
 
           <%= family_form.select :locale,
                                  language_options,
-                                 { label: t(".locale"), required: true, selected: params[:locale] || @user.locale || I18n.locale },
+                                 { label: t(".locale"), required: true, selected: params[:locale] || market_profile[:locale] || @user.locale || I18n.locale },
                                  { data: { action: "onboarding#setLocale" } } %>
 
           <%= family_form.select :currency,
@@ -94,8 +95,12 @@
 
           <%= family_form.select :date_format,
                                  Family::DATE_FORMATS,
-                                 { label: t(".date_format"), required: true, selected: params[:date_format] || @user.family.date_format },
+                                 { label: t(".date_format"), required: true, selected: params[:date_format] || market_profile[:date_format] || @user.family.date_format },
                                  { data: { action: "onboarding#setDateFormat" } } %>
+
+          <% if @user.family.timezone.blank? && market_profile[:timezone].present? %>
+            <%= family_form.hidden_field :timezone, value: market_profile[:timezone] %>
+          <% end %>
 
         <% end %>
       </div>
