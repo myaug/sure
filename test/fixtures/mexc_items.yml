@@ -1,0 +1,18 @@
+one:
+  family: dylan_family
+  name: My MEXC
+  api_key: test_api_key_123
+  api_secret: test_api_secret_456
+  status: good
+  institution_name: MEXC
+  institution_domain: mexc.com
+  institution_url: https://www.mexc.com
+  institution_color: "#1972E2"
+
+requires_update:
+  family: dylan_family
+  name: Stale MEXC
+  api_key: old_key
+  api_secret: old_secret
+  status: requires_update
+  institution_name: MEXC

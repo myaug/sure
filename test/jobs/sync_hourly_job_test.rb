@@ -30,4 +30,20 @@ class SyncHourlyJobTest < ActiveJob::TestCase
       SyncHourlyJob.perform_now
     end
   end
+
+  test "skips an item that holds hourly syncing back to stay inside its plan" do
+    held_back = CoinstatsItem.new
+    held_back.expects(:hourly_sync_allowed?).returns(false)
+    held_back.expects(:sync_later).never
+
+    allowed = CoinstatsItem.new
+    allowed.expects(:hourly_sync_allowed?).returns(true)
+    allowed.expects(:sync_later).once
+
+    relation = mock("active_relation")
+    relation.stubs(:find_each).multiple_yields([ held_back ], [ allowed ])
+    CoinstatsItem.expects(:active).returns(relation)
+
+    SyncHourlyJob.perform_now
+  end
 end

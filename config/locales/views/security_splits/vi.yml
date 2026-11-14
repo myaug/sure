@@ -1,0 +1,26 @@
+---
+vi:
+  security_splits:
+    not_allowed: Chỉ quản trị viên hệ thống mới được ghi nhận thay đổi số lượng cổ phiếu của một mã.
+    create:
+      invalid_ratio: Hãy nhập tỷ lệ phần trăm lớn hơn 0, hoặc một tỷ lệ số nguyên làm thay đổi số lượng cổ phiếu.
+      success: "Đã ghi nhận thay đổi số cổ phiếu của %{ticker}. Các vị thế đang được tính lại."
+    destroy:
+      success: "Đã xóa thay đổi số cổ phiếu của %{ticker}. Các vị thế đang được tính lại."
+    new:
+      title: "Cổ tức bằng cổ phiếu hoặc chia tách: %{ticker}"
+      description: "Dùng khi công ty phát hành cổ phiếu thưởng, trả cổ tức bằng cổ phiếu hoặc chia tách cổ phiếu. Mọi tài khoản đang nắm giữ mã này được tính lại từ ngày giao dịch không hưởng quyền, tổng giá vốn không đổi. Quyền mua phát hành thêm không ghi ở đây, hãy ghi lệnh mua cổ phiếu mới theo giá đăng ký. Nếu công ty chứng khoán cắt bỏ phần cổ phiếu lẻ, hãy điều chỉnh phần chênh lệch nhỏ bằng một lệnh bán."
+      kind_label: Sự kiện
+      kind_stock_dividend: Cổ tức bằng cổ phiếu hoặc cổ phiếu thưởng
+      kind_split: Chia tách hoặc gộp cổ phiếu
+      percent_label: Số cổ phiếu mới trên 100 cổ phiếu đang giữ (%)
+      percent_help: "20% nghĩa là cứ 100 cổ phiếu nhận thêm 20 cổ phiếu mới (tỷ lệ 6 trên 5)."
+      numerator_label: Cổ phiếu mới
+      denominator_label: Trên mỗi cổ phiếu cũ
+      split_help: "Chia tách 2 thành 1 nhập 2 và 1. Gộp 1 trên 10 nhập 1 và 10."
+      ex_date_label: Ngày giao dịch không hưởng quyền
+      submit: Ghi nhận
+      recorded: Đã ghi nhận
+      recorded_split: "%{date}: %{numerator} trên %{denominator}"
+      delete: Xóa
+      delete_confirm: Xóa thay đổi này? Các vị thế sẽ được tính lại mà không có nó.

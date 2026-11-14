@@ -31,6 +31,34 @@ class PortfoliosControllerTest < ActionDispatch::IntegrationTest
     assert_select "#portfolio-crypto", text: /JUNK/
   end
 
+  test "the crypto section says when a connection failed and when transfers wait for confirmation" do
+    @family.update!(currency: "VND")
+    account = accounts(:crypto)
+    account.update_columns(currency: "VND")
+    account.holdings.destroy_all
+    ExchangeRate.create!(from_currency: "USD", to_currency: "VND", date: Date.current, rate: 25_000)
+    security = Security.create!(ticker: "CRYPTO:USDT", name: "Tether", exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC, offline: true)
+    account.holdings.create!(security: security, date: Date.current, qty: 100, price: 25_000, amount: 2_500_000, currency: "VND")
+
+    item = BybitItem.create!(family: @family, name: "Bybit", api_key: "k", api_secret: "s")
+    AccountProvider.create!(account: account, provider: item.bybit_accounts.create!(name: "Bybit", account_type: "combined", currency: "USD", current_balance: 0))
+    item.syncs.create!(status: "failed", failed_at: Time.current, error: "boom")
+
+    wallet = @family.accounts.create!(name: "Cold wallet", balance: 0, currency: "VND", accountable: Crypto.new)
+    out_leg = account.entries.create!(name: "Transfer", date: Date.current, amount: 0, currency: "VND",
+      entryable: Trade.new(qty: -10, price: 1, currency: "VND", security: security, investment_activity_label: "Transfer"))
+    in_leg = wallet.entries.create!(name: "Transfer", date: Date.current, amount: 0, currency: "VND",
+      entryable: Trade.new(qty: 9.9, price: 1, currency: "VND", security: security, investment_activity_label: "Transfer"))
+    CryptoTransferLink.create!(family: @family, outflow_entry: out_leg, inflow_entry: in_leg, basis: "amount_time")
+
+    get portfolio_path
+
+    assert_response :success
+    assert_select "#portfolio-crypto", text: /last sync failed for #{Regexp.escape(account.name)}/
+    assert_select "#portfolio-crypto", text: /1 crypto transfer between your accounts is waiting/
+    assert_select "#portfolio-crypto a[href=?]", auto_matches_path
+  end
+
   test "omits the crypto section when the family holds no crypto" do
     accounts(:crypto).holdings.destroy_all
 

@@ -218,6 +218,9 @@ class Settings::ProvidersController < ApplicationController
       { key: "brex",           title: "Brex",            turbo_id: "brex",           partial: "brex_panel" },
       { key: "coinbase",       title: "Coinbase",        turbo_id: "coinbase",       partial: "coinbase_panel" },
       { key: "binance",        title: "Binance",         turbo_id: "binance",        partial: "binance_panel" },
+      { key: "bybit",          title: "Bybit",           turbo_id: "bybit",          partial: "bybit_panel" },
+      { key: "mexc",          title: "MEXC",           turbo_id: "mexc",          partial: "mexc_panel" },
+      { key: "okx",          title: "OKX",           turbo_id: "okx",          partial: "okx_panel" },
       { key: "kraken",         title: "Kraken",          turbo_id: "kraken",         partial: "kraken_panel" },
       { key: "coinspot",       title: "CoinSpot",        turbo_id: "coinspot",       partial: "coinspot_panel" },
       { key: "onchain_wallet", title: "On-chain wallets", turbo_id: "onchain_wallet", partial: "onchain_wallet_panel" },
@@ -251,6 +254,9 @@ class Settings::ProvidersController < ApplicationController
       "brex"           => "BrexItem",
       "coinbase"       => "CoinbaseItem",
       "binance"        => "BinanceItem",
+      "bybit"          => "BybitItem",
+      "mexc"          => "MexcItem",
+      "okx"          => "OkxItem",
       "kraken"         => "KrakenItem",
       "coinspot"       => "CoinspotItem",
       "onchain_wallet" => "OnchainWalletItem",
@@ -296,6 +302,12 @@ class Settings::ProvidersController < ApplicationController
         @coinbase_items = Current.family.coinbase_items.ordered
       when "binance"
         @binance_items = Current.family.binance_items.active.ordered
+      when "bybit"
+        @bybit_items = Current.family.bybit_items.active.ordered
+      when "mexc"
+        @mexc_items = Current.family.mexc_items.active.ordered
+      when "okx"
+        @okx_items = Current.family.okx_items.active.ordered
       when "kraken"
         @kraken_items = Current.family.kraken_items.active.ordered
       when "coinspot"
@@ -353,6 +365,9 @@ class Settings::ProvidersController < ApplicationController
       @trade_republic_items = Current.family.trade_republic_items.active.ordered.includes(:trade_republic_accounts)
       @indexa_capital_items = Current.family.indexa_capital_items.ordered.select(:id)
       @binance_items = Current.family.binance_items.active.ordered
+      @bybit_items = Current.family.bybit_items.active.ordered
+      @mexc_items = Current.family.mexc_items.active.ordered
+      @okx_items = Current.family.okx_items.active.ordered
       @kraken_items = Current.family.kraken_items.active.ordered
       @coinspot_items = Current.family.coinspot_items.active.ordered
       @onchain_wallet_items = Current.family.onchain_wallet_items.active.ordered
@@ -401,6 +416,9 @@ class Settings::ProvidersController < ApplicationController
         "brex"           => @brex_items,
         "coinbase"       => @coinbase_items,
         "binance"        => @binance_items,
+        "bybit"          => @bybit_items,
+        "mexc"          => @mexc_items,
+        "okx"          => @okx_items,
         "kraken"         => @kraken_items,
         "coinspot"       => @coinspot_items,
         "onchain_wallet" => @onchain_wallet_items,

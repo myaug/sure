@@ -155,6 +155,9 @@ module Family::AutoTransferMatchable
         used_transaction_ids << match.outflow_transaction_id
       end
     end
+
+    # Crypto moves as Trades, which the SQL above never sees; pair those too.
+    match_crypto_transfers!
   end
 
   private

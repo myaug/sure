@@ -9,19 +9,27 @@ class CoinstatsItem::Importer
     cardano ada polkadot dot cosmos atom
   ].freeze
 
-  attr_reader :coinstats_item, :coinstats_provider
+  attr_reader :coinstats_item, :coinstats_provider, :credit_budget
 
   # @param coinstats_item [CoinstatsItem] Item containing accounts to import
   # @param coinstats_provider [Provider::Coinstats] API client instance
-  def initialize(coinstats_item, coinstats_provider:)
+  # @param credit_budget [CoinstatsItem::CreditBudget] what the plan can still pay for
+  def initialize(coinstats_item, coinstats_provider:, credit_budget: CoinstatsItem::CreditBudget.new(coinstats_item, provider: coinstats_provider))
     @coinstats_item = coinstats_item
     @coinstats_provider = coinstats_provider
+    @credit_budget = credit_budget
   end
 
   # Imports balance and transaction data for all linked accounts.
   # @return [Hash] Result with :success, :accounts_updated, :transactions_imported
   def import
     Rails.logger.info "CoinstatsItem::Importer - Starting import for item #{coinstats_item.id}"
+
+    if credit_budget.exhausted?
+      raise Provider::Coinstats::CreditLimitError.new(
+        "CoinStats credits nearly used up (#{credit_budget.remaining.to_i} left); skipping this sync"
+      )
+    end
 
     # CoinStats works differently from bank providers - wallets are added manually
     # via the setup_accounts flow. During sync, we just update existing linked accounts.
@@ -695,6 +703,15 @@ class CoinstatsItem::Importer
 
       return Set.new if unique_wallets.empty?
 
+      # DeFi is the costliest call by far (400 credits per wallet). Skip it, and
+      # keep the positions already stored, rather than spend what the balances
+      # and transactions of every other account still need.
+      defi_cost = CoinstatsItem::CreditBudget::DEFI_COST_PER_WALLET * unique_wallets.size
+      unless credit_budget.can_afford?(defi_cost)
+        record_defi_skipped(defi_cost)
+        return Set.new
+      end
+
       manager = CoinstatsItem::DefiAccountManager.new(coinstats_item)
       failed_wallet_keys = Set.new
 
@@ -707,6 +724,18 @@ class CoinstatsItem::Importer
     rescue => e
       Rails.logger.warn "CoinstatsItem::Importer - DeFi sync failed: #{e.message}"
       Set.new
+    end
+
+    def record_defi_skipped(cost)
+      DebugLogEntry.capture(
+        category: "provider_sync",
+        level: "warn",
+        message: "CoinStats DeFi sync skipped: not enough credits",
+        source: self.class.name,
+        provider_key: "coinstats",
+        family: coinstats_item.family,
+        metadata: { coinstats_item_id: coinstats_item.id, credits_needed: cost, credits_remaining: credit_budget.remaining&.to_i }
+      )
     end
 
     def defi_supported_blockchain?(blockchain)

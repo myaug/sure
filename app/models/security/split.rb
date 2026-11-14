@@ -46,6 +46,32 @@ class Security::Split < ApplicationRecord
     (qty.to_d * ratio.denominator / ratio.numerator).round(QTY_SCALE)
   end
 
+  SOURCE_MANUAL = "manual".freeze
+
+  class << self
+    # A stock dividend or bonus issue of `percent` new shares per 100 held
+    # (cổ tức bằng cổ phiếu, cổ phiếu thưởng) is a split by (100 + percent) / 100:
+    # the share count rises, nothing is paid, and cost per share falls by the
+    # same factor. 20% is 6 new for 5 old.
+    #
+    # @return [Rational] new shares per old, or nil for a percentage that is not
+    #   a positive number with at most 4 decimals
+    def ratio_for_stock_dividend(percent)
+      value = BigDecimal(percent.to_s, exception: false)
+      return nil if value.nil? || !value.finite? || !value.positive? || value.round(4) != value
+
+      Rational(((100 + value) * 10_000).to_i, 1_000_000)
+    end
+  end
+
+  # Accounts whose holdings change when this split is added or removed: every
+  # account with a trade or a holding in the security, whichever family owns it.
+  # A security is shared, so its splits are too.
+  def affected_accounts
+    Account.where(id: Trade.joins(:entry).where(security_id: security_id).select("entries.account_id"))
+      .or(Account.where(id: Holding.where(security_id: security_id).select(:account_id)))
+  end
+
   private
     # A 1:1 "split" changes nothing, and the DB refuses it too. Reuses Rails'
     # own `other_than` message, so no new string is needed.

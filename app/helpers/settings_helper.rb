@@ -103,6 +103,15 @@ module SettingsHelper
     when "binance"
       return { status: :off } unless @binance_items&.any?
       sync_based_summary(key)
+    when "bybit"
+      return { status: :off } unless @bybit_items&.any?
+      sync_based_summary(key)
+    when "mexc"
+      return { status: :off } unless @mexc_items&.any?
+      sync_based_summary(key)
+    when "okx"
+      return { status: :off } unless @okx_items&.any?
+      sync_based_summary(key)
     when "kraken"
       return { status: :off } unless @kraken_items&.any?
       sync_based_summary(key)

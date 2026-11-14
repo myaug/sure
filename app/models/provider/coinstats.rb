@@ -7,6 +7,9 @@ class Provider::Coinstats < Provider
 
   # Subclass so errors caught in this provider are raised as Provider::Coinstats::Error
   Error = Class.new(Provider::Error)
+  # The plan's monthly credits are used up (HTTP 406), or close enough that the
+  # call was not attempted. Retrying does not help until credits reset.
+  CreditLimitError = Class.new(Error)
   class RateLimitError < Error
     attr_reader :retry_after
 
@@ -31,6 +34,19 @@ class Provider::Coinstats < Provider
   # @param api_key [String] CoinStats API key for authentication
   def initialize(api_key)
     @api_key = api_key
+  end
+
+  # Credits left on the key's plan. The endpoint is free and consumes no credits.
+  # @return [Provider::Response] data is { total:, used:, remaining: }, each nil
+  #   when the response did not carry it
+  def get_credits
+    with_provider_response do
+      res = self.class.get("#{BASE_URL}/usage/credits", headers: auth_headers)
+      normalize_credits(handle_response(res))
+    end
+  rescue SocketError, Net::OpenTimeout, Net::ReadTimeout => e
+    Rails.logger.error "CoinStats API: GET /usage/credits failed: #{e.class}: #{e.message}"
+    raise Error, "CoinStats API request failed: #{e.message}"
   end
 
   # Get the list of blockchains supported by CoinStats
@@ -455,6 +471,36 @@ class Provider::Coinstats < Provider
       super
     end
 
+    # The response shape is not documented, so find the three figures by the
+    # words their keys use, at the top level or one level down.
+    def normalize_credits(payload)
+      figures = flatten_numerics(payload)
+      pick = ->(pattern) { figures.find { |key, _| key.match?(pattern) }&.last }
+
+      total = pick.call(/total|limit|allowance|quota|max/i)
+      used = pick.call(/used|spent|consum/i)
+      remaining = pick.call(/remain|left|avail/i)
+
+      remaining ||= total - used if total && used
+      total ||= remaining + used if remaining && used
+
+      { total: total, used: used, remaining: remaining }
+    end
+
+    def flatten_numerics(payload)
+      return {} unless payload.is_a?(Hash)
+
+      payload.each_with_object({}) do |(key, value), figures|
+        if value.is_a?(Hash)
+          figures.merge!(flatten_numerics(value))
+        elsif value.is_a?(Numeric)
+          figures[key.to_s] = value
+        elsif value.is_a?(String) && value.match?(/\A\d+(\.\d+)?\z/)
+          figures[key.to_s] = value.to_d
+        end
+      end
+    end
+
     def auth_headers
       {
         "X-API-KEY" => api_key,
@@ -512,7 +558,7 @@ class Provider::Coinstats < Provider
         raise_api_error(response, fallback: "CoinStats: Resource not found")
       when 406
         log_api_error(response, "Not Acceptable")
-        raise_api_error(response, fallback: "CoinStats: Credits limit reached")
+        raise_api_error(response, fallback: "CoinStats: Credits limit reached", error_class: CreditLimitError)
       when 409
         log_api_error(response, "Conflict")
         raise_api_error(response, fallback: "CoinStats: Resource conflict")

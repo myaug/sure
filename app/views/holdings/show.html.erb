@@ -190,6 +190,25 @@
         </div>
       </div>
     <% end %>
+    <% security_splits = @holding.security.splits.order(:ex_date) %>
+    <% if security_splits.any? || Current.user.manages_instance_settings? %>
+      <% dialog.with_section(title: t(".share_events"), open: true) do %>
+        <div class="space-y-2 px-3 py-4">
+          <% if security_splits.any? %>
+            <ul class="space-y-1 text-sm">
+              <% security_splits.each do |split| %>
+                <li class="text-primary"><%= t(".share_event_entry", date: l(split.ex_date, format: :long), numerator: split.numerator, denominator: split.denominator) %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-sm text-secondary"><%= t(".no_share_events") %></p>
+          <% end %>
+          <% if Current.user.manages_instance_settings? %>
+            <%= render DS::Link.new(text: t(".record_share_event"), icon: "plus", variant: "secondary", href: new_security_split_path(security_id: @holding.security_id), frame: :modal) %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
     <% if @holding.cost_basis_locked? || (@holding.security_remapped? && @holding.account.linked?) || @holding.account.can_delete_holdings? || !@holding.security.offline? || @holding.security.provider_status == :provider_unavailable %>
       <% dialog.with_section(title: t(".settings"), open: true) do %>
         <div class="pb-4">

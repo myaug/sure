@@ -47,6 +47,9 @@ class AccountsController < ApplicationController
       family.onchain_wallet_items.ordered.includes(:accounts, onchain_wallet_accounts: { account_provider: :account })
     )
     @binance_items = visible_provider_items(family.binance_items.ordered.with_attached_logo.includes(:binance_accounts, :accounts))
+    @bybit_items = visible_provider_items(family.bybit_items.ordered.with_attached_logo.includes(:bybit_accounts, :accounts))
+    @mexc_items = visible_provider_items(family.mexc_items.ordered.with_attached_logo.includes(:mexc_accounts, :accounts))
+    @okx_items = visible_provider_items(family.okx_items.ordered.with_attached_logo.includes(:okx_accounts, :accounts))
     @kraken_items = visible_provider_items(family.kraken_items.ordered.with_attached_logo.includes(:kraken_accounts, :accounts))
     @coinspot_items = visible_provider_items(family.coinspot_items.ordered.with_attached_logo.includes(:coinspot_accounts, :accounts))
     @trading212_items = visible_provider_items(family.trading212_items.ordered.with_attached_logo.includes(:trading212_accounts)).sort_by(&:created_at)
@@ -551,6 +554,9 @@ class AccountsController < ApplicationController
         @indexa_capital_items,
         @sophtron_items,
         @binance_items,
+        @bybit_items,
+        @mexc_items,
+        @okx_items,
         @kraken_items,
         @coinspot_items,
         @trading212_items,

@@ -73,6 +73,53 @@ class Portfolio::CryptoExposureTest < ActiveSupport::TestCase
     assert_equal Date.current, rate.date
   end
 
+  test "reports accounts whose connection failed its last sync" do
+    provider_account = crypto_account("Failing exchange")
+    item = connect_exchange(provider_account)
+    item.syncs.create!(status: "failed", failed_at: Time.current, error: "boom")
+
+    assert_equal [ "Failing exchange" ], build.failing_accounts
+    assert_equal [], build.out_of_date_accounts
+  end
+
+  test "a connection that needs the user to act is failing even before a sync" do
+    item = connect_exchange(crypto_account("Revoked key"))
+    item.update!(status: :requires_update)
+
+    assert_equal [ "Revoked key" ], build.failing_accounts
+  end
+
+  test "reports a connection whose last good sync is more than two days old" do
+    item = connect_exchange(crypto_account("Quiet exchange"))
+    item.syncs.create!(status: "completed", completed_at: 3.days.ago)
+
+    assert_equal [ "Quiet exchange" ], build.out_of_date_accounts
+    assert_equal [], build.failing_accounts
+  end
+
+  test "a recently synced or never synced connection is neither failing nor out of date" do
+    connect_exchange(crypto_account("Never synced"))
+    fresh = connect_exchange(crypto_account("Fresh"), name: "Fresh item")
+    fresh.syncs.create!(status: "completed", completed_at: 1.hour.ago)
+
+    assert_equal [], build.failing_accounts
+    assert_equal [], build.out_of_date_accounts
+  end
+
+  test "counts crypto transfers waiting for confirmation between visible accounts only" do
+    exchange = crypto_account("Exchange")
+    wallet = crypto_account("Wallet")
+    security = Security.create!(ticker: "CRYPTO:USDT#{SecureRandom.hex(2)}", name: "USDT")
+    out_leg = transfer_leg(exchange, security, -10)
+    in_leg = transfer_leg(wallet, security, 9.9)
+    CryptoTransferLink.create!(family: @family, outflow_entry: out_leg, inflow_entry: in_leg, basis: "amount_time")
+
+    assert_equal 1, build.pending_transfers_count
+
+    CryptoTransferLink.sole.confirm!
+    assert_equal 0, build.pending_transfers_count, "a confirmed link needs nothing from the user"
+  end
+
   private
     def build
       Portfolio::CryptoExposure.new(@family.investment_statement(user: @user))
@@ -93,5 +140,21 @@ class Portfolio::CryptoExposureTest < ActiveSupport::TestCase
     def hold(ticker, qty:, price:, currency: "VND", account: @account)
       security = Security.find_or_create_by!(ticker: ticker, exchange_operating_mic: Provider::BinancePublic::BINANCE_MIC) { |s| s.name = ticker; s.offline = true }
       account.holdings.create!(security: security, date: Date.current, qty: qty, price: price, amount: qty * price, currency: currency)
+    end
+
+    # A connection record a provider account of the account belongs to, as an
+    # exchange sync would leave it.
+    def connect_exchange(account, name: "Connection")
+      item = BybitItem.create!(family: @family, name: name, api_key: "k#{SecureRandom.hex(3)}", api_secret: "s")
+      provider_account = item.bybit_accounts.create!(name: name, account_type: "combined", currency: "USD", current_balance: 0)
+      AccountProvider.create!(account: account, provider: provider_account)
+      item
+    end
+
+    def transfer_leg(account, security, qty)
+      account.entries.create!(
+        name: "Transfer", date: Date.current, amount: 0, currency: account.currency,
+        entryable: Trade.new(qty: qty, price: 1, currency: account.currency, security: security, investment_activity_label: "Transfer")
+      )
     end
 end

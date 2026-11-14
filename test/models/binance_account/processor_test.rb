@@ -23,6 +23,8 @@ class BinanceAccount::ProcessorTest < ActiveSupport::TestCase
     AccountProvider.create!(account: @account, provider: @ba)
 
     BinanceAccount::HoldingsProcessor.any_instance.stubs(:process).returns(nil)
+    # Deposits and withdrawals have their own tests (transfers_test.rb).
+    BinanceAccount::Processor.any_instance.stubs(:fetch_and_process_transfers)
     @ba.stubs(:binance_item).returns(
       stub(binance_provider: nil, family: @family)
     )
@@ -270,6 +272,63 @@ class BinanceAccount::ProcessorTest < ActiveSupport::TestCase
     buy = @account.entries.find_by!(external_id: "binance_p2p_VN1")
     assert_equal 26_000, buy.entryable.price.to_i, "cost basis is the real P2P unit price in VND"
     assert_equal "VND", buy.currency
+  end
+
+  test "P2P orders that were cancelled or are still open are not imported or cached" do
+    @family.update!(currency: "VND")
+    @account.update!(currency: "VND")
+    provider = mock
+    @item.stubs(:binance_provider).returns(provider)
+    @ba.stubs(:binance_item).returns(@item)
+    provider.stubs(:get_spot_trades).returns([])
+    provider.stubs(:get_futures_trades).returns([])
+    Security.create!(ticker: "CRYPTO:USDT", name: "Tether", price_provider: "binance_public")
+    created = Time.utc(2026, 5, 2, 5).to_i * 1000
+    order = ->(number, status) {
+      { "orderNumber" => number, "createTime" => created, "tradeType" => "BUY", "asset" => "USDT", "fiat" => "VND",
+        "totalPrice" => "2600000", "unitPrice" => "26000", "amount" => "100", "orderStatus" => status }
+    }
+    provider.stubs(:get_all_p2p_trades).returns([ order.call("DONE", "COMPLETED"), order.call("GONE", "CANCELLED"), order.call("OPEN", "BUYER_PAYED"), order.call("APPEAL", "IN_APPEAL") ])
+
+    BinanceAccount::Processor.new(@ba).process
+
+    assert @account.entries.exists?(external_id: "binance_p2p_DONE")
+    assert_not @account.entries.exists?(external_id: "binance_p2p_GONE")
+    assert_not @account.entries.exists?(external_id: "binance_p2p_OPEN")
+    assert_not @account.entries.exists?(external_id: "binance_p2p_APPEAL_funding")
+    assert_equal [ "DONE" ], @ba.reload.raw_transactions_payload["p2p"].map { |t| t["orderNumber"] }
+  end
+
+  test "a P2P order that was still open at the last sync is imported once it completes" do
+    @family.update!(currency: "VND")
+    @account.update!(currency: "VND")
+    provider = mock
+    @item.stubs(:binance_provider).returns(provider)
+    @ba.stubs(:binance_item).returns(@item)
+    provider.stubs(:get_spot_trades).returns([])
+    provider.stubs(:get_futures_trades).returns([])
+    Security.create!(ticker: "CRYPTO:USDT", name: "Tether", price_provider: "binance_public")
+    day = ->(d) { Time.utc(2026, 5, d, 5).to_i * 1000 }
+    order = ->(number, status, created) {
+      { "orderNumber" => number, "createTime" => created, "tradeType" => "BUY", "asset" => "USDT", "fiat" => "VND",
+        "totalPrice" => "2600000", "unitPrice" => "26000", "amount" => "100", "orderStatus" => status }
+    }
+
+    # First sync: an older order is still open while a newer one is done.
+    provider.stubs(:get_all_p2p_trades).returns([ order.call("OLD", "BUYER_PAYED", day.call(2)), order.call("NEW", "COMPLETED", day.call(4)) ])
+    BinanceAccount::Processor.new(@ba).process
+    assert @account.entries.exists?(external_id: "binance_p2p_NEW")
+    assert_not @account.entries.exists?(external_id: "binance_p2p_OLD")
+
+    # The old order completes; it is created before the newest cached one.
+    seen_from = nil
+    provider.stubs(:get_all_p2p_trades).with { |start_timestamp:, **| seen_from ||= start_timestamp }
+      .returns([ order.call("OLD", "COMPLETED", day.call(2)), order.call("NEW", "COMPLETED", day.call(4)) ])
+    BinanceAccount::Processor.new(@ba).process
+
+    assert @account.entries.exists?(external_id: "binance_p2p_OLD")
+    assert_operator seen_from, :<=, day.call(2), "history is read from before the newest order seen"
+    assert_equal 1, @account.entries.where(external_id: "binance_p2p_NEW").count
   end
 
   test "skips processing if P2P external_id already exists" do

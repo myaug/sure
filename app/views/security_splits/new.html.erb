@@ -1,0 +1,57 @@
+<%= render DS::Dialog.new do |dialog| %>
+  <% dialog.with_header(title: t(".title", ticker: @security.ticker)) %>
+  <% dialog.with_body do %>
+    <div class="space-y-4">
+      <p class="text-sm text-secondary"><%= t(".description") %></p>
+
+      <% if @split.errors.any? %>
+        <%= render DS::Alert.new(variant: :error, message: @split.errors.full_messages.to_sentence) %>
+      <% end %>
+
+      <%= styled_form_with scope: :security_split, url: security_splits_path, method: :post,
+                           data: { controller: "security-split-kind", turbo_frame: "_top" }, class: "space-y-4" do |form| %>
+        <%= form.hidden_field :security_id, value: @security.id %>
+
+        <%= form.select :kind,
+                        [ [ t(".kind_stock_dividend"), "stock_dividend" ], [ t(".kind_split"), "split" ] ],
+                        { label: t(".kind_label"), selected: @kind },
+                        { data: { action: "security-split-kind#toggle", security_split_kind_target: "kind" } } %>
+
+        <div data-security-split-kind-target="stockDividend" class="<%= "hidden" unless @kind == "stock_dividend" %>">
+          <%= form.number_field :percent, label: t(".percent_label"), placeholder: "20", step: "0.01", min: "0" %>
+          <p class="mt-1 text-xs text-secondary"><%= t(".percent_help") %></p>
+        </div>
+
+        <div data-security-split-kind-target="split" class="<%= "hidden" unless @kind == "split" %> grid grid-cols-2 gap-3">
+          <%= form.number_field :numerator, label: t(".numerator_label"), step: "1", min: "1" %>
+          <%= form.number_field :denominator, label: t(".denominator_label"), step: "1", min: "1" %>
+          <p class="col-span-2 text-xs text-secondary"><%= t(".split_help") %></p>
+        </div>
+
+        <%= form.date_field :ex_date, value: @split.ex_date, label: t(".ex_date_label"), required: true %>
+
+        <div class="flex justify-end">
+          <%= form.submit t(".submit") %>
+        </div>
+      <% end %>
+
+      <% if @security.splits.any? %>
+        <div class="space-y-2">
+          <h4 class="text-sm font-medium text-primary"><%= t(".recorded") %></h4>
+          <ul class="space-y-1 text-sm">
+            <% @security.splits.order(:ex_date).each do |split| %>
+              <% next if split.new_record? %>
+              <li class="flex items-center justify-between gap-2">
+                <span class="text-primary"><%= t(".recorded_split", date: l(split.ex_date, format: :long), numerator: split.numerator, denominator: split.denominator) %></span>
+                <%= render DS::Button.new(
+                  variant: :icon, icon: "trash-2", href: security_split_path(split, security_id: @security.id), method: :delete,
+                  data: { turbo_confirm: t(".delete_confirm") }, aria: { label: t(".delete") }
+                ) %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

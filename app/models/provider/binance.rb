@@ -45,6 +45,18 @@ class Provider::Binance
     signed_get("/sapi/v1/simple-earn/locked/position")
   end
 
+  # Deposits inside [start_time, end_time] (ms), at most 90 days apart.
+  # status 1 (success) and 6 (credited) put coins on the account.
+  def get_deposit_history(start_time:, end_time:)
+    signed_get("/sapi/v1/capital/deposit/hisrec", extra_params: record_params(start_time, end_time))
+  end
+
+  # Withdrawals inside [start_time, end_time] (ms), at most 90 days apart.
+  # status 6 is a completed withdrawal.
+  def get_withdraw_history(start_time:, end_time:)
+    signed_get("/sapi/v1/capital/withdraw/history", extra_params: record_params(start_time, end_time))
+  end
+
   # Public endpoint — no auth needed
   # symbol e.g. "BTCUSDT"
   # Returns price string or nil on failure
@@ -141,7 +153,15 @@ class Provider::Binance
     end
   end
 
+  # Deposit and withdrawal history spans at most 90 days a request.
+  RECORD_WINDOW_MS = 90 * 24 * 60 * 60 * 1000
+  RECORD_HISTORY_MS = 2 * 365 * 24 * 60 * 60 * 1000
+
   private
+
+    def record_params(start_time, end_time)
+      { "startTime" => start_time.to_i.to_s, "endTime" => end_time.to_i.to_s, "limit" => "1000" }
+    end
 
     def signed_get(path, extra_params: {}, base_url: SPOT_BASE_URL)
       params = timestamp_params.merge(extra_params)

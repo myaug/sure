@@ -100,4 +100,32 @@
       </div>
     <% end %>
   </div>
+
+  <% if @crypto_links.any? %>
+    <div class="bg-container rounded-xl shadow-border-xs p-4 space-y-2">
+      <div>
+        <p class="text-sm font-medium text-primary"><%= t("auto_matches.crypto.title") %></p>
+        <p class="text-xs text-secondary"><%= t("auto_matches.crypto.description") %></p>
+      </div>
+
+      <div class="bg-container rounded-lg shadow-border-xs overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="text-xs uppercase font-medium text-secondary border-b border-divider">
+              <th class="text-left py-3 px-4"><%= t("auto_matches.table.from") %></th>
+              <th class="text-left py-3 px-2"><%= t("auto_matches.table.to") %></th>
+              <th class="text-left py-3 px-2"><%= t("auto_matches.table.date") %></th>
+              <th class="text-left py-3 px-2"><%= t("auto_matches.crypto.matched_by") %></th>
+              <th class="text-right py-3 px-2"><%= t("auto_matches.table.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @crypto_links.each do |link| %>
+              <%= render "pending_crypto_link", link: link %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
 </div>

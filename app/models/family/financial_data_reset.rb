@@ -45,6 +45,7 @@ class Family::FinancialDataReset
     akahu_items
     binance_items
     brex_items
+    bybit_items
     coinbase_items
     coinspot_items
     coinstats_items
@@ -56,7 +57,9 @@ class Family::FinancialDataReset
     kraken_items
     lunchflow_items
     mercury_items
+    mexc_items
     monobank_items
+    okx_items
     onchain_wallet_items
     plaid_items
     questrade_items

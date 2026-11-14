@@ -16,6 +16,18 @@ vi:
       bulk_rejected:
         one: Đã từ chối 1 giao dịch chuyển khoản
         other: "Đã từ chối %{count} giao dịch chuyển khoản"
+    crypto:
+      title: Chuyển tiền số cần xác nhận
+      description: Số coin rời khỏi một tài khoản và đến một tài khoản khác, được ghép theo số lượng và ngày vì không tìm thấy mã giao dịch (hash) trùng khớp. Xác nhận để coi đây là chuyển nội bộ, không tính là chi tiêu hay bán.
+      matched_by: Ghép theo
+      sent: "Đã gửi %{amount} %{symbol}"
+      received: "Đã nhận %{amount} %{symbol}"
+      confirm: Xác nhận chuyển tiền số
+      reject: Từ chối chuyển tiền số
+      basis:
+        tx_hash: Mã giao dịch (hash)
+        reference: Mã tham chiếu của sàn
+        amount_time: Số lượng và ngày
     empty:
       title: Không có đề xuất khớp lệnh tự động nào đang chờ xử lý
       description: Khi quá trình đồng bộ phát hiện một giao dịch chuyển khoản có khả năng xảy ra giữa hai tài khoản của bạn, nó sẽ hiển thị ở đây để xem xét.

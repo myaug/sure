@@ -51,6 +51,14 @@ class Provider::BinanceTest < ActiveSupport::TestCase
     assert_equal({ "balances" => [] }, result)
   end
 
+  test "deposit and withdrawal history ask for the window with the largest page" do
+    @provider.expects(:signed_get).with("/sapi/v1/capital/deposit/hisrec", extra_params: { "startTime" => "1", "endTime" => "2", "limit" => "1000" }).returns([])
+    @provider.expects(:signed_get).with("/sapi/v1/capital/withdraw/history", extra_params: { "startTime" => "1", "endTime" => "2", "limit" => "1000" }).returns([])
+
+    assert_equal [], @provider.get_deposit_history(start_time: 1, end_time: 2)
+    assert_equal [], @provider.get_withdraw_history(start_time: 1, end_time: 2)
+  end
+
   private
 
     def mock_httparty_response(code, body)

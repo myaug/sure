@@ -1,0 +1,14 @@
+---
+vi:
+  activerecord:
+    errors:
+      models:
+        crypto_transfer_link:
+          attributes:
+            base:
+              not_trades: Cả hai bên phải là giao dịch chuyển tiền số
+              not_transfers: Cả hai bên phải được gắn nhãn chuyển khoản
+              wrong_direction: Một bên phải gửi coin và bên kia phải nhận
+              different_securities: Cả hai bên phải chuyển cùng một tài sản
+              same_account: Hai bên phải thuộc hai tài khoản khác nhau
+              different_families: Cả hai tài khoản phải thuộc cùng một gia đình

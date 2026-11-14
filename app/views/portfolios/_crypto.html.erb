@@ -23,6 +23,18 @@
   <% if exposure.stale_accounts.any? %>
     <%= render DS::Alert.new(variant: :warning, message: t(".stale", accounts: exposure.stale_accounts.to_sentence)) %>
   <% end %>
+  <% if exposure.failing_accounts.any? %>
+    <%= render DS::Alert.new(variant: :error, message: t(".failing", accounts: exposure.failing_accounts.to_sentence)) %>
+  <% end %>
+  <% if exposure.out_of_date_accounts.any? %>
+    <%= render DS::Alert.new(variant: :warning, message: t(".out_of_date", accounts: exposure.out_of_date_accounts.to_sentence)) %>
+  <% end %>
+  <% if exposure.pending_transfers_count.positive? %>
+    <div class="space-y-1">
+      <%= render DS::Alert.new(variant: :info, message: t(".pending_transfers", count: exposure.pending_transfers_count)) %>
+      <%= link_to t(".review_transfers"), auto_matches_path, class: "text-sm font-medium text-primary underline" %>
+    </div>
+  <% end %>
   <% if exposure.history_truncated_accounts.any? %>
     <%= render DS::Alert.new(variant: :info, message: t(".history_truncated", accounts: exposure.history_truncated_accounts.to_sentence)) %>
   <% end %>

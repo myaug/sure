@@ -1,0 +1,14 @@
+---
+en:
+  activerecord:
+    errors:
+      models:
+        crypto_transfer_link:
+          attributes:
+            base:
+              not_trades: Both sides must be crypto movements
+              not_transfers: Both sides must be labelled as transfers
+              wrong_direction: One side must send coins and the other receive them
+              different_securities: Both sides must move the same asset
+              same_account: The two sides must be in different accounts
+              different_families: Both accounts must belong to the family

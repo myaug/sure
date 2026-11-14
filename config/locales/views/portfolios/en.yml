@@ -11,8 +11,14 @@ en:
       by_venue: By exchange or wallet
       chain: Network
       exchange_balance: Exchange balance
+      failing: "The last sync failed for %{accounts}. The figures shown are the last ones it read."
       history_truncated: "Not every transfer could be read for %{accounts}. Balances are complete."
       official_rate: "Official rate: 1 USD = %{rate} %{currency} (%{date})"
+      out_of_date: "These accounts have not synced in over two days, so their balances may be out of date: %{accounts}."
+      pending_transfers:
+        one: "1 crypto transfer between your accounts is waiting for you to confirm it. Until then it is counted as coins leaving or entering your portfolio."
+        other: "%{count} crypto transfers between your accounts are waiting for you to confirm them. Until then they are counted as coins leaving or entering your portfolio."
+      review_transfers: Review transfers
       stablecoin_note: Stablecoins are valued at the official USD exchange rate, not at peer-to-peer prices, which are usually higher.
       stablecoin_share: "%{share}% of your crypto"
       stablecoin_title: Stablecoin exposure

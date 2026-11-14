@@ -19,6 +19,10 @@ class SyncHourlyJob < ApplicationJob
 
     def sync_items(syncable_class)
       syncable_class.active.find_each do |item|
+        # Hourly is an extra, not the schedule: an item may hold it back (see
+        # CoinstatsItem#hourly_sync_allowed?) to stay inside its plan.
+        next if item.try(:hourly_sync_allowed?) == false
+
         item.sync_later
       rescue => e
         Rails.logger.error("Failed to sync #{syncable_class.name} #{item.id}: #{e.message}")

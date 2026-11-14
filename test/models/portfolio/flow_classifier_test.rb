@@ -337,6 +337,49 @@ class Portfolio::FlowClassifierTest < ActiveSupport::TestCase
     assert_empty placeholders, "sql_case must be final SQL, not a bind template"
   end
 
+  # A network fee leaves the received quantity short of the sent one, and the
+  # two sides often land on different days, so the exact-match rule above reads
+  # such a move as two external flows. A confirmed link says what really happened.
+  test "a crypto transfer confirmed as one movement is internal whatever the fee or the day" do
+    security = create_portfolio_security
+    out_leg = create_portfolio_trade(account: @brokerage, security: security, qty: -10, price: 50, label: "Transfer")
+    in_leg = create_portfolio_trade(account: @ira, security: security, qty: 9.9, price: 50, label: "Transfer", date: Date.current + 2)
+
+    assert_equal :external_outflow, @family_scope.classify(out_leg)
+    assert_equal :external_inflow, @family_scope.classify(in_leg)
+
+    link = CryptoTransferLink.create!(family: @family, outflow_entry: out_leg, inflow_entry: in_leg, basis: "tx_hash", status: :pending)
+    assert_equal :external_outflow, @family_scope.classify(out_leg), "a suggestion changes nothing until it is confirmed"
+
+    link.confirm!
+
+    assert_equal :internal, @family_scope.classify(out_leg)
+    assert_equal :internal, @family_scope.classify(in_leg)
+    assert_equal :internal, @family_scope.classify_ids([ out_leg.id ])[out_leg.id]
+    assert_equal :internal, @family_scope.classify_ids([ in_leg.id ])[in_leg.id]
+  end
+
+  test "a confirmed crypto link is internal only when the other account is in scope" do
+    security = create_portfolio_security
+    out_leg = create_portfolio_trade(account: @brokerage, security: security, qty: -10, price: 50, label: "Transfer")
+    in_leg = create_portfolio_trade(account: @ira, security: security, qty: 9.9, price: 50, label: "Transfer")
+    CryptoTransferLink.create!(family: @family, outflow_entry: out_leg, inflow_entry: in_leg, basis: "tx_hash", status: :confirmed)
+
+    assert_equal :external_outflow, @brokerage_scope.classify(out_leg)
+    assert_equal :external_outflow, @brokerage_scope.classify_ids([ out_leg.id ])[out_leg.id]
+    assert_equal :external_inflow, Portfolio::FlowClassifier.new(scope_account_ids: [ @ira.id ]).classify(in_leg)
+  end
+
+  test "a rejected crypto link changes nothing" do
+    security = create_portfolio_security
+    out_leg = create_portfolio_trade(account: @brokerage, security: security, qty: -10, price: 50, label: "Transfer")
+    in_leg = create_portfolio_trade(account: @ira, security: security, qty: 9.9, price: 50, label: "Transfer")
+    CryptoTransferLink.create!(family: @family, outflow_entry: out_leg, inflow_entry: in_leg, basis: "amount_time", status: :rejected)
+
+    assert_equal :external_outflow, @family_scope.classify(out_leg)
+    assert_equal :external_outflow, @family_scope.classify_ids([ out_leg.id ])[out_leg.id]
+  end
+
   private
     # One entry per contract row plus the shapes each provider writes, at
     # every position the classifier branches on.

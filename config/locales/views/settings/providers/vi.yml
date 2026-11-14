@@ -56,6 +56,9 @@ vi:
         brex: Đồng bộ tiền mặt và hoạt động thẻ doanh nghiệp Brex với quyền chỉ đọc.
         coinbase: Nhập danh mục tiền mã hóa Coinbase và theo dõi hiệu suất.
         binance: Đồng bộ số dư giao ngay Binance bằng khóa API chỉ đọc.
+        bybit: Đồng bộ số dư Bybit và các lệnh giao ngay đã khớp bằng khóa API chỉ đọc.
+        mexc: Đồng bộ số dư MEXC và các lệnh giao ngay đã khớp bằng khóa API chỉ đọc.
+        okx: Đồng bộ số dư OKX và các lệnh giao ngay đã khớp bằng khóa API chỉ đọc.
         kraken: Đồng bộ số dư Kraken và giao dịch giao ngay bằng khóa API chỉ đọc.
         snaptrade: Kết nối tài khoản môi giới qua mạng tổng hợp SnapTrade.
         ibkr: Đồng bộ tài khoản đầu tư Interactive Brokers qua nhập Flex Query.
@@ -113,6 +116,7 @@ vi:
         step3: "Dán Khóa API và Bí mật vào bên dưới"
         no_withdraw_title: "Chỉ khóa chỉ đọc"
         no_withdraw_body: "Không bật quyền rút tiền khi tạo khóa API Binance. Sure chỉ cần quyền đọc."
+        history_note: "Binance chỉ trả sáu tháng lịch sử lệnh futures và hai năm lịch sử nạp rút. Dữ liệu cũ hơn không thể nhập."
         ip_hint_title: "Yêu cầu danh sách trắng IP"
         ip_hint_body: "Thêm IP đầu ra của máy chủ ứng dụng vào danh sách trắng Khóa API Binance:"
         ip_hint_contact_admin: "Liên hệ quản trị viên để lấy địa chỉ IP đầu ra của máy chủ ứng dụng."
@@ -128,6 +132,68 @@ vi:
         sync_start_date_help: "Chọn khoảng thời gian lịch sử cần tải."
         disconnect: Ngắt kết nối
         disconnect_confirm: "Bạn có chắc muốn ngắt kết nối Binance?"
+      bybit_panel:
+        setup_instructions: "Để kết nối Bybit, tạo khóa API chỉ đọc:"
+        step1_html: 'Vào <a href="https://www.bybit.com/app/user/api-management" target="_blank" rel="noopener noreferrer" class="underline">Quản lý API Bybit</a>'
+        step2: "Tạo khóa API do hệ thống tạo với quyền Chỉ đọc (Read-Only) và thêm IP của máy chủ vào danh sách trắng"
+        step3: "Dán Khóa API và Bí mật vào bên dưới"
+        no_withdraw_title: "Chỉ khóa chỉ đọc"
+        no_withdraw_body: "Sure từ chối khóa Bybit có quyền giao dịch hoặc rút tiền. Hãy chọn Chỉ đọc khi tạo khóa."
+        history_note: "Bybit chỉ lưu hai năm lịch sử giao dịch, nạp và rút. Dữ liệu cũ hơn không thể nhập."
+        ip_hint_title: "Nên dùng danh sách trắng IP"
+        ip_hint_body: "Thêm IP đầu ra của máy chủ ứng dụng vào danh sách trắng khóa API Bybit:"
+        ip_hint_contact_admin: "Liên hệ quản trị viên để lấy địa chỉ IP đầu ra của máy chủ ứng dụng."
+        api_key_label: Khóa API
+        api_key_placeholder: Dán Khóa API Bybit
+        api_secret_label: Bí mật API
+        api_secret_placeholder: Dán Bí mật API Bybit
+        connect_button: Kết nối Bybit
+        syncing: Đang đồng bộ...
+        sync: Đồng bộ
+        disconnect: Ngắt kết nối
+        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối Bybit?"
+      mexc_panel:
+        step1_html: 'Vào <a href="https://www.mexc.com/user/openapi" target="_blank" rel="noopener noreferrer" class="underline">Quản lý API MEXC</a>'
+        step2: "Tạo khóa API chỉ với quyền Đọc tài khoản. MEXC không cho phép kiểm tra quyền này, vì vậy đừng bật giao dịch hoặc rút tiền."
+        step3: "Dán Khóa API và Bí mật vào bên dưới"
+        no_withdraw_body: "Sure không thể kiểm tra quyền của khóa MEXC. Chỉ bật quyền Đọc tài khoản, tuyệt đối không bật giao dịch hay rút tiền."
+        setup_instructions: "Để kết nối MEXC, tạo khóa API chỉ đọc:"
+        no_withdraw_title: "Chỉ khóa chỉ đọc"
+        history_note: "MEXC chỉ trả một tháng lịch sử lệnh và 90 ngày lịch sử nạp rút, và nạp rút cần quyền đọc rút tiền của khóa. Không có quyền này vẫn nhập được số dư và lệnh. Dữ liệu cũ hơn không thể nhập, vì vậy hãy đồng bộ đều đặn."
+        ip_hint_title: "Nên dùng danh sách trắng IP"
+        ip_hint_body: "Thêm IP đầu ra của máy chủ ứng dụng vào danh sách trắng khóa API MEXC:"
+        ip_hint_contact_admin: "Liên hệ quản trị viên để lấy địa chỉ IP đầu ra của máy chủ ứng dụng."
+        api_key_label: Khóa API
+        api_key_placeholder: Dán Khóa API MEXC
+        api_secret_label: Bí mật API
+        api_secret_placeholder: Dán Bí mật API MEXC
+        connect_button: Kết nối MEXC
+        syncing: Đang đồng bộ...
+        sync: Đồng bộ
+        disconnect: Ngắt kết nối
+        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối MEXC?"
+      okx_panel:
+        step1_html: 'Vào <a href="https://www.okx.com/account/my-api" target="_blank" rel="noopener noreferrer" class="underline">Cài đặt API OKX</a>'
+        step2: "Tạo khóa API chỉ với quyền Đọc (Read), đặt passphrase và thêm IP của máy chủ vào danh sách trắng"
+        step3: "Dán Khóa API, Bí mật và Passphrase vào bên dưới"
+        no_withdraw_body: "Sure từ chối khóa OKX có quyền giao dịch hoặc rút tiền. Hãy chọn Chỉ đọc khi tạo khóa."
+        setup_instructions: "Để kết nối OKX, tạo khóa API chỉ đọc:"
+        no_withdraw_title: "Chỉ khóa chỉ đọc"
+        history_note: "OKX chỉ lưu ba tháng lịch sử lệnh khớp. Dữ liệu cũ hơn không thể nhập, vì vậy hãy kết nối sớm và đồng bộ đều đặn."
+        ip_hint_title: "Nên dùng danh sách trắng IP"
+        ip_hint_body: "Thêm IP đầu ra của máy chủ ứng dụng vào danh sách trắng khóa API OKX:"
+        ip_hint_contact_admin: "Liên hệ quản trị viên để lấy địa chỉ IP đầu ra của máy chủ ứng dụng."
+        api_key_label: Khóa API
+        api_key_placeholder: Dán Khóa API OKX
+        api_secret_label: Bí mật API
+        api_secret_placeholder: Dán Bí mật API OKX
+        api_passphrase_label: Passphrase
+        api_passphrase_placeholder: Dán passphrase bạn đã đặt cho khóa API này
+        connect_button: Kết nối OKX
+        syncing: Đang đồng bộ...
+        sync: Đồng bộ
+        disconnect: Ngắt kết nối
+        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối OKX?"
       kraken_panel:
         step1_html: 'Vào <a href="https://pro.kraken.com/app/settings/api" target="_blank" rel="noopener noreferrer" class="underline">Cài đặt API Kraken</a>'
         step2: "Tạo khóa API chỉ với Truy vấn Quỹ và Truy vấn Lệnh & Giao dịch Đã Đóng."

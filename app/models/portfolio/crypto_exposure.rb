@@ -10,6 +10,9 @@
 # Holdings come from the statement, so the viewer's account sharing and the
 # "included in reports" setting apply exactly as on the rest of the portfolio.
 class Portfolio::CryptoExposure
+  # A connection that has not synced for this long is showing old balances.
+  OUT_OF_DATE_AFTER = 2.days
+
   Segment = Data.define(:id, :name, :amount, :weight)
   Rate = Data.define(:currency, :value, :date)
 
@@ -85,6 +88,32 @@ class Portfolio::CryptoExposure
     @history_truncated_accounts ||= wallet_accounts.select(&:history_truncated?).map(&:display_name).sort
   end
 
+  # Accounts whose connection failed its last sync or needs the user to act, so
+  # the figures shown for them are the last ones it managed to read.
+  def failing_accounts
+    @failing_accounts ||= crypto_account_connections.select { |_, item| failing?(item) }.map { |account, _| account.name }.uniq.sort
+  end
+
+  # Accounts whose connection last synced successfully more than
+  # OUT_OF_DATE_AFTER ago. One that has never synced is not listed: it has
+  # nothing old to show.
+  def out_of_date_accounts
+    @out_of_date_accounts ||= crypto_account_connections.select { |_, item| out_of_date?(item) }.map { |account, _| account.name }.uniq.sort
+  end
+
+  # Coin movements between two of the viewer's accounts that were paired by
+  # amount and date and still wait to be confirmed, so they count as neither
+  # internal nor external until then.
+  def pending_transfers_count
+    @pending_transfers_count ||= begin
+      entry_ids = Entry.where(account_id: visible_crypto_account_ids).select(:id)
+
+      CryptoTransferLink.pending
+        .where(family_id: statement.family.id, outflow_entry_id: entry_ids, inflow_entry_id: entry_ids)
+        .count
+    end
+  end
+
   # The dated USD -> family currency rate that values stablecoins and the
   # USD-quoted assets. Nil when the family reports in USD or no rate exists.
   def usd_rate
@@ -154,6 +183,41 @@ class Portfolio::CryptoExposure
 
     def crypto_accounts
       @crypto_accounts ||= holdings.map(&:account).uniq
+    end
+
+    # Every crypto account the viewer can see, not only those holding something
+    # right now: a connection that fails still matters when its account is empty.
+    def visible_crypto_account_ids
+      @visible_crypto_account_ids ||= statement.investment_accounts.select(&:crypto?).map(&:id)
+    end
+
+    # [account, syncable connection] pairs for the viewer's crypto accounts.
+    def crypto_account_connections
+      @crypto_account_connections ||= statement.investment_accounts.select(&:crypto?).flat_map do |account|
+        account.account_providers.filter_map do |link|
+          item = connection_for(link.provider)
+          [ account, item ] if item
+        end
+      end
+    end
+
+    # The connection record (an *Item) a provider account belongs to, found by its
+    # belongs_to associations rather than a list of providers.
+    def connection_for(provider_account)
+      provider_account.class.reflect_on_all_associations(:belongs_to).each do |association|
+        candidate = provider_account.public_send(association.name)
+        return candidate if candidate.respond_to?(:latest_sync_record)
+      end
+      nil
+    end
+
+    def failing?(item)
+      (item.respond_to?(:requires_update?) && item.requires_update?) || item.latest_sync_record&.failed? || false
+    end
+
+    def out_of_date?(item)
+      synced_at = item.last_synced_at
+      synced_at.present? && synced_at < OUT_OF_DATE_AFTER.ago && !failing?(item)
     end
 
     def stale?(account)

@@ -157,6 +157,15 @@ class Portfolio::FlowClassifier
           WHEN flow_transfers.inflow_transaction_id = transactions.id THEN flow_transfers.outflow_transaction_id
           ELSE flow_transfers.inflow_transaction_id
         END
+      LEFT JOIN crypto_transfer_links flow_crypto_links
+        ON entries.entryable_type = 'Trade'
+        AND flow_crypto_links.status = 'confirmed'
+        AND (flow_crypto_links.outflow_entry_id = entries.id OR flow_crypto_links.inflow_entry_id = entries.id)
+      LEFT JOIN entries flow_crypto_counterparts
+        ON flow_crypto_counterparts.id = CASE
+          WHEN flow_crypto_links.outflow_entry_id = entries.id THEN flow_crypto_links.inflow_entry_id
+          ELSE flow_crypto_links.outflow_entry_id
+        END
     SQL
   end
 
@@ -176,7 +185,7 @@ class Portfolio::FlowClassifier
         WHEN #{label_sql} IN (#{quote_list(INTERNAL_LABELS)}) THEN 'internal'
         WHEN #{label_sql} IN (#{quote_list(EXTERNAL_LABELS)}) THEN #{transfer_resolution_sql}
         WHEN #{label_sql} = '#{TRANSFER_LABEL}' AND entries.entryable_type = 'Trade'
-          THEN CASE WHEN #{security_transfer_counterpart_in_scope_sql} THEN 'internal' ELSE #{direction_sql} END
+          THEN CASE WHEN #{security_transfer_counterpart_in_scope_sql} OR flow_crypto_counterparts.account_id = ANY(#{scope_ids_sql}) THEN 'internal' ELSE #{direction_sql} END
         WHEN #{label_sql} = '#{TRANSFER_LABEL}' THEN #{transfer_resolution_sql}
         WHEN entries.entryable_type = 'Trade' THEN 'internal'
         WHEN transactions.kind IN (#{quote_list(Transaction::TRANSFER_KINDS)}) THEN #{transfer_resolution_sql}
@@ -192,7 +201,7 @@ class Portfolio::FlowClassifier
       case rule
       when nil then :internal
       when :external then trade_direction(trade)
-      when :transfer then security_transfer_counterpart_in_scope?(entry, trade) ? :internal : trade_direction(trade)
+      when :transfer then security_transfer_counterpart_in_scope?(entry, trade) || crypto_link_counterpart_in_scope?(entry) ? :internal : trade_direction(trade)
       else rule
       end
     end
@@ -261,6 +270,19 @@ class Portfolio::FlowClassifier
         .where("entries.excluded IS NOT TRUE")
         .where(counterpart_trades: { security_id: trade.security_id, qty: -trade.qty, investment_activity_label: TRANSFER_LABEL })
         .exists?
+    end
+
+    # A confirmed CryptoTransferLink says the coins went to, or came from,
+    # another of the family's accounts, whatever fee the network took out of
+    # the quantity in between -- which the exact-quantity check above cannot see.
+    # Accounts are compared by id only, so a counterpart the user may not see is
+    # never loaded.
+    def crypto_link_counterpart_in_scope?(entry)
+      CryptoTransferLink.confirmed.involving(entry.id).any? do |link|
+        counterpart_id = link.outflow_entry_id == entry.id ? link.inflow_entry_id : link.outflow_entry_id
+        counterpart_account_id = Entry.where(id: counterpart_id).pick(:account_id)&.to_s
+        counterpart_account_id && counterpart_account_id != entry.account_id.to_s && scope_account_ids.include?(counterpart_account_id)
+      end
     end
 
     def label_sql

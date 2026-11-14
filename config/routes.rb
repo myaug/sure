@@ -113,6 +113,51 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :bybit_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
+    collection do
+      get :select_accounts
+      post :link_accounts
+      get :select_existing_account
+      post :link_existing_account
+    end
+
+    member do
+      post :sync
+      get :setup_accounts
+      post :complete_account_setup
+    end
+  end
+
+  resources :mexc_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
+    collection do
+      get :select_accounts
+      post :link_accounts
+      get :select_existing_account
+      post :link_existing_account
+    end
+
+    member do
+      post :sync
+      get :setup_accounts
+      post :complete_account_setup
+    end
+  end
+
+  resources :okx_items, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
+    collection do
+      get :select_accounts
+      post :link_accounts
+      get :select_existing_account
+      post :link_existing_account
+    end
+
+    member do
+      post :sync
+      get :setup_accounts
+      post :complete_account_setup
+    end
+  end
+
   resources :kraken_items, only: [ :create, :update, :destroy ] do
     collection do
       get :select_accounts
@@ -580,6 +625,8 @@ Rails.application.routes.draw do
     resources :mappings, only: :update, module: :import
   end
 
+  resources :security_splits, only: %i[new create destroy]
+
   resources :holdings, only: %i[index new show update destroy] do
     member do
       post :unlock_cost_basis
@@ -683,6 +730,8 @@ Rails.application.routes.draw do
       post :dismiss
     end
   end
+
+  resources :crypto_transfer_links, only: :update
 
   resources :auto_matches, only: %i[index] do
     collection do

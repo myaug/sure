@@ -72,6 +72,27 @@ class Provider::CoinstatsTest < ActiveSupport::TestCase
     refute result.success?
     assert_match "Credits limit reached", result.error.message
     assert_equal 406, result.error.details[:status_code]
+    assert_kind_of Provider::Coinstats::CreditLimitError, result.error
+  end
+
+  test "get_credits reads the plan's total and remaining credits" do
+    stub_credits_response({ totalCredits: 20_000, usedCredits: 4_500, remainingCredits: 15_500 })
+
+    assert_equal({ total: 20_000, used: 4_500, remaining: 15_500 }, @provider.get_credits.data)
+  end
+
+  test "get_credits derives remaining from total and used" do
+    stub_credits_response({ data: { total: "20000", used: "5000" } })
+
+    data = @provider.get_credits.data
+    assert_equal 15_000, data[:remaining]
+    assert_equal 20_000, data[:total]
+  end
+
+  test "get_credits leaves figures nil when the response has none" do
+    stub_credits_response({ status: "ok" })
+
+    assert_equal({ total: nil, used: nil, remaining: nil }, @provider.get_credits.data)
   end
 
   test "extract_wallet_balance finds matching wallet by address and connectionId" do
@@ -230,4 +251,12 @@ class Provider::CoinstatsTest < ActiveSupport::TestCase
 
     assert_equal 1, result.size
   end
+
+  private
+
+    def stub_credits_response(body)
+      response = Struct.new(:code, :body, :headers).new(200, body.to_json, {})
+      @provider.stubs(:min_request_interval).returns(0)
+      Provider::Coinstats.expects(:get).with("#{Provider::Coinstats::BASE_URL}/usage/credits", anything).returns(response)
+    end
 end

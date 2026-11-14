@@ -1,0 +1,8 @@
+---
+en:
+  crypto_transfer_links:
+    update:
+      confirmed: Crypto transfer confirmed. It now counts as moving your own coins.
+      rejected: Crypto transfer rejected. These two movements will not be paired again.
+      invalid_status: Choose to confirm or reject the transfer
+      not_allowed: You need edit access to both accounts to resolve this transfer

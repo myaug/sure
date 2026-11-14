@@ -52,7 +52,7 @@ class Settings::ProviderPanelsTest < ActionDispatch::IntegrationTest
     EnableBankingItem.create!(family: family, name: "Expired", country_code: "FI", application_id: "app",
                               client_certificate: "cert", session_id: "expired", session_expires_at: 1.day.ago)
 
-    %w[binance brex coinbase enable_banking kraken mercury].each do |provider_key|
+    %w[binance brex bybit coinbase mexc okx enable_banking kraken mercury].each do |provider_key|
       get connect_form_settings_providers_path(provider_key: provider_key)
 
       assert_response :success

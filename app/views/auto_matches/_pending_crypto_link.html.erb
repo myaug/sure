@@ -1,0 +1,53 @@
+<%# locals: (link:) %>
+
+<% out_entry = link.outflow_entry %>
+<% in_entry = link.inflow_entry %>
+<% trade = out_entry.entryable %>
+<% writable = @writable_account_ids.include?(out_entry.account_id) && @writable_account_ids.include?(in_entry.account_id) %>
+<% symbol = trade.security.ticker.delete_prefix("CRYPTO:") %>
+
+<tr id="<%= dom_id(link) %>" class="border-b border-subdued hover:bg-surface-hover">
+  <td class="py-3 px-4 text-sm">
+    <div class="font-medium text-primary"><%= out_entry.account.name %></div>
+    <div class="text-xs text-secondary privacy-sensitive">
+      <%= t("auto_matches.crypto.sent", amount: number_with_precision(trade.qty.abs, precision: 8, strip_insignificant_zeros: true), symbol: symbol) %>
+    </div>
+  </td>
+  <td class="py-3 px-2 text-sm">
+    <div class="font-medium text-primary"><%= in_entry.account.name %></div>
+    <div class="text-xs text-secondary privacy-sensitive">
+      <%= t("auto_matches.crypto.received", amount: number_with_precision(in_entry.entryable.qty.abs, precision: 8, strip_insignificant_zeros: true), symbol: symbol) %>
+    </div>
+  </td>
+  <td class="py-3 px-2 text-sm text-secondary">
+    <%= l(out_entry.date, format: :short) %>
+  </td>
+  <td class="py-3 px-2 text-sm text-secondary">
+    <%= t("auto_matches.crypto.basis.#{link.basis}") %>
+  </td>
+  <td class="py-3 px-2 text-sm text-right">
+    <% if writable %>
+      <div class="flex items-center justify-end gap-2">
+        <%= render DS::Button.new(
+          variant: :icon,
+          icon: "check",
+          href: crypto_transfer_link_path(link, crypto_transfer_link: { status: "confirmed" }),
+          method: :patch,
+          data: { turbo: false },
+          aria: { label: t("auto_matches.crypto.confirm") }
+        ) %>
+
+        <%= render DS::Button.new(
+          variant: :icon,
+          icon: "x",
+          href: crypto_transfer_link_path(link, crypto_transfer_link: { status: "rejected" }),
+          method: :patch,
+          data: { turbo: false },
+          aria: { label: t("auto_matches.crypto.reject") }
+        ) %>
+      </div>
+    <% else %>
+      <span class="text-xs text-secondary"><%= t("account_sharings.show.permissions.read_only") %></span>
+    <% end %>
+  </td>
+</tr>

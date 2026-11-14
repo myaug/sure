@@ -490,6 +490,18 @@ class Account < ApplicationRecord
       create_from_crypto_exchange_account(binance_account, family: binance_account.binance_item.family)
     end
 
+    def create_from_bybit_account(bybit_account)
+      create_from_crypto_exchange_account(bybit_account, family: bybit_account.bybit_item.family)
+    end
+
+    def create_from_okx_account(okx_account)
+      create_from_crypto_exchange_account(okx_account, family: okx_account.okx_item.family)
+    end
+
+    def create_from_mexc_account(mexc_account)
+      create_from_crypto_exchange_account(mexc_account, family: mexc_account.mexc_item.family)
+    end
+
     def create_from_ibkr_account(ibkr_account)
       family = ibkr_account.ibkr_item.family
       default_name = if ibkr_account.ibkr_account_id.present?

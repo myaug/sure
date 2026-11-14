@@ -31,10 +31,38 @@ class CoinstatsItem < ApplicationRecord
       Rails.logger.error "CoinstatsItem #{id} - Cannot import: CoinStats provider is not configured"
       raise StandardError.new("CoinStats provider is not configured")
     end
-    CoinstatsItem::Importer.new(self, coinstats_provider: provider).import
+    CoinstatsItem::Importer.new(self, coinstats_provider: provider, credit_budget: credit_budget).import
+  rescue Provider::Coinstats::CreditLimitError => e
+    # Out of credits until they reset: say so where support can see it, and
+    # keep the previous snapshot rather than reporting an empty import.
+    DebugLogEntry.capture(
+      category: "provider_sync",
+      level: "warn",
+      message: "CoinStats credit limit reached",
+      source: self.class.name,
+      provider_key: "coinstats",
+      family: family,
+      metadata: { coinstats_item_id: id, error: e.message }
+    )
+    Rails.logger.warn "CoinstatsItem #{id} - credit limit reached: #{e.message}"
+    raise
   rescue => e
     Rails.logger.error "CoinstatsItem #{id} - Failed to import data: #{e.message}"
     raise
+  end
+
+  def credit_budget
+    @credit_budget ||= CoinstatsItem::CreditBudget.new(self)
+  end
+
+  # Whether the hourly tick should sync this connection: only while usage is on
+  # pace with the plan's monthly credits. The daily family sync and manual syncs
+  # are not held back by this.
+  def hourly_sync_allowed?
+    credit_budget.hourly_sync_allowed?
+  rescue StandardError => e
+    Rails.logger.warn "CoinstatsItem #{id} - credit check failed, allowing sync: #{e.message}"
+    true
   end
 
   # Processes holdings for all linked visible accounts.

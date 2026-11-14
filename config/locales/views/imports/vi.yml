@@ -466,7 +466,10 @@ vi:
       processing_failed_with_message: "%{message}"
       processing_failed_generic: "Xử lý thất bại: %{error}"
       ready_for_review_title: Sẵn sàng xem xét
-      ready_for_review_description: "Chúng tôi đã trích xuất %{count} giao dịch từ sao kê. Xem xét và xuất bản để thêm vào tài khoản."
+      ready_for_review_description:
+        one: "%{count} giao dịch từ sao kê của bạn chưa có trong tài khoản này. Hãy xem xét và xuất bản để thêm vào."
+        other: "%{count} giao dịch từ sao kê của bạn chưa có trong tài khoản này. Hãy xem xét và xuất bản để thêm vào."
+      balance_mismatch: "Số dư trong sao kê không khớp: số dư đầu kỳ cộng các giao dịch đã trích xuất chênh lệch %{difference} so với số dư cuối kỳ. Có thể thiếu giao dịch, trùng lặp hoặc sai dấu. Hãy kiểm tra trước khi nhập."
       transactions_extracted: Giao dịch đã trích xuất
       transactions_extracted_count:
         one: "%{count} giao dịch"

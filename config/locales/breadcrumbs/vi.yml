@@ -12,6 +12,9 @@ vi:
     bank_sync: Đồng bộ ngân hàng
     binance_items: Binance
     brex_items: Brex
+    bybit_items: Bybit
+    mexc_items: MEXC
+    okx_items: OKX
     budget_categories: Danh mục ngân sách
     budgets: Ngân sách
     categories: Danh mục

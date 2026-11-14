@@ -1,0 +1,133 @@
+<%# locals: (bybit_item:, unlinked_count: bybit_item.unlinked_accounts_count, visible_accounts:) %>
+
+<%= tag.div id: dom_id(bybit_item) do %>
+  <%= render DS::Disclosure.new(variant: :card, open: true) do |disclosure| %>
+    <% disclosure.with_summary_content do %>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <%= icon "chevron-right", class: "group-open:rotate-90 motion-safe:transition-transform motion-safe:duration-150" %>
+
+          <%= render ProviderLogo.new(provider_key: :bybit) %>
+
+          <div class="pl-1 text-sm">
+            <div class="flex items-center gap-2">
+              <%= tag.p bybit_item.institution_display_name, class: "font-medium text-primary" %>
+              <% if bybit_item.scheduled_for_deletion? %>
+                <p class="text-destructive text-sm animate-pulse"><%= t(".deletion_in_progress") %></p>
+              <% end %>
+            </div>
+            <p class="text-xs text-secondary"><%= t(".provider_name") %></p>
+            <% if bybit_item.syncing? %>
+              <div class="text-secondary flex items-center gap-1">
+                <%= icon "loader", size: "sm", class: "animate-spin" %>
+                <%= tag.span t(".syncing") %>
+              </div>
+            <% elsif bybit_item.requires_update? %>
+              <div class="text-warning flex items-center gap-1">
+                <%= icon "alert-triangle", size: "sm", color: "warning" %>
+                <%= tag.span t(".reconnect") %>
+              </div>
+            <% else %>
+              <p class="text-secondary">
+                <% if bybit_item.last_synced_at %>
+                  <% if bybit_item.sync_status_summary %>
+                    <%= t(".status_with_summary", timestamp: time_ago_in_words(bybit_item.last_synced_at), summary: bybit_item.sync_status_summary) %>
+                  <% else %>
+                    <%= t(".status", timestamp: time_ago_in_words(bybit_item.last_synced_at)) %>
+                  <% end %>
+                <% else %>
+                  <%= t(".status_never") %>
+                <% end %>
+              </p>
+            <% end %>
+          </div>
+        </div>
+
+        <% if Current.user&.admin? %>
+          <div class="ml-auto flex items-center gap-2">
+            <% if bybit_item.requires_update? %>
+              <%= render DS::Link.new(
+                text: t(".update_credentials"),
+                icon: "refresh-cw",
+                variant: "secondary",
+                href: settings_providers_path,
+                frame: "_top"
+              ) %>
+            <% else %>
+              <%= icon(
+                "refresh-cw",
+                as_button: true,
+                href: sync_bybit_item_path(bybit_item),
+                disabled: bybit_item.syncing?
+              ) %>
+            <% end %>
+
+            <%= render DS::Menu.new do |menu| %>
+              <% sync_schedule_menu_item(menu, bybit_item) %>
+              <% if bybit_item.unlinked_accounts_count > 0 %>
+                <% menu.with_item(
+                  variant: "link",
+                  text: t(".import_accounts_menu"),
+                  icon: "plus",
+                  href: setup_accounts_bybit_item_path(bybit_item),
+                  frame: :modal
+                ) %>
+              <% end %>
+              <% menu.with_item(
+                variant: "button",
+                text: t(".delete"),
+                icon: "trash-2",
+                href: bybit_item_path(bybit_item),
+                method: :delete,
+                confirm: CustomConfirm.for_resource_deletion(bybit_item.institution_display_name, high_severity: true)
+              ) %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% unless bybit_item.scheduled_for_deletion? %>
+      <div class="space-y-4 mt-4">
+        <% if visible_accounts.any? %>
+          <%= render "accounts/index/account_groups", accounts: visible_accounts %>
+          <% bybit_item.stale_rate_accounts.where(accounts: { id: visible_accounts.map(&:id) }).each do |ba| %>
+            <div class="flex items-center gap-2 text-xs text-warning px-1">
+              <span class="font-mono">~</span>
+              <%= icon "triangle-alert", size: "sm" %>
+              <span>
+                <%= t("bybit_items.bybit_item.stale_rate_warning",
+                      date: ba.extra.dig("bybit", "rate_target_date")) %>
+              </span>
+            </div>
+          <% end %>
+        <% end %>
+
+        <% stats = bybit_item.syncs.ordered.first&.sync_stats || {} %>
+        <%= render ProviderSyncSummary.new(
+          stats: stats,
+          provider_item: bybit_item, show_account_details: visible_accounts.size == bybit_item.accounts.size
+        ) %>
+
+        <% if bybit_item.unlinked_accounts_count > 0 %>
+          <div class="p-4 flex flex-col gap-3 items-center justify-center bg-surface border border-primary rounded-xl">
+            <p class="text-primary font-medium text-sm"><%= t(".setup_needed") %></p>
+            <p class="text-secondary text-sm text-center"><%= t(".setup_description") %></p>
+            <%= render DS::Link.new(
+              text: t(".setup_action"),
+              icon: "plus",
+              variant: "primary",
+              href: setup_accounts_bybit_item_path(bybit_item),
+              frame: :modal
+            ) %>
+          </div>
+        <% elsif bybit_item.accounts.empty? && bybit_item.bybit_accounts.none? %>
+          <div class="p-4 flex flex-col gap-3 items-center justify-center">
+            <p class="text-primary font-medium text-sm"><%= t(".no_accounts_title") %></p>
+            <p class="text-secondary text-sm"><%= t(".no_accounts_message") %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

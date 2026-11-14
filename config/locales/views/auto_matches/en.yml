@@ -16,6 +16,18 @@ en:
       bulk_rejected:
         one: Rejected 1 transfer
         other: Rejected %{count} transfers
+    crypto:
+      title: Crypto transfers to confirm
+      description: Coins that left one account and arrived in another, paired by amount and date because no matching transaction hash was found. Confirm a pair to treat the move as internal, so it counts as neither spending nor a sale.
+      matched_by: Matched by
+      sent: "Sent %{amount} %{symbol}"
+      received: "Received %{amount} %{symbol}"
+      confirm: Confirm crypto transfer
+      reject: Reject crypto transfer
+      basis:
+        tx_hash: Transaction hash
+        reference: Exchange reference
+        amount_time: Amount and date
     empty:
       title: No pending auto-match suggestions
       description: When a sync detects a likely transfer between two of your accounts, it will show up here for review.

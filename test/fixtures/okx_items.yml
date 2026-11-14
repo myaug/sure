@@ -1,0 +1,20 @@
+one:
+  family: dylan_family
+  name: My OKX
+  api_key: test_api_key_123
+  api_secret: test_api_secret_456
+  api_passphrase: test_passphrase_789
+  status: good
+  institution_name: OKX
+  institution_domain: okx.com
+  institution_url: https://www.okx.com
+  institution_color: "#000000"
+
+requires_update:
+  family: dylan_family
+  name: Stale OKX
+  api_key: old_key
+  api_secret: old_secret
+  api_passphrase: old_passphrase
+  status: requires_update
+  institution_name: OKX

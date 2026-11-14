@@ -12,6 +12,9 @@ en:
     bank_sync: Bank Sync
     binance_items: Binance
     brex_items: Brex
+    bybit_items: Bybit
+    mexc_items: MEXC
+    okx_items: OKX
     budget_categories: Budget categories
     budgets: Budgets
     categories: Categories

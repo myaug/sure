@@ -1,0 +1,8 @@
+---
+vi:
+  crypto_transfer_links:
+    update:
+      confirmed: Đã xác nhận chuyển tiền số. Khoản này được tính là chuyển coin giữa các ví của bạn.
+      rejected: Đã từ chối chuyển tiền số. Hai giao dịch này sẽ không được ghép lại.
+      invalid_status: Hãy chọn xác nhận hoặc từ chối
+      not_allowed: Bạn cần quyền chỉnh sửa cả hai tài khoản để xử lý khoản chuyển này

@@ -18,6 +18,8 @@ class AutoMatchesController < ApplicationController
     # that just bounce with a flash. Precompute which accounts they can
     # actually write to, mirroring TransfersController#show's writable check.
     @writable_account_ids = Account.writable_by(Current.user).where(family: @family).ids.to_set
+
+    @crypto_links = pending_crypto_links.includes(outflow_entry: [ :account, { entryable: :security } ], inflow_entry: [ :account, :entryable ])
   end
 
   def update_settings
@@ -87,6 +89,16 @@ class AutoMatchesController < ApplicationController
   end
 
   private
+    # Crypto movements the matcher could pair but not prove, between accounts
+    # the user may see.
+    def pending_crypto_links
+      visible_entries = Entry.where(account_id: Account.accessible_by(Current.user).where(family: Current.family).select(:id)).select(:id)
+
+      CryptoTransferLink.pending
+        .where(family: Current.family, outflow_entry_id: visible_entries, inflow_entry_id: visible_entries)
+        .order(created_at: :desc)
+    end
+
     def accessible_transaction_ids
       Current.family.transactions
         .joins(entry: :account)

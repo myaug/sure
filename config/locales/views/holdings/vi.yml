@@ -56,6 +56,10 @@ vi:
       description: Khoản đầu tư này có giá trị bị thiếu và chúng tôi không thể tính lợi nhuận hoặc giá trị.
       missing_data: Thiếu dữ liệu
     show:
+      no_share_events: Chưa ghi nhận cổ tức bằng cổ phiếu hay chia tách nào cho mã này.
+      record_share_event: Ghi nhận cổ tức bằng cổ phiếu hoặc chia tách
+      share_event_entry: "%{date}: %{numerator} cổ phiếu mới cho mỗi %{denominator} cổ phiếu đang nắm giữ"
+      share_events: Cổ tức bằng cổ phiếu và chia tách
       avg_cost_label: Giá trung bình
       current_market_price_label: Giá thị trường hiện tại
       delete: Xóa

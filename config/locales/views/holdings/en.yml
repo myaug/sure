@@ -57,6 +57,10 @@ en:
         its returns or value.
       missing_data: Missing data
     show:
+      no_share_events: No stock dividends or splits recorded for this security.
+      record_share_event: Record stock dividend or split
+      share_event_entry: "%{date}: %{numerator} new shares for every %{denominator} held"
+      share_events: Stock dividends and splits
       avg_cost_label: Average Cost
       current_market_price_label: Current Market Price
       delete: Delete

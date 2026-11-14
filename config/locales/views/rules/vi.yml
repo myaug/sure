@@ -7,7 +7,7 @@ vi:
       edit: Chỉnh sửa
       re_apply_rule: Áp dụng lại quy tắc
       delete: Xóa
-      then: THÌ
+      then: THEN
       and_more_conditions:
         one: và 1 điều kiện nữa
         other: và %{count} điều kiện nữa
@@ -27,7 +27,7 @@ vi:
       add_action: Thêm hành động
       all_past_and_future: Tất cả %{resource} trong quá khứ và tương lai
       starting_from: Bắt đầu từ
-      then: THÌ
+      then: THEN
       stop_processing_label: "Dừng xử lý các quy tắc tiếp theo"
       stop_processing_description: "Các quy tắc bên dưới trong danh sách không thay đổi giao dịch mà quy tắc này khớp."
       group_label: "Nhóm (không bắt buộc)"

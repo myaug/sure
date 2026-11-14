@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -403,6 +403,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
     t.index ["user_id"], name: "index_budgets_on_user_id"
   end
 
+  create_table "bybit_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "account_type"
+    t.uuid "bybit_item_id", null: false
+    t.datetime "created_at", null: false
+    t.string "currency"
+    t.decimal "current_balance", precision: 19, scale: 4
+    t.jsonb "extra", default: {}, null: false
+    t.jsonb "institution_metadata"
+    t.string "name"
+    t.jsonb "raw_payload"
+    t.jsonb "raw_transactions_payload"
+    t.datetime "updated_at", null: false
+    t.index ["account_type"], name: "index_bybit_accounts_on_account_type"
+    t.index ["bybit_item_id", "account_type"], name: "index_bybit_accounts_on_item_and_type", unique: true
+    t.index ["bybit_item_id"], name: "index_bybit_accounts_on_bybit_item_id"
+  end
+
+  create_table "bybit_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "api_key"
+    t.text "api_secret"
+    t.datetime "created_at", null: false
+    t.uuid "family_id", null: false
+    t.string "institution_color"
+    t.string "institution_domain"
+    t.string "institution_name"
+    t.string "institution_url"
+    t.string "name"
+    t.boolean "pending_account_setup", default: false, null: false
+    t.jsonb "raw_payload"
+    t.boolean "scheduled_for_deletion", default: false, null: false
+    t.string "status", default: "good", null: false
+    t.datetime "sync_start_date"
+    t.datetime "updated_at", null: false
+    t.index ["family_id"], name: "index_bybit_items_on_family_id"
+    t.index ["status"], name: "index_bybit_items_on_status"
+  end
+
   create_table "categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "classification_unused", default: "expense", null: false
     t.string "color", default: "#6172F3", null: false
@@ -584,6 +621,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
     t.datetime "updated_at", null: false
     t.check_constraint "due_day >= 1 AND due_day <= 31", name: "chk_credit_cards_due_day"
     t.check_constraint "statement_close_day >= 1 AND statement_close_day <= 31", name: "chk_credit_cards_statement_close_day"
+  end
+
+  create_table "crypto_transfer_links", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "basis", null: false
+    t.datetime "created_at", null: false
+    t.uuid "family_id", null: false
+    t.uuid "inflow_entry_id", null: false
+    t.uuid "outflow_entry_id", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["family_id"], name: "index_crypto_transfer_links_on_family_id"
+    t.index ["inflow_entry_id"], name: "index_crypto_transfer_links_on_live_inflow", unique: true, where: "((status)::text <> 'rejected'::text)"
+    t.index ["outflow_entry_id", "inflow_entry_id"], name: "index_crypto_transfer_links_on_pair", unique: true
+    t.index ["outflow_entry_id"], name: "index_crypto_transfer_links_on_live_outflow", unique: true, where: "((status)::text <> 'rejected'::text)"
   end
 
   create_table "cryptos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1734,6 +1785,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
     t.index ["chat_id"], name: "index_messages_on_chat_id"
   end
 
+  create_table "mexc_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "account_type"
+    t.uuid "mexc_item_id", null: false
+    t.datetime "created_at", null: false
+    t.string "currency"
+    t.decimal "current_balance", precision: 19, scale: 4
+    t.jsonb "extra", default: {}, null: false
+    t.jsonb "institution_metadata"
+    t.string "name"
+    t.jsonb "raw_payload"
+    t.jsonb "raw_transactions_payload"
+    t.datetime "updated_at", null: false
+    t.index ["account_type"], name: "index_mexc_accounts_on_account_type"
+    t.index ["mexc_item_id", "account_type"], name: "index_mexc_accounts_on_item_and_type", unique: true
+    t.index ["mexc_item_id"], name: "index_mexc_accounts_on_mexc_item_id"
+  end
+
+  create_table "mexc_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "api_key"
+    t.text "api_secret"
+    t.datetime "created_at", null: false
+    t.uuid "family_id", null: false
+    t.string "institution_color"
+    t.string "institution_domain"
+    t.string "institution_name"
+    t.string "institution_url"
+    t.string "name"
+    t.boolean "pending_account_setup", default: false, null: false
+    t.jsonb "raw_payload"
+    t.boolean "scheduled_for_deletion", default: false, null: false
+    t.string "status", default: "good", null: false
+    t.datetime "sync_start_date"
+    t.datetime "updated_at", null: false
+    t.index ["family_id"], name: "index_mexc_items_on_family_id"
+    t.index ["status"], name: "index_mexc_items_on_status"
+  end
+
   create_table "mobile_devices", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "app_version"
     t.datetime "created_at", null: false
@@ -1863,6 +1951,44 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
     t.index ["issuer"], name: "index_oidc_identities_on_issuer"
     t.index ["provider", "uid"], name: "index_oidc_identities_on_provider_and_uid", unique: true
     t.index ["user_id"], name: "index_oidc_identities_on_user_id"
+  end
+
+  create_table "okx_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "account_type"
+    t.uuid "okx_item_id", null: false
+    t.datetime "created_at", null: false
+    t.string "currency"
+    t.decimal "current_balance", precision: 19, scale: 4
+    t.jsonb "extra", default: {}, null: false
+    t.jsonb "institution_metadata"
+    t.string "name"
+    t.jsonb "raw_payload"
+    t.jsonb "raw_transactions_payload"
+    t.datetime "updated_at", null: false
+    t.index ["account_type"], name: "index_okx_accounts_on_account_type"
+    t.index ["okx_item_id", "account_type"], name: "index_okx_accounts_on_item_and_type", unique: true
+    t.index ["okx_item_id"], name: "index_okx_accounts_on_okx_item_id"
+  end
+
+  create_table "okx_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "api_key"
+    t.text "api_passphrase"
+    t.text "api_secret"
+    t.datetime "created_at", null: false
+    t.uuid "family_id", null: false
+    t.string "institution_color"
+    t.string "institution_domain"
+    t.string "institution_name"
+    t.string "institution_url"
+    t.string "name"
+    t.boolean "pending_account_setup", default: false, null: false
+    t.jsonb "raw_payload"
+    t.boolean "scheduled_for_deletion", default: false, null: false
+    t.string "status", default: "good", null: false
+    t.datetime "sync_start_date"
+    t.datetime "updated_at", null: false
+    t.index ["family_id"], name: "index_okx_items_on_family_id"
+    t.index ["status"], name: "index_okx_items_on_status"
   end
 
   create_table "onchain_wallet_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -3132,6 +3258,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
   add_foreign_key "budget_shares", "users", column: "viewer_id"
   add_foreign_key "budgets", "families"
   add_foreign_key "budgets", "users", on_delete: :cascade
+  add_foreign_key "bybit_accounts", "bybit_items"
+  add_foreign_key "bybit_items", "families"
   add_foreign_key "categories", "families"
   add_foreign_key "categorization_comparisons", "families"
   add_foreign_key "categorization_comparisons", "transactions", on_delete: :nullify
@@ -3142,6 +3270,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
   add_foreign_key "coinspot_items", "families"
   add_foreign_key "coinstats_accounts", "coinstats_items"
   add_foreign_key "coinstats_items", "families"
+  add_foreign_key "crypto_transfer_links", "entries", column: "inflow_entry_id", on_delete: :cascade
+  add_foreign_key "crypto_transfer_links", "entries", column: "outflow_entry_id", on_delete: :cascade
+  add_foreign_key "crypto_transfer_links", "families"
   add_foreign_key "debug_log_entries", "account_providers", on_delete: :nullify
   add_foreign_key "debug_log_entries", "accounts", on_delete: :nullify
   add_foreign_key "debug_log_entries", "families", on_delete: :nullify
@@ -3217,6 +3348,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
   add_foreign_key "mercury_accounts", "mercury_items"
   add_foreign_key "mercury_items", "families"
   add_foreign_key "messages", "chats"
+  add_foreign_key "mexc_accounts", "mexc_items"
+  add_foreign_key "mexc_items", "families"
   add_foreign_key "mobile_devices", "users"
   add_foreign_key "monobank_accounts", "monobank_items"
   add_foreign_key "monobank_items", "families"
@@ -3225,6 +3358,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_080000) do
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oidc_identities", "users"
+  add_foreign_key "okx_accounts", "okx_items"
+  add_foreign_key "okx_items", "families"
   add_foreign_key "onchain_wallet_accounts", "onchain_wallet_items"
   add_foreign_key "onchain_wallet_items", "families"
   add_foreign_key "plaid_accounts", "plaid_items"

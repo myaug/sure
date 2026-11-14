@@ -83,6 +83,9 @@ en:
         brex: Sync Brex cash and corporate card activity with read-only access.
         coinbase: Import your Coinbase crypto holdings and track performance.
         binance: Sync your Binance spot balances using a read-only API key.
+        bybit: Sync Bybit balances and spot trade fills using a read-only API key.
+        mexc: Sync MEXC balances and spot trade fills using a read-only API key.
+        okx: Sync OKX balances and spot trade fills using a read-only API key.
         kraken: Sync Kraken balances and spot trade fills using a read-only API key.
         coinspot: Sync CoinSpot balances, AUD values, transfers, deposits, withdrawals, and order history using a read-only API key.
         onchain_wallet: Track self-custody Bitcoin, EVM (including BNB Smart Chain), TRON, Solana, Cosmos and Polkadot wallets from their public addresses.
@@ -132,6 +135,7 @@ en:
         step3: "Paste your API Key and Secret below"
         no_withdraw_title: "Read-only key only"
         no_withdraw_body: "Don't enable withdrawal permissions when creating your Binance API key. Sure only needs read access."
+        history_note: "Binance serves six months of futures trades and two years of deposits and withdrawals. Older history cannot be imported."
         ip_hint_title: "IP whitelisting required"
         ip_hint_body: "Add the app server's egress IP to the Binance API Key whitelist:"
         ip_hint_contact_admin: "Contact your administrator to obtain the app server's egress IP address."
@@ -147,6 +151,68 @@ en:
         sync_start_date_help: "Select how far back to fetch historical trades."
         disconnect: Disconnect
         disconnect_confirm: "Are you sure you want to disconnect Binance?"
+      bybit_panel:
+        setup_instructions: "To connect Bybit, create a read-only API key:"
+        step1_html: 'Go to <a href="https://www.bybit.com/app/user/api-management" target="_blank" rel="noopener noreferrer" class="underline">Bybit API Management</a>'
+        step2: "Create a System-generated API key with Read-Only permission, and add the server's IP to its whitelist"
+        step3: "Paste your API Key and Secret below"
+        no_withdraw_title: "Read-only key only"
+        no_withdraw_body: "Sure refuses a Bybit key that can trade or withdraw. Choose Read-Only when creating the key."
+        history_note: "Bybit keeps two years of trades, deposits and withdrawals. Anything older cannot be imported."
+        ip_hint_title: "IP whitelisting recommended"
+        ip_hint_body: "Add the app server's egress IP to the Bybit API key whitelist:"
+        ip_hint_contact_admin: "Contact your administrator to obtain the app server's egress IP address."
+        api_key_label: API Key
+        api_key_placeholder: Paste your Bybit API Key
+        api_secret_label: API Secret
+        api_secret_placeholder: Paste your Bybit API Secret
+        connect_button: Connect Bybit
+        syncing: Syncing...
+        sync: Sync
+        disconnect: Disconnect
+        disconnect_confirm: "Are you sure you want to disconnect Bybit?"
+      mexc_panel:
+        step1_html: 'Go to <a href="https://www.mexc.com/user/openapi" target="_blank" rel="noopener noreferrer" class="underline">MEXC API management</a>'
+        step2: "Create an API key with Account Read permission only. MEXC offers no way to verify this, so do not enable trading or withdrawals."
+        step3: "Paste your API Key and Secret below"
+        no_withdraw_body: "Sure cannot check a MEXC key's permissions. Enable Account Read only, and never trade or withdraw."
+        setup_instructions: "To connect MEXC, create a read-only API key:"
+        no_withdraw_title: "Read-only key only"
+        history_note: "MEXC serves one month of trades and 90 days of deposits and withdrawals, and deposits and withdrawals need the key's withdrawal read permission. Without it you still get balances and trades. Older history cannot be imported, so keep syncing."
+        ip_hint_title: "IP whitelisting recommended"
+        ip_hint_body: "Add the app server's egress IP to the MEXC API key whitelist:"
+        ip_hint_contact_admin: "Contact your administrator to obtain the app server's egress IP address."
+        api_key_label: API Key
+        api_key_placeholder: Paste your MEXC API Key
+        api_secret_label: API Secret
+        api_secret_placeholder: Paste your MEXC API Secret
+        connect_button: Connect MEXC
+        syncing: Syncing...
+        sync: Sync
+        disconnect: Disconnect
+        disconnect_confirm: "Are you sure you want to disconnect MEXC?"
+      okx_panel:
+        step1_html: 'Go to <a href="https://www.okx.com/account/my-api" target="_blank" rel="noopener noreferrer" class="underline">OKX API settings</a>'
+        step2: "Create an API key with Read permission only and set a passphrase; add the server's IP to its whitelist"
+        step3: "Paste your API Key, Secret and Passphrase below"
+        no_withdraw_body: "Sure refuses an OKX key that can trade or withdraw. Choose Read only when creating the key."
+        setup_instructions: "To connect OKX, create a read-only API key:"
+        no_withdraw_title: "Read-only key only"
+        history_note: "OKX keeps three months of trade fills. Anything older cannot be imported, so connect early and keep syncing."
+        ip_hint_title: "IP whitelisting recommended"
+        ip_hint_body: "Add the app server's egress IP to the OKX API key whitelist:"
+        ip_hint_contact_admin: "Contact your administrator to obtain the app server's egress IP address."
+        api_key_label: API Key
+        api_key_placeholder: Paste your OKX API Key
+        api_secret_label: API Secret
+        api_secret_placeholder: Paste your OKX API Secret
+        api_passphrase_label: Passphrase
+        api_passphrase_placeholder: Paste the passphrase you set for this API key
+        connect_button: Connect OKX
+        syncing: Syncing...
+        sync: Sync
+        disconnect: Disconnect
+        disconnect_confirm: "Are you sure you want to disconnect OKX?"
       kraken_panel:
         step1_html: 'Go to <a href="https://pro.kraken.com/app/settings/api" target="_blank" rel="noopener noreferrer" class="underline">Kraken API settings</a>'
         step2: "Create an API key with Query Funds and Query Closed Orders & Trades only."

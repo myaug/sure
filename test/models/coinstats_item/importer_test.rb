@@ -12,6 +12,8 @@ class CoinstatsItem::ImporterTest < ActiveSupport::TestCase
     @mock_provider = mock("Provider::Coinstats")
     # Stub DeFi endpoint globally — individual tests override if needed
     @mock_provider.stubs(:get_wallet_defi).returns(success_response({ protocols: [] }))
+    # The credit balance is unknown here, which holds nothing back.
+    @mock_provider.stubs(:get_credits).returns(error_response("not under test"))
   end
 
   # Helper to wrap data in Provider::Response
@@ -1039,5 +1041,35 @@ class CoinstatsItem::ImporterTest < ActiveSupport::TestCase
     # Wallet account still updated, but DeFi failure is counted
     assert_equal 1, result[:accounts_failed]
     refute result[:success]
+  end
+
+  test "does not import once the plan's credits are nearly used up" do
+    @mock_provider.stubs(:get_credits).returns(success_response({ total: 20_000, remaining: 300 }))
+    @mock_provider.expects(:get_wallet_balances).never
+
+    error = assert_raises(Provider::Coinstats::CreditLimitError) do
+      CoinstatsItem::Importer.new(@coinstats_item, coinstats_provider: @mock_provider).import
+    end
+    assert_includes error.message, "300 left"
+  end
+
+  test "skips DeFi, the costliest call, when the remaining credits cannot pay for it" do
+    account = @coinstats_item.coinstats_accounts.create!(
+      name: "ETH wallet", currency: "USD", account_id: "ethereum:0xabc",
+      raw_payload: { address: "0xabc", blockchain: "ethereum" }
+    )
+    AccountProvider.create!(account: Account.create!(family: @family, name: "ETH", balance: 0, currency: "USD", accountable: Crypto.create!), provider: account)
+
+    # 1,000 left minus the 5% reserve (1,000) of 20,000 leaves nothing, but not exhausted.
+    @mock_provider.stubs(:get_credits).returns(success_response({ total: 20_000, remaining: 1_100 }))
+    @mock_provider.expects(:get_wallet_defi).never
+    @mock_provider.stubs(:get_wallet_balances).returns(success_response([]))
+    @mock_provider.stubs(:get_wallet_transactions).returns(success_response([]))
+
+    CoinstatsItem::Importer.new(@coinstats_item, coinstats_provider: @mock_provider).import
+
+    entry = DebugLogEntry.where(provider_key: "coinstats", message: "CoinStats DeFi sync skipped: not enough credits").sole
+    assert_equal 400, entry.metadata["credits_needed"]
+    assert_equal 1_100, entry.metadata["credits_remaining"]
   end
 end

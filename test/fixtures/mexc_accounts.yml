@@ -1,0 +1,6 @@
+one:
+  mexc_item: one
+  name: MEXC
+  account_type: combined
+  currency: USD
+  current_balance: 15000.00

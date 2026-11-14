@@ -360,6 +360,28 @@ Phần này không chặn tính năng. Mục đích là điều chỉnh sản ph
   - Ghi danh sách việc cần làm trước khi mở cho người khác: Luật Bảo vệ dữ liệu cá nhân, điều khoản SSI FastConnect, Nghị định 284.
 - **Test:** toàn bộ Rails test suite, system test liên quan, Ruby/ERB lint, Biome, Brakeman. Không có secret trong fixture, VCR, log hay báo lỗi. Bản ghi Binance/on-chain hiện có vẫn hoạt động sau khi nâng cấp.
 
+## Trạng thái triển khai
+
+Cập nhật 13/11/2026. "Xong" nghĩa là có code và test; chưa task nào được thử với tài khoản sàn hoặc công ty chứng khoán thật.
+
+| Task | Trạng thái | Ghi chú |
+|---|---|---|
+| 0 | Chưa làm | Cần sao kê thật từ người dùng |
+| 1 | Xong | Gợi ý `vi`, `Asia/Ho_Chi_Minh`, `DD/MM/YYYY` khi onboarding |
+| 2 | Phần lớn xong | Còn các trang của nhà cung cấp nước ngoài (Monarch, Mint, YNAB, Akahu, Up, Redbark, Fio, Monobank, Questrade, Sharesight, Trading 212, TrueLayer, CoinSpot) |
+| 3 | Xong | Tùy chọn giá P2P tham khảo không làm (endpoint không chính thức) |
+| 4, 5 | Xong | `CryptoAsset`, TRON, BSC |
+| 6 | Xong | Lịch sử P2P chỉ nhập lệnh `COMPLETED`, đọc lại 7 ngày gần nhất mỗi lần sync; khoản chưa chắc nằm trong hàng chờ Auto Matches |
+| 7 | Xong | Nhập nạp/rút Binance, Bybit, OKX, MEXC; `CryptoTransferLink` ghép theo tx hash, mã tham chiếu, rồi số lượng và ngày (chờ duyệt) |
+| 8 | Một phần | Có đọc số `1.234.567` và kiểm tra số dư; thiếu gợi ý theo từng ngân hàng và fixture thật |
+| 9 | Chưa làm | Cần Task 0 |
+| 10, 11, 12 | Xong | Bybit, OKX, MEXC. MEXC không cho kiểm tra quyền của khóa |
+| 13 | Chưa làm | Cần tài khoản sàn có dữ liệu để kiểm tra CoinStats |
+| 14 | Một phần | Cổ tức bằng cổ phiếu, cổ phiếu thưởng và chia tách ghi qua `Security::Split` (form cho quản trị viên hệ thống). Quyền mua = lệnh mua thường. Đọc sao kê chứng khoán cần Task 0 |
+| 15, 16 | Một phần | Provider đã có; còn xác minh MIC, điều khoản SSI, nguồn NAV |
+| 17 | Xong | Hiển thị tài khoản lỗi sync, dữ liệu cũ, khoản chuyển chờ xác nhận |
+| 18 | Một phần | Có ghi chú giới hạn lịch sử trên panel và log khoảng trống dữ liệu; CoinStats được giãn nhịp theo credit |
+
 ## Thứ tự phát hành
 
 | Bản | Task | Giá trị cho người dùng |

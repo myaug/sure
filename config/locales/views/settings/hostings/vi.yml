@@ -105,6 +105,11 @@ vi:
         agent_discovery_error: "Không thể tải agent: %{error}"
         external_info:
           title: "Cấu hình AI bên ngoài"
+          items:
+          - "Nhập đầy đủ URL endpoint tương thích OpenAI, kết thúc bằng /v1/chat/completions."
+          - "Sure tìm các agent khả dụng từ /v1/models sau khi endpoint và token được lưu."
+          - "Dịch vụ bên ngoài chọn mô hình đứng sau mỗi agent; Sure chỉ chọn tuyến agent."
+          - "Lỗi xác thực, endpoint hoặc agent do dịch vụ bên ngoài trả về. Hãy kiểm tra nhật ký của dịch vụ đó khi yêu cầu thất bại."
       brand_fetch_settings:
         description: Nhập Client ID do Brandfetch cung cấp
         env_configured_message: Bạn đã cấu hình thành công Client ID Brandfetch qua biến môi trường BRAND_FETCH_CLIENT_ID.

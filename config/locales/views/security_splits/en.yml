@@ -1,0 +1,26 @@
+---
+en:
+  security_splits:
+    not_allowed: Only an instance administrator can record changes to a security's share count.
+    create:
+      invalid_ratio: Enter a percentage above 0, or a ratio of whole numbers that changes the share count.
+      success: "Recorded the change in shares of %{ticker}. Positions are being recalculated."
+    destroy:
+      success: "Removed the change in shares of %{ticker}. Positions are being recalculated."
+    new:
+      title: "Stock dividend or split: %{ticker}"
+      description: "Use this when a company issues bonus shares, pays a dividend in shares, or splits its shares. Every account holding the security is restated from the ex-date, with the total cost unchanged. Rights offerings are not recorded here: buy the new shares at the subscription price. A broker that discards fractional shares leaves a small difference to correct with a sale."
+      kind_label: What happened
+      kind_stock_dividend: Stock dividend or bonus shares
+      kind_split: Share split or reverse split
+      percent_label: New shares per 100 held (%)
+      percent_help: "20% means 20 new shares for every 100 held (6 for 5)."
+      numerator_label: New shares
+      denominator_label: For every old shares
+      split_help: "A 2-for-1 split is 2 and 1. A 1-for-10 reverse split is 1 and 10."
+      ex_date_label: Ex-date
+      submit: Record
+      recorded: Already recorded
+      recorded_split: "%{date}: %{numerator} for %{denominator}"
+      delete: Remove
+      delete_confirm: Remove this change? Positions will be recalculated without it.

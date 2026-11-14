@@ -3,6 +3,10 @@
 # Updates account balance and imports spot trades.
 class BinanceAccount::Processor
   include BinanceAccount::UsdConverter
+  include CryptoTransfer::ExchangeMovements
+
+  SOURCE = "binance"
+  PROVIDER_ERROR = Provider::Binance::Error
 
   # Quote currencies probed when fetching trade history. Ordered by prevalence so
   # the most common pairs are tried first and rate-limit weight is front-loaded.
@@ -19,6 +23,10 @@ class BinanceAccount::Processor
   FUTURES_MAX_LOOKBACK_MS = 6 * 30 * 24 * 60 * 60 * 1000
 
   TRADE_PAGE_LIMIT = 1000
+
+  # P2P orders take minutes to days to complete, and history is read by creation
+  # time, so each sync reads this far back from the newest order it has seen.
+  P2P_RESCAN_MS = 7 * 24 * 60 * 60 * 1000
 
   attr_reader :binance_account
 
@@ -46,6 +54,7 @@ class BinanceAccount::Processor
     end
 
     fetch_and_process_trades
+    fetch_and_process_transfers
 
     # The account was created, and anchored, before any of this history
     # existed. Now that it does, the anchor has to precede it.
@@ -126,12 +135,86 @@ class BinanceAccount::Processor
       merged_p2p     = existing_p2p + new_p2p
 
       # 6. Update the Account Payload LAST (Safe Caching Boundary)
-      binance_account.update!(raw_transactions_payload: {
+      # Merged into what is there, since deposits and withdrawals keep their own
+      # cursor in the same payload.
+      binance_account.update!(raw_transactions_payload: binance_account.raw_transactions_payload.to_h.merge(
         "spot"       => merged_spot,
         "futures"    => merged_futures,
         "p2p"        => merged_p2p,
         "fetched_at" => Time.current.iso8601
-      })
+      ))
+    end
+
+    def account
+      binance_account.current_account
+    end
+
+    def provider
+      binance_account.binance_item&.binance_provider
+    end
+
+    def resolve_movement_security(symbol)
+      BinanceAccount::SecurityResolver.resolve(CryptoAsset.ticker_for(symbol), symbol.to_s.upcase)
+    end
+
+    # Deposits and withdrawals: Transfer-labelled trades that CryptoTransfer::Matcher
+    # can pair with the other side. Read after the trades and never fatal to them.
+    def fetch_and_process_transfers
+      return unless provider
+
+      importing_movements("deposits and withdrawals") do
+        now_ms = Time.current.to_i * 1000
+        from_ms = transfer_scan_start_ms(
+          binance_account.raw_transactions_payload.to_h["last_transfer_scan"]&.to_i,
+          binance_account.binance_item.sync_start_date,
+          lookback: 30.days, retention_ms: Provider::Binance::RECORD_HISTORY_MS, now_ms: now_ms
+        )
+
+        deposits = []
+        withdrawals = []
+        each_transfer_window(from_ms, now_ms, Provider::Binance::RECORD_WINDOW_MS) do |window_start, window_end|
+          deposits.concat(Array(provider.get_deposit_history(start_time: window_start, end_time: window_end)))
+          withdrawals.concat(Array(provider.get_withdraw_history(start_time: window_start, end_time: window_end)))
+        end
+
+        deposits.each { |deposit| record_deposit(deposit) }
+        withdrawals.each { |withdrawal| record_withdrawal(withdrawal) }
+
+        store_movement_cursor(binance_account, "last_transfer_scan", now_ms)
+      end
+    end
+
+    # status 1 (success) and 6 (credited) put coins on the account.
+    def record_deposit(deposit)
+      return unless [ 1, 6 ].include?(deposit["status"].to_i)
+
+      record_movement(
+        external_id: "binance_deposit_#{deposit["id"].presence || deposit["txId"]}",
+        symbol: deposit["coin"],
+        quantity: deposit["amount"].to_d,
+        time_ms: deposit["insertTime"],
+        tx_hash: deposit["txId"],
+        network: deposit["network"],
+        address: deposit["address"],
+        provider_meta: { "type" => "deposit", "id" => deposit["id"], "network" => deposit["network"], "tx_id" => deposit["txId"], "internal" => deposit["transferType"].to_i == 1 }
+      )
+    end
+
+    # status 6 is completed. The fee is charged on top of the amount, so both
+    # leave the balance.
+    def record_withdrawal(withdrawal)
+      return unless withdrawal["status"].to_i == 6
+
+      record_movement(
+        external_id: "binance_withdraw_#{withdrawal["id"]}",
+        symbol: withdrawal["coin"],
+        quantity: -(withdrawal["amount"].to_d + withdrawal["transactionFee"].to_d),
+        time_ms: withdrawal["completeTime"].presence || withdrawal["applyTime"],
+        tx_hash: withdrawal["txId"],
+        network: withdrawal["network"],
+        address: withdrawal["address"],
+        provider_meta: { "type" => "withdrawal", "id" => withdrawal["id"], "network" => withdrawal["network"], "tx_id" => withdrawal["txId"], "fee" => withdrawal["transactionFee"], "internal" => withdrawal["transferType"].to_i == 1 }
+      )
     end
 
     # Fetches only trades newer than what is already cached for the given pair.
@@ -215,8 +298,10 @@ class BinanceAccount::Processor
     def fetch_new_p2p_trades(provider, cached_p2p)
       # Binance P2P history endpoint only supports max 30-day windows.
       # If no cache exists, we fetch back to sync_start_date (or default 30 days).
-      # If cache exists, we fetch from the last cached trade timestamp.
+      # If cache exists, we fetch from shortly before the last cached trade, since
+      # an order created earlier may only have completed since the last sync.
       max_cached_timestamp = cached_p2p&.map { |t| t["createTime"].to_i }&.max
+      max_cached_timestamp -= P2P_RESCAN_MS if max_cached_timestamp
 
       start_time = if max_cached_timestamp
         max_cached_timestamp
@@ -233,6 +318,11 @@ class BinanceAccount::Processor
         current_end = [ current_start + 30.days.to_i * 1000, Time.current.to_i * 1000 ].min
 
         page = provider.get_all_p2p_trades(start_timestamp: current_start, end_timestamp: current_end)
+
+        # Only completed orders moved coins and money. A pending or appealed one
+        # may still complete, a cancelled one never will; neither is cached, so
+        # the overlap above reads it again.
+        page = page&.select { |order| p2p_order_completed?(order) }
 
         # We might fetch overlapping trades if they share the exact timestamp, filter by unique orderNumber
         if page.present?
@@ -251,6 +341,13 @@ class BinanceAccount::Processor
       end
 
       all_new
+    end
+
+    # An order without a status (older responses) is taken as completed, as it
+    # always was.
+    def p2p_order_completed?(order)
+      status = order["orderStatus"].to_s
+      status.blank? || status.casecmp?("COMPLETED")
     end
 
     def extract_trade_symbols
