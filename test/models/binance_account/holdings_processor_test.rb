@@ -103,6 +103,20 @@ class BinanceAccount::HoldingsProcessorTest < ActiveSupport::TestCase
     assert_empty held_tickers, "the emptied wallet still reported holdings"
   end
 
+  test "the same coin in spot, earn and futures is held once, at its combined quantity" do
+    seed_rate_and_securities
+    write_payload([ btc_asset, btc_asset.merge("total" => "0.25", "source" => "earn"), { "symbol" => "BTC", "total" => "0.25", "source" => "futures" } ])
+
+    2.times do
+      BinanceAccount::HoldingsProcessor.new(@ba.reload).process
+
+      holding = @account.reload.current_holdings.sole
+      assert_equal 1.0, holding.qty.to_f
+      assert_equal 1_000, holding.amount.to_f
+      assert_equal 1_000, holding.price.to_f
+    end
+  end
+
   private
     def seed_rate_and_securities
       ExchangeRate.create!(from_currency: "USD", to_currency: "EUR",

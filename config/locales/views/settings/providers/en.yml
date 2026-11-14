@@ -128,6 +128,16 @@ en:
         sync: Sync
         disconnect: Disconnect
         disconnect_confirm: Are you sure you want to disconnect this Coinbase connection? Your synced accounts will become manual accounts.
+      exchange_connection:
+        add_connection: "Add another %{provider} account"
+        disconnect: Disconnect
+        disconnect_confirm: "Are you sure you want to disconnect %{name}?"
+        name_label: Connection name
+        name_placeholder: "e.g. %{provider} main"
+        save_name: Save name
+        setup_accounts: Import Account
+        sync: Sync
+        syncing: Syncing...
       binance_panel:
         setup_instructions: "To connect Binance, create a read-only API key:"
         step1_html: 'Go to <a href="https://www.binance.com/en/my/settings/api-management" target="_blank" rel="noopener noreferrer" class="underline">Binance API Management</a>'
@@ -152,7 +162,6 @@ en:
         disconnect: Disconnect
         disconnect_confirm: "Are you sure you want to disconnect Binance?"
       bybit_panel:
-        setup_instructions: "To connect Bybit, create a read-only API key:"
         step1_html: 'Go to <a href="https://www.bybit.com/app/user/api-management" target="_blank" rel="noopener noreferrer" class="underline">Bybit API Management</a>'
         step2: "Create a System-generated API key with Read-Only permission, and add the server's IP to its whitelist"
         step3: "Paste your API Key and Secret below"
@@ -167,16 +176,13 @@ en:
         api_secret_label: API Secret
         api_secret_placeholder: Paste your Bybit API Secret
         connect_button: Connect Bybit
-        syncing: Syncing...
-        sync: Sync
-        disconnect: Disconnect
-        disconnect_confirm: "Are you sure you want to disconnect Bybit?"
+        sync_start_date_label: "Import data from"
+        sync_start_date_help: "Select how far back to fetch historical trades."
       mexc_panel:
         step1_html: 'Go to <a href="https://www.mexc.com/user/openapi" target="_blank" rel="noopener noreferrer" class="underline">MEXC API management</a>'
         step2: "Create an API key with Account Read permission only. MEXC offers no way to verify this, so do not enable trading or withdrawals."
         step3: "Paste your API Key and Secret below"
         no_withdraw_body: "Sure cannot check a MEXC key's permissions. Enable Account Read only, and never trade or withdraw."
-        setup_instructions: "To connect MEXC, create a read-only API key:"
         no_withdraw_title: "Read-only key only"
         history_note: "MEXC serves one month of trades and 90 days of deposits and withdrawals, and deposits and withdrawals need the key's withdrawal read permission. Without it you still get balances and trades. Older history cannot be imported, so keep syncing."
         ip_hint_title: "IP whitelisting recommended"
@@ -187,16 +193,13 @@ en:
         api_secret_label: API Secret
         api_secret_placeholder: Paste your MEXC API Secret
         connect_button: Connect MEXC
-        syncing: Syncing...
-        sync: Sync
-        disconnect: Disconnect
-        disconnect_confirm: "Are you sure you want to disconnect MEXC?"
+        sync_start_date_label: "Import data from"
+        sync_start_date_help: "Select how far back to fetch historical trades."
       okx_panel:
         step1_html: 'Go to <a href="https://www.okx.com/account/my-api" target="_blank" rel="noopener noreferrer" class="underline">OKX API settings</a>'
         step2: "Create an API key with Read permission only and set a passphrase; add the server's IP to its whitelist"
         step3: "Paste your API Key, Secret and Passphrase below"
         no_withdraw_body: "Sure refuses an OKX key that can trade or withdraw. Choose Read only when creating the key."
-        setup_instructions: "To connect OKX, create a read-only API key:"
         no_withdraw_title: "Read-only key only"
         history_note: "OKX keeps three months of trade fills. Anything older cannot be imported, so connect early and keep syncing."
         ip_hint_title: "IP whitelisting recommended"
@@ -209,10 +212,8 @@ en:
         api_passphrase_label: Passphrase
         api_passphrase_placeholder: Paste the passphrase you set for this API key
         connect_button: Connect OKX
-        syncing: Syncing...
-        sync: Sync
-        disconnect: Disconnect
-        disconnect_confirm: "Are you sure you want to disconnect OKX?"
+        sync_start_date_label: "Import data from"
+        sync_start_date_help: "Select how far back to fetch historical trades."
       kraken_panel:
         step1_html: 'Go to <a href="https://pro.kraken.com/app/settings/api" target="_blank" rel="noopener noreferrer" class="underline">Kraken API settings</a>'
         step2: "Create an API key with Query Funds and Query Closed Orders & Trades only."

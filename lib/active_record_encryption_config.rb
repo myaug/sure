@@ -70,7 +70,7 @@ module ActiveRecordEncryptionConfig
   # older, narrower version back into "not complete" until they re-run the
   # task - otherwise the legacy-plaintext fallback would get disabled for
   # models the install's last backfill never actually covered.
-  CURRENT_BACKFILL_VERSION = 10
+  CURRENT_BACKFILL_VERSION = 11
 
   # Single source of truth for which models/fields security:backfill_encryption
   # covers, keyed by the same symbol the task's `results` hash uses. Model
@@ -107,6 +107,7 @@ module ActiveRecordEncryptionConfig
     fio_items: [ "FioItem", %i[token raw_payload raw_institution_payload] ],
     akahu_items: [ "AkahuItem", %i[app_token user_token raw_payload raw_institution_payload] ],
     binance_items: [ "BinanceItem", %i[api_key api_secret raw_payload] ],
+    bybit_items: [ "BybitItem", %i[api_key api_secret raw_payload] ],
     brex_items: [ "BrexItem", %i[token raw_payload raw_institution_payload] ],
     coinbase_items: [ "CoinbaseItem", %i[api_key api_secret raw_payload raw_institution_payload] ],
     coinspot_items: [ "CoinspotItem", %i[api_key api_secret raw_payload] ],
@@ -115,7 +116,9 @@ module ActiveRecordEncryptionConfig
     indexa_capital_items: [ "IndexaCapitalItem", %i[password api_token username document raw_payload raw_institution_payload] ],
     kraken_items: [ "KrakenItem", %i[api_key api_secret raw_payload] ],
     mercury_items: [ "MercuryItem", %i[token raw_payload raw_institution_payload] ],
+    mexc_items: [ "MexcItem", %i[api_key api_secret raw_payload] ],
     monobank_items: [ "MonobankItem", %i[access_token raw_payload raw_institution_payload] ],
+    okx_items: [ "OkxItem", %i[api_key api_secret api_passphrase raw_payload] ],
     onchain_wallet_items: [ "OnchainWalletItem", %i[etherscan_api_key] ],
     questrade_items: [ "QuestradeItem", %i[refresh_token raw_payload raw_institution_payload] ],
     redbark_items: [ "RedbarkItem", %i[api_key raw_payload raw_institution_payload] ],
@@ -140,10 +143,13 @@ module ActiveRecordEncryptionConfig
     monobank_accounts: [ "MonobankAccount", %i[raw_payload raw_transactions_payload] ],
     akahu_accounts: [ "AkahuAccount", %i[raw_payload raw_transactions_payload formatted_account] ],
     binance_accounts: [ "BinanceAccount", %i[raw_payload raw_transactions_payload] ],
+    bybit_accounts: [ "BybitAccount", %i[raw_payload raw_transactions_payload] ],
     brex_accounts: [ "BrexAccount", %i[raw_payload raw_transactions_payload] ],
     ibkr_accounts: [ "IbkrAccount", %i[raw_holdings_payload raw_activities_payload raw_cash_report_payload raw_equity_summary_payload] ],
     indexa_capital_accounts: [ "IndexaCapitalAccount", %i[raw_payload raw_holdings_payload raw_activities_payload] ],
     kraken_accounts: [ "KrakenAccount", %i[raw_payload raw_transactions_payload] ],
+    mexc_accounts: [ "MexcAccount", %i[raw_payload raw_transactions_payload] ],
+    okx_accounts: [ "OkxAccount", %i[raw_payload raw_transactions_payload] ],
     onchain_wallet_accounts: [ "OnchainWalletAccount", %i[raw_payload raw_movements_payload] ],
     questrade_accounts: [ "QuestradeAccount", %i[raw_payload raw_holdings_payload raw_activities_payload raw_balances_payload] ],
     redbark_accounts: [ "RedbarkAccount", %i[raw_payload raw_transactions_payload raw_account_details_payload] ],

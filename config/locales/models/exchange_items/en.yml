@@ -1,0 +1,30 @@
+---
+en:
+  activerecord:
+    attributes:
+      binance_item:
+        api_key: API key
+      bybit_item:
+        api_key: API key
+      mexc_item:
+        api_key: API key
+      okx_item:
+        api_key: API key
+    errors:
+      models:
+        binance_item:
+          attributes:
+            api_key:
+              already_connected: is already used by another connection
+        bybit_item:
+          attributes:
+            api_key:
+              already_connected: is already used by another connection
+        mexc_item:
+          attributes:
+            api_key:
+              already_connected: is already used by another connection
+        okx_item:
+          attributes:
+            api_key:
+              already_connected: is already used by another connection

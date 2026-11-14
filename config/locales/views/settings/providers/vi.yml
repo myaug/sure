@@ -109,6 +109,16 @@ vi:
         sync: Đồng bộ
         disconnect: Ngắt kết nối
         disconnect_confirm: Bạn có chắc muốn ngắt kết nối Coinbase? Các tài khoản đã đồng bộ sẽ trở thành tài khoản thủ công.
+      exchange_connection:
+        add_connection: "Thêm tài khoản %{provider} khác"
+        disconnect: Ngắt kết nối
+        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối %{name}?"
+        name_label: Tên kết nối
+        name_placeholder: "Ví dụ: %{provider} chính"
+        save_name: Lưu tên
+        setup_accounts: Nhập tài khoản
+        sync: Đồng bộ
+        syncing: Đang đồng bộ...
       binance_panel:
         setup_instructions: "Để kết nối Binance, tạo khóa API chỉ đọc:"
         step1_html: 'Vào <a href="https://www.binance.com/en/my/settings/api-management" target="_blank" rel="noopener noreferrer" class="underline">Quản lý API Binance</a>'
@@ -133,7 +143,6 @@ vi:
         disconnect: Ngắt kết nối
         disconnect_confirm: "Bạn có chắc muốn ngắt kết nối Binance?"
       bybit_panel:
-        setup_instructions: "Để kết nối Bybit, tạo khóa API chỉ đọc:"
         step1_html: 'Vào <a href="https://www.bybit.com/app/user/api-management" target="_blank" rel="noopener noreferrer" class="underline">Quản lý API Bybit</a>'
         step2: "Tạo khóa API do hệ thống tạo với quyền Chỉ đọc (Read-Only) và thêm IP của máy chủ vào danh sách trắng"
         step3: "Dán Khóa API và Bí mật vào bên dưới"
@@ -148,16 +157,13 @@ vi:
         api_secret_label: Bí mật API
         api_secret_placeholder: Dán Bí mật API Bybit
         connect_button: Kết nối Bybit
-        syncing: Đang đồng bộ...
-        sync: Đồng bộ
-        disconnect: Ngắt kết nối
-        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối Bybit?"
+        sync_start_date_label: "Nhập dữ liệu từ"
+        sync_start_date_help: "Chọn khoảng thời gian lịch sử cần tải."
       mexc_panel:
         step1_html: 'Vào <a href="https://www.mexc.com/user/openapi" target="_blank" rel="noopener noreferrer" class="underline">Quản lý API MEXC</a>'
         step2: "Tạo khóa API chỉ với quyền Đọc tài khoản. MEXC không cho phép kiểm tra quyền này, vì vậy đừng bật giao dịch hoặc rút tiền."
         step3: "Dán Khóa API và Bí mật vào bên dưới"
         no_withdraw_body: "Sure không thể kiểm tra quyền của khóa MEXC. Chỉ bật quyền Đọc tài khoản, tuyệt đối không bật giao dịch hay rút tiền."
-        setup_instructions: "Để kết nối MEXC, tạo khóa API chỉ đọc:"
         no_withdraw_title: "Chỉ khóa chỉ đọc"
         history_note: "MEXC chỉ trả một tháng lịch sử lệnh và 90 ngày lịch sử nạp rút, và nạp rút cần quyền đọc rút tiền của khóa. Không có quyền này vẫn nhập được số dư và lệnh. Dữ liệu cũ hơn không thể nhập, vì vậy hãy đồng bộ đều đặn."
         ip_hint_title: "Nên dùng danh sách trắng IP"
@@ -168,16 +174,13 @@ vi:
         api_secret_label: Bí mật API
         api_secret_placeholder: Dán Bí mật API MEXC
         connect_button: Kết nối MEXC
-        syncing: Đang đồng bộ...
-        sync: Đồng bộ
-        disconnect: Ngắt kết nối
-        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối MEXC?"
+        sync_start_date_label: "Nhập dữ liệu từ"
+        sync_start_date_help: "Chọn khoảng thời gian lịch sử cần tải."
       okx_panel:
         step1_html: 'Vào <a href="https://www.okx.com/account/my-api" target="_blank" rel="noopener noreferrer" class="underline">Cài đặt API OKX</a>'
         step2: "Tạo khóa API chỉ với quyền Đọc (Read), đặt passphrase và thêm IP của máy chủ vào danh sách trắng"
         step3: "Dán Khóa API, Bí mật và Passphrase vào bên dưới"
         no_withdraw_body: "Sure từ chối khóa OKX có quyền giao dịch hoặc rút tiền. Hãy chọn Chỉ đọc khi tạo khóa."
-        setup_instructions: "Để kết nối OKX, tạo khóa API chỉ đọc:"
         no_withdraw_title: "Chỉ khóa chỉ đọc"
         history_note: "OKX chỉ lưu ba tháng lịch sử lệnh khớp. Dữ liệu cũ hơn không thể nhập, vì vậy hãy kết nối sớm và đồng bộ đều đặn."
         ip_hint_title: "Nên dùng danh sách trắng IP"
@@ -190,10 +193,8 @@ vi:
         api_passphrase_label: Passphrase
         api_passphrase_placeholder: Dán passphrase bạn đã đặt cho khóa API này
         connect_button: Kết nối OKX
-        syncing: Đang đồng bộ...
-        sync: Đồng bộ
-        disconnect: Ngắt kết nối
-        disconnect_confirm: "Bạn có chắc muốn ngắt kết nối OKX?"
+        sync_start_date_label: "Nhập dữ liệu từ"
+        sync_start_date_help: "Chọn khoảng thời gian lịch sử cần tải."
       kraken_panel:
         step1_html: 'Vào <a href="https://pro.kraken.com/app/settings/api" target="_blank" rel="noopener noreferrer" class="underline">Cài đặt API Kraken</a>'
         step2: "Tạo khóa API chỉ với Truy vấn Quỹ và Truy vấn Lệnh & Giao dịch Đã Đóng."

@@ -75,6 +75,15 @@ class ApplicationController < ActionController::Base
       ], status: alert ? :unprocessable_entity : :ok
     end
 
+    # `base`, or "base 2", "base 3"... when the family already has a live
+    # connection by that name, so a second one is not named like the first.
+    def next_connection_name(items, base)
+      taken = items.active.pluck(:name).to_set
+      return base unless taken.include?(base)
+
+      (2..).each { |number| return "#{base} #{number}" unless taken.include?("#{base} #{number}") }
+    end
+
     def detect_os
       user_agent = request.user_agent
       @os = case user_agent

@@ -34,6 +34,57 @@ class BinanceItemsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, ERB::Util.html_escape("can't be blank")
   end
 
+  test "a second and third connection are added beside the first, named apart" do
+    assert_difference -> { @family.binance_items.count }, 2 do
+      post binance_items_url, params: { binance_item: { name: "", api_key: "second_key", api_secret: "s2" } }
+      post binance_items_url, params: { binance_item: { name: "", api_key: "third_key", api_secret: "s3" } }
+    end
+
+    assert_equal [ "Binance", "Binance 2" ], @family.binance_items.order(:created_at).last(2).map(&:name)
+  end
+
+  test "a typed name is kept" do
+    post binance_items_url, params: { binance_item: { name: "Savings", api_key: "second_key", api_secret: "s2" } }
+
+    assert @family.binance_items.exists?(name: "Savings")
+  end
+
+  test "the same API key cannot be connected twice" do
+    assert_no_difference -> { BinanceItem.count } do
+      post binance_items_url, params: { binance_item: { api_key: "test_key", api_secret: "other" } }, as: :turbo_stream
+    end
+
+    assert_turbo_stream status: :unprocessable_entity, action: "replace", target: "binance-providers-panel"
+    assert_includes response.body, I18n.t("activerecord.errors.models.binance_item.attributes.api_key.already_connected")
+  end
+
+  test "a disconnected connection's key can be connected again" do
+    @binance_item.update!(scheduled_for_deletion: true)
+
+    assert_difference -> { @family.binance_items.count }, 1 do
+      post binance_items_url, params: { binance_item: { api_key: "test_key", api_secret: "test_secret" } }
+    end
+  end
+
+  test "a connection is renamed without touching its credentials" do
+    patch binance_item_url(@binance_item), params: { binance_item: { name: "Trading" } }
+
+    @binance_item.reload
+    assert_equal "Trading", @binance_item.name
+    assert_equal "test_key", @binance_item.api_key
+  end
+
+  test "the panel lists every connection and still offers another" do
+    @family.binance_items.create!(name: "Second", api_key: "second_key", api_secret: "s2")
+
+    post sync_binance_item_url(@binance_item, source: "panel"), as: :turbo_stream
+
+    assert_includes response.body, "Test Binance"
+    assert_includes response.body, "Second"
+    assert_includes response.body, ERB::Util.html_escape(I18n.t("settings.providers.exchange_connection.add_connection", provider: "Binance"))
+    assert_select "form[action=?]", binance_items_path
+  end
+
   test "should sync binance item" do
     post sync_binance_item_url(@binance_item)
     assert_response :redirect

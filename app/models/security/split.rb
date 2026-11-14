@@ -9,7 +9,10 @@ class Security::Split < ApplicationRecord
   belongs_to :security
 
   validates :ex_date, :source, presence: true
-  validates :numerator, :denominator, numericality: { only_integer: true, greater_than: 0 }
+  # The terms are int4 columns: a larger one must fail validation, not raise
+  # ActiveModel::RangeError on save.
+  validates :numerator, :denominator,
+            numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 2_147_483_647 }
   validates :ex_date, uniqueness: { scope: :security_id }
   validate :changes_the_share_count
 

@@ -13,6 +13,7 @@ class SecuritySplitsController < ApplicationController
   def new
     @split = @security.splits.build(ex_date: Date.current)
     @kind = "stock_dividend"
+    @entered = {}
   end
 
   def create
@@ -24,6 +25,8 @@ class SecuritySplitsController < ApplicationController
       redirect_back_or_to portfolio_path, notice: t(".success", ticker: @security.ticker)
     else
       @split.errors.add(:base, t(".invalid_ratio")) if @split.errors.empty?
+      # Re-shown as typed, not as parsed: "abc" must not come back as 0.
+      @entered = %i[percent numerator denominator].index_with { |field| params.dig(:security_split, field).to_s }
       render :new, status: :unprocessable_entity
     end
   end

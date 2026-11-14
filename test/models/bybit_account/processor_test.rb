@@ -21,6 +21,7 @@ class BybitAccount::ProcessorTest < ActiveSupport::TestCase
     @provider.stubs(:get_spot_executions).returns([])
     @provider.stubs(:get_deposit_records).returns([])
     @provider.stubs(:get_withdraw_records).returns([])
+    @provider.stubs(:get_internal_deposit_records).returns([])
     BybitItem.any_instance.stubs(:bybit_provider).returns(@provider)
   end
 
@@ -99,6 +100,55 @@ class BybitAccount::ProcessorTest < ActiveSupport::TestCase
     end
   end
 
+  test "an execution that cannot be priced holds the cursor until it can be" do
+    held_at = (Time.current - 2.hours).to_i * 1000
+    later = (Time.current - 1.hour).to_i * 1000
+    executions = [ execution("e4", symbol: "BTCETH", value: "0.1", price: "0.1", time: held_at), execution("e5", time: later) ]
+    ExchangeRate.stubs(:find_or_fetch_rate).returns(nil)
+
+    stub_executions(executions)
+    BybitAccount::Processor.new(@ba).process
+
+    payload = @ba.reload.raw_transactions_payload
+    assert_equal held_at, payload["last_exec_time"], "the cursor stops at the execution it could not import"
+    assert_equal({ "bybit_spot_e4" => 1 }, payload["unconverted_trades"])
+    assert @account.entries.exists?(external_id: "bybit_spot_e5"), "later executions are still imported"
+    assert_not @account.entries.exists?(external_id: "bybit_spot_e4")
+
+    @provider.stubs(:get_historical_price).with("ETHUSDT", anything).returns(3000)
+    stub_executions(executions)
+    BybitAccount::Processor.new(@ba).process
+
+    assert_equal 300, @account.entries.find_by!(external_id: "bybit_spot_e4").entryable.price.to_f
+    payload = @ba.reload.raw_transactions_payload
+    assert_equal later, payload["last_exec_time"]
+    assert_not payload.key?("unconverted_trades")
+  end
+
+  test "an execution still unpriced after the last attempt is let go and logged once" do
+    held_at = (Time.current - 2.hours).to_i * 1000
+    later = (Time.current - 1.hour).to_i * 1000
+    attempts = CryptoTransfer::ExchangeMovements::UNCONVERTED_TRADE_ATTEMPTS
+    @ba.update!(raw_transactions_payload: { "last_exec_time" => held_at, "unconverted_trades" => { "bybit_spot_e4" => attempts - 1 } })
+    ExchangeRate.stubs(:find_or_fetch_rate).returns(nil)
+    stub_executions([ execution("e4", symbol: "BTCETH", time: held_at), execution("e5", time: later) ])
+
+    assert_difference -> { DebugLogEntry.where(provider_key: "bybit", level: "error").count }, 1 do
+      BybitAccount::Processor.new(@ba).process
+    end
+
+    log = DebugLogEntry.where(provider_key: "bybit", level: "error").order(:created_at).last
+    assert_equal "bybit_spot_e4", log.metadata["external_id"]
+    assert_equal "no_usd_price", log.metadata["reason"]
+    assert_equal @account, log.account
+    assert_equal later, @ba.reload.raw_transactions_payload["last_exec_time"], "the cursor moves past it"
+
+    stub_executions([ execution("e4", symbol: "BTCETH", time: held_at) ])
+    assert_no_difference -> { DebugLogEntry.where(provider_key: "bybit", level: "error").count } do
+      BybitAccount::Processor.new(@ba).process
+    end
+  end
+
   test "reads each symbol's quote currency" do
     processor = BybitAccount::Processor.new(@ba)
 
@@ -166,6 +216,89 @@ class BybitAccount::ProcessorTest < ActiveSupport::TestCase
     assert_nil @ba.reload.raw_transactions_payload["last_transfer_scan"], "the failed scan is retried"
   end
 
+  test "a withdrawal that completed a week after it was requested is still read" do
+    last_scan = (Time.current - 1.hour).to_i * 1000
+    @ba.update!(raw_transactions_payload: { "last_transfer_scan" => last_scan })
+    @provider.expects(:get_withdraw_records)
+      .with(start_time: last_scan - 7.days.in_milliseconds, end_time: kind_of(Integer))
+      .returns([ withdrawal("w9") ])
+
+    BybitAccount::Processor.new(@ba).process
+
+    assert @account.entries.exists?(external_id: "bybit_withdraw_w9")
+  end
+
+  test "a transfer between two of the owner's Bybit accounts is imported on both sides and paired" do
+    other_item = BybitItem.create!(family: @family, name: "Bybit 2", api_key: "k2", api_secret: "s2")
+    other_ba = other_item.bybit_accounts.create!(name: "Bybit 2", account_type: "combined", currency: "USD", current_balance: 0)
+    other_account = Account.create!(family: @family, name: "Bybit 2", balance: 0, currency: "USD", accountable: Crypto.create!(subtype: "exchange"))
+    AccountProvider.create!(account: other_account, provider: other_ba)
+
+    stub_transfers(withdrawals: [ withdrawal("w5", amount: "100", tx: "77c37e5c-d9fa-41e5-bd13-c9b59d95").merge("withdrawType" => 1, "chain" => "") ])
+    BybitAccount::Processor.new(@ba).process
+
+    stub_transfers
+    @provider.stubs(:get_internal_deposit_records).returns([ internal_deposit("i1", amount: "100", tx: "77c37e5c-d9fa-41e5-bd13-c9b59d95") ])
+    BybitAccount::Processor.new(other_ba).process
+
+    deposit = other_account.entries.find_by!(external_id: "bybit_internal_deposit_i1")
+    assert_equal 100, deposit.entryable.qty.to_f
+    assert_equal "bybit:internal:77c37e5c-d9fa-41e5-bd13-c9b59d95", deposit.entryable.extra.dig("crypto_transfer", "reference")
+    assert_equal deposit.date, Time.zone.at(1_705_393_280).to_date, "seconds are read as seconds"
+
+    assert_equal 1, @family.match_crypto_transfers!
+    link = CryptoTransferLink.sole
+    assert link.confirmed?
+    assert_equal "reference", link.basis
+  end
+
+  test "internal deposits not yet credited are not imported" do
+    @provider.stubs(:get_internal_deposit_records).returns([ internal_deposit("i2", status: 1) ])
+
+    assert_no_difference -> { @account.entries.count } do
+      BybitAccount::Processor.new(@ba).process
+    end
+  end
+
+  test "a key that cannot read internal deposits still imports the other transfers" do
+    stub_transfers(deposits: [ deposit("d1") ])
+    @provider.stubs(:get_internal_deposit_records).raises(Provider::Bybit::PermissionError, "permission denied")
+
+    BybitAccount::Processor.new(@ba).process
+
+    assert @account.entries.exists?(external_id: "bybit_deposit_d1")
+    payload = @ba.reload.raw_transactions_payload
+    assert payload["last_transfer_scan"].present?
+    assert_nil payload["last_internal_deposit_scan"], "the failed scan is retried"
+  end
+
+  test "a deposit written without a price is priced on a later sync" do
+    ExchangeRate.stubs(:find_or_fetch_rate).returns(nil)
+    stub_transfers(deposits: [ deposit("d7", coin: "ETH", amount: "2") ])
+    BybitAccount::Processor.new(@ba).process
+
+    trade = @account.entries.find_by!(external_id: "bybit_deposit_d7").entryable
+    assert_equal 0, trade.price.to_f
+    assert trade.extra.dig("bybit", "price_missing")
+
+    @provider.stubs(:get_historical_price).with("ETHUSDT", anything).returns("3000")
+    BybitAccount::Processor.new(@ba).process
+
+    trade.reload
+    assert_equal 3000, trade.price.to_f
+    assert_nil trade.extra.dig("bybit", "price_missing")
+  end
+
+  test "a deposit that still cannot be priced stops being retried" do
+    ExchangeRate.stubs(:find_or_fetch_rate).returns(nil)
+    stub_transfers(deposits: [ deposit("d8", coin: "ETH") ])
+
+    (CryptoTransfer::ExchangeMovements::UNCONVERTED_TRADE_ATTEMPTS + 2).times { BybitAccount::Processor.new(@ba).process }
+
+    trade = @account.entries.find_by!(external_id: "bybit_deposit_d8").entryable
+    assert_equal CryptoTransfer::ExchangeMovements::UNCONVERTED_TRADE_ATTEMPTS, trade.extra.dig("bybit", "price_attempts")
+  end
+
   test "the trade and transfer cursors live side by side" do
     stub_executions([ execution("e1", time: 1_700_000_000_000) ])
     stub_transfers(deposits: [ deposit("d1") ])
@@ -200,6 +333,11 @@ class BybitAccount::ProcessorTest < ActiveSupport::TestCase
     def stub_transfers(deposits: [], withdrawals: [])
       @provider.stubs(:get_deposit_records).returns(deposits)
       @provider.stubs(:get_withdraw_records).returns(withdrawals)
+    end
+
+    def internal_deposit(id, coin: "USDT", amount: "10", tx: "internal-tx", status: 2)
+      { "id" => id, "coin" => coin, "amount" => amount, "type" => 1, "status" => status, "address" => "o***@example.com",
+        "createdTime" => "1705393280", "fromMemberId" => "118027304", "txID" => tx }
     end
 
     def deposit(id, coin: "USDT", amount: "10", tx: nil, chain: "TRX", status: 3)

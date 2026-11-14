@@ -9,6 +9,7 @@
 class Provider::Mexc
   include HTTParty
   include Provider::RateLimitable
+  include Provider::ExchangePriceCache
   extend SslConfigurable
 
   class Error < StandardError; end
@@ -109,7 +110,9 @@ class Provider::Mexc
 
   # Public endpoint. Last traded price for a symbol such as "BTCUSDT", or nil.
   def get_spot_price(symbol)
-    public_get("/api/v3/ticker/price", params: { "symbol" => symbol })["price"].presence
+    cached_spot_price(symbol) do
+      public_get("/api/v3/ticker/price", params: { "symbol" => symbol })["price"].presence
+    end
   rescue Error => e
     Rails.logger.warn("Provider::Mexc: no price for #{symbol}: #{e.message}")
     nil
@@ -117,11 +120,13 @@ class Provider::Mexc
 
   # Public endpoint. Close of the daily candle containing `date`, or nil.
   def get_historical_price(symbol, date)
-    start_ms = date.to_time.utc.beginning_of_day.to_i * 1000
-    candles = public_get("/api/v3/klines", params: {
-      "symbol" => symbol, "interval" => "1d", "startTime" => start_ms.to_s, "limit" => "1"
-    })
-    candles.dig(0, 4).presence # [openTime, open, high, low, close, ...]
+    cached_historical_price(symbol, date) do
+      start_ms = date.to_time.utc.beginning_of_day.to_i * 1000
+      candles = public_get("/api/v3/klines", params: {
+        "symbol" => symbol, "interval" => "1d", "startTime" => start_ms.to_s, "limit" => "1"
+      })
+      candles.dig(0, 4).presence # [openTime, open, high, low, close, ...]
+    end
   rescue Error => e
     Rails.logger.warn("Provider::Mexc: no historical price for #{symbol} on #{date}: #{e.message}")
     nil

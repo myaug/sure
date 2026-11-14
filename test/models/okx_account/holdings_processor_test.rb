@@ -93,6 +93,25 @@ class OkxAccount::HoldingsProcessorTest < ActiveSupport::TestCase
     assert_equal [ "CRYPTO:BTC" ], held_tickers
   end
 
+  test "the same coin in two wallets is held once, at their combined quantity and value" do
+    ExchangeRate.create!(from_currency: "USD", to_currency: "EUR", date: Date.current, rate: 1.0)
+    write_payload([ btc_asset, btc_asset.merge("total" => "0.25", "usd_value" => "15000", "source" => "fund") ])
+
+    2.times do
+      OkxAccount::HoldingsProcessor.new(@ba.reload).process
+
+      holding = @account.reload.current_holdings.sole
+      assert_equal 0.75, holding.qty.to_f
+      assert_equal 45_000, holding.amount.to_f
+      assert_equal 60_000, holding.price.to_f
+    end
+
+    write_payload([ btc_asset ])
+    OkxAccount::HoldingsProcessor.new(@ba.reload).process
+
+    assert_equal 0.5, @account.reload.current_holdings.sole.qty.to_f
+  end
+
   private
 
     def btc_asset = { "symbol" => "BTC", "total" => "0.5", "usd_value" => "30000", "source" => "unified" }

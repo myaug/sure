@@ -67,10 +67,12 @@ class OkxAccount::Processor
 
       # Entries first: if this raises, the cursor below is not advanced and the
       # next sync retries the same range. Oldest first so cost basis builds in order.
-      fills.reverse_each { |fill| process_fill(fill) }
+      unconverted = fills.reverse.filter_map { |fill| process_fill(fill) }
+      retried, attempts = retry_unconverted_trades(okx_account, unconverted)
 
       newest = fills.filter_map { |fill| fill["fillTime"].presence&.to_i }.max
-      store_movement_cursor(okx_account, "last_fill_time", [ newest, last_fill_time ].compact.max || now_ms)
+      cursor = retried.map(&:time_ms).min || [ newest, last_fill_time ].compact.max || now_ms
+      store_trade_cursor(okx_account, "last_fill_time", cursor, attempts)
     end
 
     def account
@@ -94,6 +96,7 @@ class OkxAccount::Processor
         provider.get_withdrawal_history(begin_time: from_ms).each { |withdrawal| record_withdrawal(withdrawal) }
 
         store_movement_cursor(okx_account, "last_transfer_scan", now_ms)
+        reprice_missing_movements
       end
     end
 
@@ -152,6 +155,7 @@ class OkxAccount::Processor
       [ start_ms, now_ms - Provider::Okx::FILLS_HISTORY_MS + 60_000 ].max
     end
 
+    # Returns an UnconvertedTrade when the fill could not be imported yet, else nil.
     def process_fill(fill)
       account = okx_account.current_account
       return unless account
@@ -162,21 +166,22 @@ class OkxAccount::Processor
       qty = fill["fillSz"].to_d
       return if qty.zero?
 
+      time_ms = (fill["fillTime"].presence || fill["ts"]).to_i
       base, quote = fill["instId"].to_s.split("-", 2)
-      return if base.blank? || quote.blank? || CryptoAsset.usd_stablecoin?(base)
+      return unconverted_trade(external_id, time_ms: time_ms, reason: "unknown_pair", symbol: fill["instId"]) if base.blank? || quote.blank?
+      return if CryptoAsset.usd_stablecoin?(base)
 
       security = OkxAccount::SecurityResolver.resolve(base)
-      return unless security
+      return unconverted_trade(external_id, time_ms: time_ms, reason: "no_security", symbol: fill["instId"]) unless security
 
-      time_ms = (fill["fillTime"].presence || fill["ts"]).to_i
       date = Time.zone.at(time_ms / 1000).to_date
       price = fill["fillPx"].to_d
       amount_usd = quote_to_usd(qty * price, quote, date: date)
       price_usd = quote_to_usd(price, quote, date: date)
 
       if amount_usd.nil? || price_usd.nil?
-        Rails.logger.warn "OkxAccount::Processor - skipping fill #{fill["billId"]}: could not convert #{quote} to USD"
-        return
+        Rails.logger.warn "OkxAccount::Processor - holding fill #{fill["billId"]}: could not convert #{quote} to USD"
+        return unconverted_trade(external_id, time_ms: time_ms, reason: "no_usd_price", symbol: fill["instId"])
       end
 
       fee = fee_in_usd(fill, base, price_usd, date: date)
@@ -199,6 +204,7 @@ class OkxAccount::Processor
           investment_activity_label: buy ? "Buy" : "Sell"
         )
       )
+      nil
     rescue StandardError => e
       Rails.logger.error "OkxAccount::Processor - failed to process fill #{fill["billId"]}: #{e.message}"
       raise

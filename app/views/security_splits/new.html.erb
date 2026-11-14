@@ -18,13 +18,13 @@
                         { data: { action: "security-split-kind#toggle", security_split_kind_target: "kind" } } %>
 
         <div data-security-split-kind-target="stockDividend" class="<%= "hidden" unless @kind == "stock_dividend" %>">
-          <%= form.number_field :percent, label: t(".percent_label"), placeholder: "20", step: "0.01", min: "0" %>
+          <%= form.number_field :percent, value: @entered[:percent], label: t(".percent_label"), placeholder: "20", step: "0.01", min: "0" %>
           <p class="mt-1 text-xs text-secondary"><%= t(".percent_help") %></p>
         </div>
 
         <div data-security-split-kind-target="split" class="<%= "hidden" unless @kind == "split" %> grid grid-cols-2 gap-3">
-          <%= form.number_field :numerator, label: t(".numerator_label"), step: "1", min: "1" %>
-          <%= form.number_field :denominator, label: t(".denominator_label"), step: "1", min: "1" %>
+          <%= form.number_field :numerator, value: @entered[:numerator], label: t(".numerator_label"), step: "1", min: "1" %>
+          <%= form.number_field :denominator, value: @entered[:denominator], label: t(".denominator_label"), step: "1", min: "1" %>
           <p class="col-span-2 text-xs text-secondary"><%= t(".split_help") %></p>
         </div>
 
@@ -35,12 +35,13 @@
         </div>
       <% end %>
 
-      <% if @security.splits.any? %>
+      <%# Only saved splits: a rejected submission leaves an unsaved one on the association. %>
+      <% recorded_splits = @security.splits.order(:ex_date).to_a %>
+      <% if recorded_splits.any? %>
         <div class="space-y-2">
           <h4 class="text-sm font-medium text-primary"><%= t(".recorded") %></h4>
           <ul class="space-y-1 text-sm">
-            <% @security.splits.order(:ex_date).each do |split| %>
-              <% next if split.new_record? %>
+            <% recorded_splits.each do |split| %>
               <li class="flex items-center justify-between gap-2">
                 <span class="text-primary"><%= t(".recorded_split", date: l(split.ex_date, format: :long), numerator: split.numerator, denominator: split.denominator) %></span>
                 <%= render DS::Button.new(

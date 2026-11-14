@@ -181,6 +181,7 @@ class BinanceAccount::Processor
         withdrawals.each { |withdrawal| record_withdrawal(withdrawal) }
 
         store_movement_cursor(binance_account, "last_transfer_scan", now_ms)
+        reprice_missing_movements
       end
     end
 

@@ -20,7 +20,7 @@ class BybitItemsController < ApplicationController
 
   def create
     @bybit_item = Current.family.bybit_items.build(bybit_item_params)
-    @bybit_item.name ||= t(".default_name")
+    @bybit_item.name = next_connection_name(Current.family.bybit_items, t(".default_name")) if @bybit_item.name.blank?
 
     if @bybit_item.save
       @bybit_item.set_bybit_institution_defaults!
@@ -32,9 +32,10 @@ class BybitItemsController < ApplicationController
     end
   end
 
-  # The panel has no edit form, so an update never re-renders it.
+  # Only the name changes: another key could belong to another account, whose
+  # history would then land in this one. The redirect reloads the panel.
   def update
-    if @bybit_item.update(bybit_item_params)
+    if @bybit_item.update(params.require(:bybit_item).permit(:name))
       redirect_to settings_providers_path, notice: t(".success"), status: :see_other
     else
       redirect_to settings_providers_path, alert: @bybit_item.errors.full_messages.join(", "), status: :see_other

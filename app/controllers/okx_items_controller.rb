@@ -20,7 +20,7 @@ class OkxItemsController < ApplicationController
 
   def create
     @okx_item = Current.family.okx_items.build(okx_item_params)
-    @okx_item.name ||= t(".default_name")
+    @okx_item.name = next_connection_name(Current.family.okx_items, t(".default_name")) if @okx_item.name.blank?
 
     if @okx_item.save
       @okx_item.set_okx_institution_defaults!
@@ -32,9 +32,10 @@ class OkxItemsController < ApplicationController
     end
   end
 
-  # The panel has no edit form, so an update never re-renders it.
+  # Only the name changes: another key could belong to another account, whose
+  # history would then land in this one. The redirect reloads the panel.
   def update
-    if @okx_item.update(okx_item_params)
+    if @okx_item.update(params.require(:okx_item).permit(:name))
       redirect_to settings_providers_path, notice: t(".success"), status: :see_other
     else
       redirect_to settings_providers_path, alert: @okx_item.errors.full_messages.join(", "), status: :see_other

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-# Creates/updates one Holding per (asset, wallet) pair in the combined MexcAccount.
+# Creates/updates Holdings for the combined MexcAccount. The same coin reported
+# more than once adds up to one holding, see
+# Account::ProviderImportAdapter#import_holding.
 class MexcAccount::HoldingsProcessor
   include MexcAccount::UsdConverter
 

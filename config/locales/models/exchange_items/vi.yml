@@ -1,0 +1,30 @@
+---
+vi:
+  activerecord:
+    attributes:
+      binance_item:
+        api_key: Khóa API
+      bybit_item:
+        api_key: Khóa API
+      mexc_item:
+        api_key: Khóa API
+      okx_item:
+        api_key: Khóa API
+    errors:
+      models:
+        binance_item:
+          attributes:
+            api_key:
+              already_connected: đã được dùng cho một kết nối khác
+        bybit_item:
+          attributes:
+            api_key:
+              already_connected: đã được dùng cho một kết nối khác
+        mexc_item:
+          attributes:
+            api_key:
+              already_connected: đã được dùng cho một kết nối khác
+        okx_item:
+          attributes:
+            api_key:
+              already_connected: đã được dùng cho một kết nối khác

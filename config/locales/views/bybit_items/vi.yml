@@ -10,6 +10,7 @@ vi:
       success: Đã lên lịch xóa kết nối Bybit.
     setup_accounts:
       title: Nhập tài khoản Bybit
+      historical_import: Nhập dữ liệu lịch sử
       subtitle: Chọn danh mục đầu tư muốn theo dõi
       instructions: Chọn các danh mục đầu tư Bybit bạn muốn nhập. Chỉ hiển thị các danh mục có số dư.
       no_accounts: Tất cả tài khoản đã được nhập.

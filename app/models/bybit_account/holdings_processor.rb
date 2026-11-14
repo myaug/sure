@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-# Creates/updates one Holding per (asset, wallet) pair in the combined BybitAccount.
+# Creates/updates Holdings for the combined BybitAccount. The same coin in the
+# Unified and Funding wallets adds up to one holding, see
+# Account::ProviderImportAdapter#import_holding.
 class BybitAccount::HoldingsProcessor
   include BybitAccount::UsdConverter
 

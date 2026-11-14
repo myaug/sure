@@ -37,6 +37,7 @@ class BybitAccount::Processor
     process_account!
     fetch_and_process_trades
     fetch_and_process_transfers
+    fetch_and_process_internal_deposits
 
     # The account was anchored before this history existed; the anchor has to precede it.
     bybit_account.current_account.ensure_opening_anchor_precedes_entries
@@ -71,10 +72,12 @@ class BybitAccount::Processor
 
       # Entries first: if this raises, the cursor below is not advanced and the
       # next sync retries the same range.
-      executions.each { |execution| process_execution(execution) }
+      unconverted = executions.filter_map { |execution| process_execution(execution) }
+      retried, attempts = retry_unconverted_trades(bybit_account, unconverted)
 
       newest = executions.filter_map { |execution| execution["execTime"].to_i.presence }.max
-      store_movement_cursor(bybit_account, "last_exec_time", [ newest, last_exec_time ].compact.max || now_ms)
+      cursor = retried.map(&:time_ms).min || [ newest, last_exec_time ].compact.max || now_ms
+      store_trade_cursor(bybit_account, "last_exec_time", cursor, attempts)
     end
 
     def account
@@ -105,7 +108,64 @@ class BybitAccount::Processor
         withdrawals.each { |withdrawal| record_withdrawal(withdrawal) }
 
         store_movement_cursor(bybit_account, "last_transfer_scan", now_ms)
+        reprice_missing_movements
       end
+    end
+
+    # Deposits from another Bybit user, such as the owner's other account. Kept
+    # apart from the on-chain scan, with its own cursor, so a key that cannot
+    # read them still imports everything else.
+    def fetch_and_process_internal_deposits
+      return unless provider
+
+      importing_movements("internal deposits") do
+        now_ms = Time.current.to_i * 1000
+        from_ms = transfer_scan_start_ms(
+          bybit_account.raw_transactions_payload.to_h["last_internal_deposit_scan"]&.to_i,
+          bybit_account.bybit_item.sync_start_date,
+          lookback: DEFAULT_LOOKBACK, retention_ms: Provider::Bybit::RECORD_HISTORY_MS, now_ms: now_ms
+        )
+
+        deposits = []
+        each_transfer_window(from_ms, now_ms, Provider::Bybit::RECORD_WINDOW_MS) do |window_start, window_end|
+          deposits.concat(provider.get_internal_deposit_records(start_time: window_start, end_time: window_end))
+        end
+
+        deposits.each { |deposit| record_internal_deposit(deposit) }
+        store_movement_cursor(bybit_account, "last_internal_deposit_scan", now_ms)
+      end
+    end
+
+    # status 2 is credited. The transfer never touches a chain, so it carries
+    # Bybit's own txID instead of a hash. When the sender's off-chain withdrawal
+    # shows the same txID the two pair by reference; otherwise the matcher falls
+    # back to amount and time.
+    def record_internal_deposit(deposit)
+      return unless deposit["status"].to_i == 2
+
+      record_movement(
+        external_id: "bybit_internal_deposit_#{deposit["id"].presence || deposit["txID"]}",
+        symbol: deposit["coin"],
+        quantity: deposit["amount"].to_d,
+        time_ms: epoch_ms(deposit["createdTime"]),
+        tx_hash: nil,
+        network: nil,
+        address: deposit["address"],
+        reference: internal_reference(deposit["txID"]),
+        provider_meta: { "type" => "internal_deposit", "id" => deposit["id"], "tx_id" => deposit["txID"], "from_member_id" => deposit["fromMemberId"] }
+      )
+    end
+
+    # Bybit's own id for a transfer between two Bybit users, shared by both sides.
+    def internal_reference(tx_id)
+      tx_id.presence && "bybit:internal:#{tx_id}"
+    end
+
+    # Internal deposit times come in seconds, everything else in milliseconds.
+    def epoch_ms(value)
+      return if value.blank?
+
+      value.to_i < 100_000_000_000 ? value.to_i * 1000 : value.to_i
     end
 
     # status 3 is a successful deposit; the others are still in flight or failed.
@@ -125,19 +185,23 @@ class BybitAccount::Processor
     end
 
     # What leaves the balance is the amount plus the withdrawal fee, so the
-    # quantity is both; the network then delivers the amount.
+    # quantity is both; the network then delivers the amount. An off-chain one
+    # (withdrawType 1) goes to another Bybit user and has no chain or hash.
     def record_withdrawal(withdrawal)
       return unless withdrawal["status"].to_s.casecmp?("success")
+
+      off_chain = withdrawal["withdrawType"].to_i == 1
 
       record_movement(
         external_id: "bybit_withdraw_#{withdrawal["withdrawId"]}",
         symbol: withdrawal["coin"],
         quantity: -(withdrawal["amount"].to_d + withdrawal["withdrawFee"].to_d),
         time_ms: withdrawal["updateTime"].presence || withdrawal["createTime"],
-        tx_hash: withdrawal["txID"],
-        network: withdrawal["chain"],
+        tx_hash: off_chain ? nil : withdrawal["txID"],
+        network: off_chain ? nil : withdrawal["chain"],
         address: withdrawal["toAddress"],
-        provider_meta: { "type" => "withdrawal", "id" => withdrawal["withdrawId"], "chain" => withdrawal["chain"], "tx_id" => withdrawal["txID"], "fee" => withdrawal["withdrawFee"] }
+        reference: (internal_reference(withdrawal["txID"]) if off_chain),
+        provider_meta: { "type" => "withdrawal", "id" => withdrawal["withdrawId"], "chain" => withdrawal["chain"], "tx_id" => withdrawal["txID"], "fee" => withdrawal["withdrawFee"], "off_chain" => (true if off_chain) }
       )
     end
 
@@ -170,6 +234,8 @@ class BybitAccount::Processor
       executions
     end
 
+    # Returns an UnconvertedTrade when the execution could not be imported yet,
+    # else nil.
     def process_execution(execution)
       account = bybit_account.current_account
       return unless account
@@ -180,19 +246,21 @@ class BybitAccount::Processor
       qty = execution["execQty"].to_d
       return if qty.zero?
 
+      time_ms = execution["execTime"].to_i
       base, quote = split_symbol(execution["symbol"])
-      return if base.blank? || CryptoAsset.usd_stablecoin?(base)
+      return unconverted_trade(external_id, time_ms: time_ms, reason: "unknown_pair", symbol: execution["symbol"]) if base.blank?
+      return if CryptoAsset.usd_stablecoin?(base)
 
       security = BybitAccount::SecurityResolver.resolve(base)
-      return unless security
+      return unconverted_trade(external_id, time_ms: time_ms, reason: "no_security", symbol: execution["symbol"]) unless security
 
-      date = Time.zone.at(execution["execTime"].to_i / 1000).to_date
+      date = Time.zone.at(time_ms / 1000).to_date
       amount_usd = quote_to_usd(execution["execValue"].to_d, quote, date: date)
       price_usd = quote_to_usd(execution["execPrice"].to_d, quote, date: date)
 
       if amount_usd.nil? || price_usd.nil?
-        Rails.logger.warn "BybitAccount::Processor - skipping execution #{execution["execId"]}: could not convert #{quote} to USD"
-        return
+        Rails.logger.warn "BybitAccount::Processor - holding execution #{execution["execId"]}: could not convert #{quote} to USD"
+        return unconverted_trade(external_id, time_ms: time_ms, reason: "no_usd_price", symbol: execution["symbol"])
       end
 
       fee = fee_in_usd(execution, base, price_usd, date: date)
@@ -215,6 +283,7 @@ class BybitAccount::Processor
           investment_activity_label: buy ? "Buy" : "Sell"
         )
       )
+      nil
     rescue StandardError => e
       Rails.logger.error "BybitAccount::Processor - failed to process execution #{execution["execId"]}: #{e.message}"
       raise

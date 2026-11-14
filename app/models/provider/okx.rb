@@ -7,6 +7,7 @@
 class Provider::Okx
   include HTTParty
   include Provider::RateLimitable
+  include Provider::ExchangePriceCache
   extend SslConfigurable
 
   class Error < StandardError; end
@@ -107,7 +108,9 @@ class Provider::Okx
 
   # Public endpoint. Last traded price for e.g. "BTC-USDT", or nil.
   def get_spot_price(inst_id)
-    public_get("/api/v5/market/ticker", params: { "instId" => inst_id }).dig(0, "last").presence
+    cached_spot_price(inst_id) do
+      public_get("/api/v5/market/ticker", params: { "instId" => inst_id }).dig(0, "last").presence
+    end
   rescue Error => e
     Rails.logger.warn("Provider::Okx: no price for #{inst_id}: #{e.message}")
     nil
@@ -115,12 +118,14 @@ class Provider::Okx
 
   # Public endpoint. Close of the daily candle containing `date`, or nil.
   def get_historical_price(inst_id, date)
-    # history-candles returns candles older than `after`, so ask for the one
-    # that closes at the end of the requested day.
-    day_end = date.to_time.utc.beginning_of_day.to_i * 1000 + 24 * 60 * 60 * 1000
-    public_get("/api/v5/market/history-candles", params: {
-      "instId" => inst_id, "bar" => "1Dutc", "after" => day_end.to_s, "limit" => "1"
-    }).dig(0, 4).presence # [ts, open, high, low, close, ...]
+    cached_historical_price(inst_id, date) do
+      # history-candles returns candles older than `after`, so ask for the one
+      # that closes at the end of the requested day.
+      day_end = date.to_time.utc.beginning_of_day.to_i * 1000 + 24 * 60 * 60 * 1000
+      public_get("/api/v5/market/history-candles", params: {
+        "instId" => inst_id, "bar" => "1Dutc", "after" => day_end.to_s, "limit" => "1"
+      }).dig(0, 4).presence # [ts, open, high, low, close, ...]
+    end
   rescue Error => e
     Rails.logger.warn("Provider::Okx: no historical price for #{inst_id} on #{date}: #{e.message}")
     nil

@@ -14,6 +14,7 @@ en:
       select_connection: Choose a MEXC connection in Provider Settings.
     setup_accounts:
       title: Import MEXC Account
+      historical_import: Historical import
       subtitle: Select which portfolios to track
       instructions: Select the MEXC wallets you want to import. Only wallets with balances are shown.
       no_accounts: All accounts have been imported.

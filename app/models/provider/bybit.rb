@@ -8,6 +8,7 @@
 class Provider::Bybit
   include HTTParty
   extend SslConfigurable
+  include Provider::ExchangePriceCache
 
   class Error < StandardError; end
   class AuthenticationError < Error; end
@@ -104,16 +105,26 @@ class Provider::Bybit
     records("/v5/asset/deposit/query-record", start_time, end_time)
   end
 
-  # Withdrawals requested inside one window of at most RECORD_WINDOW_MS. status
-  # "success" is a completed withdrawal.
+  # Withdrawals requested inside one window of at most RECORD_WINDOW_MS, on
+  # chain and off it (withdrawType 2), so a transfer to another Bybit user is
+  # read too. status "success" is a completed withdrawal.
   def get_withdraw_records(start_time:, end_time:)
-    records("/v5/asset/withdraw/query-record", start_time, end_time)
+    records("/v5/asset/withdraw/query-record", start_time, end_time, "withdrawType" => "2")
+  end
+
+  # Deposits from another Bybit user inside one window of at most
+  # RECORD_WINDOW_MS. They never touch a chain, so the on-chain list above
+  # leaves them out. status 2 is a credited deposit.
+  def get_internal_deposit_records(start_time:, end_time:)
+    records("/v5/asset/deposit/query-internal-record", start_time, end_time)
   end
 
   # Public endpoint. Last traded price for a spot symbol such as "BTCUSDT", or nil.
   def get_spot_price(symbol)
-    result = public_get("/v5/market/tickers", params: { "category" => "spot", "symbol" => symbol })
-    result.dig("list", 0, "lastPrice").presence
+    cached_spot_price(symbol) do
+      result = public_get("/v5/market/tickers", params: { "category" => "spot", "symbol" => symbol })
+      result.dig("list", 0, "lastPrice").presence
+    end
   rescue Error => e
     Rails.logger.warn("Provider::Bybit: no price for #{symbol}: #{e.message}")
     nil
@@ -121,13 +132,15 @@ class Provider::Bybit
 
   # Public endpoint. Close of the daily candle containing `date`, or nil.
   def get_historical_price(symbol, date)
-    start_ms = date.to_time.utc.beginning_of_day.to_i * 1000
-    result = public_get("/v5/market/kline", params: {
-      "category" => "spot", "symbol" => symbol, "interval" => "D",
-      "start" => start_ms.to_s, "end" => (start_ms + 24 * 60 * 60 * 1000 - 1).to_s, "limit" => "1"
-    })
-    # [startTime, open, high, low, close, volume, turnover]
-    result.dig("list", 0, 4).presence
+    cached_historical_price(symbol, date) do
+      start_ms = date.to_time.utc.beginning_of_day.to_i * 1000
+      result = public_get("/v5/market/kline", params: {
+        "category" => "spot", "symbol" => symbol, "interval" => "D",
+        "start" => start_ms.to_s, "end" => (start_ms + 24 * 60 * 60 * 1000 - 1).to_s, "limit" => "1"
+      })
+      # [startTime, open, high, low, close, volume, turnover]
+      result.dig("list", 0, 4).presence
+    end
   rescue Error => e
     Rails.logger.warn("Provider::Bybit: no historical price for #{symbol} on #{date}: #{e.message}")
     nil
@@ -135,12 +148,12 @@ class Provider::Bybit
 
   private
 
-    def records(path, start_time, end_time)
+    def records(path, start_time, end_time, extra_params = {})
       rows = []
       cursor = nil
 
       MAX_RECORD_PAGES.times do
-        params = { "startTime" => start_time.to_i.to_s, "endTime" => end_time.to_i.to_s, "limit" => RECORD_PAGE_LIMIT.to_s }
+        params = { "startTime" => start_time.to_i.to_s, "endTime" => end_time.to_i.to_s, "limit" => RECORD_PAGE_LIMIT.to_s }.merge(extra_params)
         params["cursor"] = cursor if cursor.present?
 
         result = signed_get(path, params: params)
@@ -186,7 +199,11 @@ class Provider::Bybit
         unwrap(parsed)
       when 401
         raise AuthenticationError, error_message(parsed) || "Unauthorized"
-      when 403, 429
+      when 403
+        # Bybit's IP limit ("access too frequent"): the server IP is blocked for
+        # about ten minutes, for every connection that shares it.
+        raise RateLimitError, "Bybit blocked this server's IP for making too many requests; it lifts after about 10 minutes"
+      when 429
         raise RateLimitError, "Rate limit exceeded"
       else
         raise ApiError, error_message(parsed) || "API error: #{response.code}"

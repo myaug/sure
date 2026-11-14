@@ -20,7 +20,7 @@ class BinanceItemsController < ApplicationController
 
   def create
     @binance_item = Current.family.binance_items.build(binance_item_params)
-    @binance_item.name ||= t(".default_name")
+    @binance_item.name = next_connection_name(Current.family.binance_items, t(".default_name")) if @binance_item.name.blank?
 
     if @binance_item.save
       @binance_item.set_binance_institution_defaults!
@@ -32,9 +32,10 @@ class BinanceItemsController < ApplicationController
     end
   end
 
-  # The panel has no edit form, so an update never re-renders it.
+  # Only the name changes: another key could belong to another account, whose
+  # history would then land in this one. The redirect reloads the panel.
   def update
-    if @binance_item.update(binance_item_params)
+    if @binance_item.update(params.require(:binance_item).permit(:name))
       redirect_to settings_providers_path, notice: t(".success"), status: :see_other
     else
       redirect_to settings_providers_path, alert: @binance_item.errors.full_messages.join(", "), status: :see_other

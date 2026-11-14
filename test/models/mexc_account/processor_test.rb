@@ -109,6 +109,27 @@ class MexcAccount::ProcessorTest < ActiveSupport::TestCase
     assert_nil @ba.reload.raw_transactions_payload
   end
 
+  test "a trade with no security holds only its own pair's cursor until it resolves" do
+    held_at = (Time.current - 2.hours).to_i * 1000
+    stub_trades("BTCUSDT", [ trade("t1", time: held_at) ])
+    stub_trades("BTCUSDC", [ trade("t2", symbol: "BTCUSDC") ])
+    MexcAccount::SecurityResolver.stubs(:resolve).returns(nil)
+
+    MexcAccount::Processor.new(@ba).process
+
+    payload = @ba.reload.raw_transactions_payload
+    assert_equal held_at, payload.dig("scanned_until", "BTCUSDT")
+    assert_operator payload.dig("scanned_until", "BTCUSDC"), :>, held_at, "the other pair is not held"
+    assert_equal({ "mexc_spot_BTCUSDT_t1" => 1, "mexc_spot_BTCUSDC_t2" => 1 }, payload["unconverted_trades"])
+
+    MexcAccount::SecurityResolver.unstub(:resolve)
+    MexcAccount::Processor.new(@ba).process
+
+    assert @account.entries.exists?(external_id: "mexc_spot_BTCUSDT_t1")
+    assert_operator @ba.reload.raw_transactions_payload.dig("scanned_until", "BTCUSDT"), :>, held_at
+    assert_not @ba.raw_transactions_payload.key?("unconverted_trades")
+  end
+
   test "reads each symbol's quote currency" do
     processor = MexcAccount::Processor.new(@ba)
 
@@ -197,8 +218,8 @@ class MexcAccount::ProcessorTest < ActiveSupport::TestCase
       @provider.stubs(:get_my_trades).with(pair, anything).returns(list)
     end
 
-    def trade(id, buyer: true, qty: "1", price: "100", quote_qty: "100", fee: "0", fee_asset: "USDT", symbol: "BTCUSDT")
+    def trade(id, buyer: true, qty: "1", price: "100", quote_qty: "100", fee: "0", fee_asset: "USDT", symbol: "BTCUSDT", time: Time.current.to_i * 1000)
       { "id" => id, "symbol" => symbol, "isBuyer" => buyer, "qty" => qty, "price" => price, "quoteQty" => quote_qty,
-        "commission" => fee, "commissionAsset" => fee_asset, "time" => (Time.current.to_i * 1000).to_s }
+        "commission" => fee, "commissionAsset" => fee_asset, "time" => time.to_s }
     end
 end

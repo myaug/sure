@@ -53,6 +53,20 @@ class SecuritySplitsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "a refused form keeps what was entered" do
+    sign_in @admin
+
+    post security_splits_path, params: { security_split: { security_id: @security.id, kind: "split", numerator: "2", denominator: "2", ex_date: "2026-11-02" } }
+    assert_response :unprocessable_entity
+    assert_select "input[name=?][value=?]", "security_split[numerator]", "2"
+    assert_select "input[name=?][value=?]", "security_split[denominator]", "2"
+    assert_select "input[name=?][value=?]", "security_split[ex_date]", "2026-11-02"
+
+    post security_splits_path, params: { security_split: { security_id: @security.id, kind: "stock_dividend", percent: "-3", ex_date: "2026-11-02" } }
+    assert_response :unprocessable_entity
+    assert_select "input[name=?][value=?]", "security_split[percent]", "-3"
+  end
+
   test "a second split on the same ex-date is refused" do
     sign_in @admin
     @security.splits.create!(ex_date: Date.new(2026, 11, 2), numerator: 6, denominator: 5, source: "manual")

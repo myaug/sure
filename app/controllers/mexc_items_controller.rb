@@ -20,7 +20,7 @@ class MexcItemsController < ApplicationController
 
   def create
     @mexc_item = Current.family.mexc_items.build(mexc_item_params)
-    @mexc_item.name ||= t(".default_name")
+    @mexc_item.name = next_connection_name(Current.family.mexc_items, t(".default_name")) if @mexc_item.name.blank?
 
     if @mexc_item.save
       @mexc_item.set_mexc_institution_defaults!
@@ -32,9 +32,10 @@ class MexcItemsController < ApplicationController
     end
   end
 
-  # The panel has no edit form, so an update never re-renders it.
+  # Only the name changes: another key could belong to another account, whose
+  # history would then land in this one. The redirect reloads the panel.
   def update
-    if @mexc_item.update(mexc_item_params)
+    if @mexc_item.update(params.require(:mexc_item).permit(:name))
       redirect_to settings_providers_path, notice: t(".success"), status: :see_other
     else
       redirect_to settings_providers_path, alert: @mexc_item.errors.full_messages.join(", "), status: :see_other

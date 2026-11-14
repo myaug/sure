@@ -99,6 +99,41 @@ class OkxAccount::ProcessorTest < ActiveSupport::TestCase
     end
   end
 
+  test "a fill that cannot be priced holds the cursor until it can be" do
+    held_at = (Time.current - 2.hours).to_i * 1000
+    later = (Time.current - 1.hour).to_i * 1000
+    # OKX lists newest first.
+    stub_fills([ fill("b5", time: later), fill("b4", inst: "BTC-ETH", price: "0.1", time: held_at) ])
+    ExchangeRate.stubs(:find_or_fetch_rate).returns(nil)
+
+    OkxAccount::Processor.new(@ba).process
+
+    payload = @ba.reload.raw_transactions_payload
+    assert_equal held_at, payload["last_fill_time"]
+    assert_equal({ "okx_spot_b4" => 1 }, payload["unconverted_trades"])
+    assert @account.entries.exists?(external_id: "okx_spot_b5")
+
+    @provider.stubs(:get_historical_price).with("ETH-USDT", anything).returns(3000)
+    OkxAccount::Processor.new(@ba).process
+
+    assert @account.entries.exists?(external_id: "okx_spot_b4")
+    assert_equal later, @ba.reload.raw_transactions_payload["last_fill_time"]
+    assert_not @ba.raw_transactions_payload.key?("unconverted_trades")
+  end
+
+  test "a fill still unpriced after the last attempt is let go and logged" do
+    held_at = (Time.current - 2.hours).to_i * 1000
+    attempts = CryptoTransfer::ExchangeMovements::UNCONVERTED_TRADE_ATTEMPTS
+    @ba.update!(raw_transactions_payload: { "last_fill_time" => held_at, "unconverted_trades" => { "okx_spot_b4" => attempts - 1 } })
+    stub_fills([ fill("b4", inst: "BTC-ETH", time: held_at) ])
+    ExchangeRate.stubs(:find_or_fetch_rate).returns(nil)
+
+    assert_difference -> { DebugLogEntry.where(provider_key: "okx", level: "error").count }, 1 do
+      OkxAccount::Processor.new(@ba).process
+    end
+    assert_equal({ "okx_spot_b4" => attempts }, @ba.reload.raw_transactions_payload["unconverted_trades"])
+  end
+
   test "imports a credited deposit as a Transfer trade that carries its hash" do
     stub_transfers(deposits: [ deposit("d1", ccy: "USDT", amt: "100", tx: "0xabababababababababababababababababababababababababababababababab", chain: "USDT-TRC20") ])
 

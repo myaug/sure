@@ -18,13 +18,72 @@
 module CryptoTransfer::ExchangeMovements
   # Deposits and withdrawals are listed by when they were requested, but only
   # count once they succeed, so a window is re-read this far back to catch one
-  # that settled after the previous sync looked.
-  TRANSFER_RESCAN_MS = 3 * 24 * 60 * 60 * 1000
+  # that settled after the previous sync looked. A withdrawal held for review
+  # can take days to complete, which is what sets the length.
+  TRANSFER_RESCAN_MS = 7 * 24 * 60 * 60 * 1000
 
   # Reading slightly before what the exchange keeps is not worth a log entry.
   GAP_TOLERANCE_MS = 24 * 60 * 60 * 1000
 
+  # A trade that could not be priced or matched to a security holds the trade
+  # cursor at its time, so later syncs read it again: the price feed or rate
+  # that failed may answer next time. After this many failed syncs it is let
+  # go, and logged for support, so one bad trade cannot pin the cursor forever.
+  UNCONVERTED_TRADE_ATTEMPTS = 5
+  UNCONVERTED_TRADES_KEY = "unconverted_trades"
+
+  # Deposits and withdrawals without a price, priced again per sync.
+  REPRICE_BATCH = 50
+
+  UnconvertedTrade = Data.define(:external_id, :time_ms, :reason, :symbol, :scope)
+
   private
+
+    def unconverted_trade(external_id, time_ms:, reason:, symbol:, scope: nil)
+      UnconvertedTrade.new(external_id: external_id, time_ms: time_ms.to_i, reason: reason, symbol: symbol, scope: scope)
+    end
+
+    # Counts the failed syncs of each trade in `unconverted` and returns
+    # [still_retried, attempts]. Attempts only cover trades that failed in this
+    # sync, so one converted since drops out. The sync that uses up the last
+    # attempt logs the trade.
+    def retry_unconverted_trades(provider_account, unconverted)
+      previous = provider_account.raw_transactions_payload.to_h[UNCONVERTED_TRADES_KEY].to_h
+      attempts = unconverted.to_h { |trade| [ trade.external_id, previous[trade.external_id].to_i + 1 ] }
+
+      retried = unconverted.select do |trade|
+        log_abandoned_trade(trade, attempts[trade.external_id]) if attempts[trade.external_id] == UNCONVERTED_TRADE_ATTEMPTS
+        attempts[trade.external_id] < UNCONVERTED_TRADE_ATTEMPTS
+      end
+
+      [ retried, attempts ]
+    end
+
+    def log_abandoned_trade(trade, attempts)
+      DebugLogEntry.capture(
+        category: "provider_sync",
+        level: "error",
+        message: "#{self.class::SOURCE.capitalize} trade not imported after #{attempts} syncs: #{trade.reason}",
+        source: self.class.name,
+        provider_key: self.class::SOURCE,
+        family: account.family,
+        account: account,
+        metadata: {
+          external_id: trade.external_id,
+          reason: trade.reason,
+          symbol: trade.symbol,
+          occurred_at: Time.zone.at(trade.time_ms / 1000).iso8601,
+          attempts: attempts
+        }
+      )
+    end
+
+    # Stores the trade cursor beside the failed-sync counts it was held for.
+    def store_trade_cursor(provider_account, key, value, attempts)
+      payload = provider_account.raw_transactions_payload.to_h.merge(key => value, "fetched_at" => Time.current.iso8601)
+      attempts.any? ? payload[UNCONVERTED_TRADES_KEY] = attempts : payload.delete(UNCONVERTED_TRADES_KEY)
+      provider_account.update!(raw_transactions_payload: payload)
+    end
 
     # Yields [from_ms, to_ms] spans no longer than `span_ms`, oldest first.
     def each_transfer_window(from_ms, to_ms, span_ms)
@@ -91,7 +150,10 @@ module CryptoTransfer::ExchangeMovements
       }.compact
 
       extra = { self.class::SOURCE => provider_meta.compact, "crypto_transfer" => meta }
-      extra[self.class::SOURCE]["price_missing"] = true if price.nil?
+      if price.nil?
+        extra[self.class::SOURCE]["price_missing"] = true
+        extra[self.class::SOURCE]["symbol"] = symbol.to_s.upcase
+      end
 
       account.entries.create!(
         date: date,
@@ -136,6 +198,37 @@ module CryptoTransfer::ExchangeMovements
     # something else overrides this.
     def resolve_movement_security(symbol)
       self.class::SECURITY_RESOLVER.resolve(symbol)
+    end
+
+    # A deposit or withdrawal written while no price could be found (a rate
+    # limit, a feed outage) is priced again on later syncs, oldest first, up to
+    # UNCONVERTED_TRADE_ATTEMPTS times. Its quantity is already right; only the
+    # price behind its cost basis was missing.
+    def reprice_missing_movements
+      source = self.class::SOURCE
+
+      account.entries
+        .where(source: source, entryable_type: "Trade")
+        .joins("JOIN trades ON trades.id = entries.entryable_id")
+        .where("trades.extra -> ? ->> 'price_missing' = 'true'", source)
+        .where("COALESCE((trades.extra -> ? ->> 'price_attempts')::int, 0) < ?", source, UNCONVERTED_TRADE_ATTEMPTS)
+        .order(:date)
+        .limit(REPRICE_BATCH)
+        .preload(entryable: :security)
+        .each { |entry| reprice_movement(entry.entryable, entry.date) }
+    end
+
+    def reprice_movement(trade, date)
+      source = self.class::SOURCE
+      meta = trade.extra[source].to_h
+      symbol = meta["symbol"].presence || trade.security.ticker.to_s.delete_prefix(CryptoAsset::TICKER_PREFIX)
+      price = quote_to_usd(1.to_d, symbol.upcase, date: date)
+
+      if price
+        trade.update!(price: price, extra: trade.extra.merge(source => meta.except("price_missing", "price_attempts")))
+      else
+        trade.update!(extra: trade.extra.merge(source => meta.merge("price_attempts" => meta["price_attempts"].to_i + 1)))
+      end
     end
 
     # Exchanges give times as epoch milliseconds, as a string of them, or as a

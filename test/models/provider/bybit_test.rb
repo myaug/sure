@@ -89,9 +89,43 @@ class Provider::BybitTest < ActiveSupport::TestCase
   end
 
   test "withdraw records use the withdraw endpoint" do
-    @provider.expects(:signed_get).with("/v5/asset/withdraw/query-record", params: has_entries("startTime" => "1")).returns({ "rows" => [], "nextPageCursor" => "" })
+    @provider.expects(:signed_get).with("/v5/asset/withdraw/query-record", params: has_entries("startTime" => "1", "withdrawType" => "2")).returns({ "rows" => [], "nextPageCursor" => "" })
 
     assert_equal [], @provider.get_withdraw_records(start_time: 1, end_time: 2)
+  end
+
+  test "internal deposit records use the off-chain endpoint" do
+    @provider.expects(:signed_get).with("/v5/asset/deposit/query-internal-record", params: has_entries("startTime" => "1", "endTime" => "2"))
+      .returns({ "rows" => [ { "id" => "1103" } ], "nextPageCursor" => "" })
+
+    assert_equal [ "1103" ], @provider.get_internal_deposit_records(start_time: 1, end_time: 2).map { |row| row["id"] }
+  end
+
+  test "a 403 is Bybit's IP ban and says so" do
+    error = assert_raises(Provider::Bybit::RateLimitError) { @provider.send(:handle_response, response(403, "access too frequent")) }
+
+    assert_match(/10 minutes/, error.message)
+  end
+
+  test "prices are shared across clients and a failed lookup is asked again" do
+    Rails.stubs(:cache).returns(ActiveSupport::Cache::MemoryStore.new)
+    other = Provider::Bybit.new(api_key: "other_key", api_secret: "other_secret")
+
+    @provider.expects(:public_get).once.returns({ "list" => [ { "lastPrice" => "60000" } ] })
+    assert_equal "60000", @provider.get_spot_price("BTCUSDT")
+    assert_equal "60000", other.get_spot_price("BTCUSDT"), "a second connection reads the cached price"
+
+    other.expects(:public_get).twice.raises(Provider::Bybit::RateLimitError, "slow down")
+    assert_nil other.get_spot_price("ETHUSDT")
+    assert_nil other.get_spot_price("ETHUSDT")
+  end
+
+  test "a closed day's candle is cached, keyed by its date" do
+    Rails.stubs(:cache).returns(ActiveSupport::Cache::MemoryStore.new)
+
+    @provider.expects(:public_get).twice.returns({ "list" => [ [ "0", "1", "2", "3", "61000" ] ] }, { "list" => [ [ "0", "1", "2", "3", "62000" ] ] })
+    3.times { assert_equal "61000", @provider.get_historical_price("BTCUSDT", Date.new(2026, 11, 1)) }
+    assert_equal "62000", @provider.get_historical_price("BTCUSDT", Date.new(2026, 11, 2))
   end
 
   private

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# Creates/updates Holdings for each asset in the combined BinanceAccount.
-# One Holding per (symbol, source) pair.
+# Creates/updates Holdings for each asset in the combined BinanceAccount. The
+# same coin in several sources (spot, margin, earn, futures) adds up to one
+# holding, see Account::ProviderImportAdapter#import_holding.
 class BinanceAccount::HoldingsProcessor
   include BinanceAccount::UsdConverter
 

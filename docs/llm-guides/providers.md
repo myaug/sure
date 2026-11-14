@@ -109,6 +109,19 @@ response and is dropped from a series, with a `DebugLogEntry` in the
 `exchange_rates` category. Providers do not need their own check. A database
 constraint on `exchange_rates.rate` rejects anything that still gets through.
 
+## Holdings
+
+A holding is one row per security, date and currency. When a provider reports
+the same security more than once in a sync (the same coin in an exchange's
+spot, funding and earn wallets, or several lots), import each position with its
+own `external_id` through one memoized `Account::ProviderImportAdapter`, as the
+generated `holdings_processor.rb` does. `import_holding` adds the second and
+later positions to the row the first created. A fresh adapter per call cannot
+see that, and each position overwrites the last.
+
+Stale-holding cleanup keyed on `external_id` must keep every position's id: the
+combined row carries whichever one was imported first.
+
 ## Transaction naming
 
 Where a provider supplies both a cleaned merchant name and the bank's own

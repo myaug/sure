@@ -7,6 +7,7 @@ class Account::ProviderImportAdapter
   def initialize(account)
     @account = account
     @skipped_entries = []
+    @imported_holding_ids = Set.new
   end
 
   # Resets skipped entries tracking (call at start of new sync batch)
@@ -426,6 +427,11 @@ class Account::ProviderImportAdapter
 
   # Imports or updates a holding (investment position) from a provider
   #
+  # One row holds a security per date and currency. Positions in the same
+  # security imported through the same adapter under different external_ids
+  # (the same coin in two wallets) are added together on that row, so call
+  # every position of one sync through one adapter instance.
+  #
   # @param security [Security] The security object
   # @param quantity [BigDecimal, Numeric] Number of shares/units
   # @param amount [BigDecimal, Numeric] Total value in account currency
@@ -501,6 +507,14 @@ class Account::ProviderImportAdapter
           currency: currency,
           account_provider_id: account_provider_id
         )
+
+        # A holding keeps one row per security, date and currency, so a second
+        # position in it (the same coin in another wallet, another lot) lands on
+        # the row this adapter already wrote. Add to it: overwriting kept only
+        # whichever position came last.
+        if holding.persisted? && holding.external_id != external_id && @imported_holding_ids.include?(holding.id)
+          return add_to_imported_holding(holding, quantity: quantity, amount: amount, cost_basis: cost_basis)
+        end
       else
         # A remapped row sits on the user's chosen security, so a lookup by the
         # incoming security alone misses it and the save hits the unique index.
@@ -587,6 +601,7 @@ class Account::ProviderImportAdapter
         Holding.transaction(requires_new: true) do
           holding.save!
         end
+        @imported_holding_ids << holding.id
       rescue ActiveRecord::RecordNotUnique => e
         # Handle unique index collisions on (account_id, security_id, date, currency)
         # that can occur when another provider (or concurrent import) already
@@ -643,6 +658,7 @@ class Account::ProviderImportAdapter
               # Best-effort only; avoid raising in collision handler
             end
 
+            @imported_holding_ids << existing.id
             holding = existing
           end
         else
@@ -1105,6 +1121,23 @@ class Account::ProviderImportAdapter
   end
 
   private
+
+    # Quantities and values add up; the price becomes their ratio and a
+    # per-unit cost basis is weighted by quantity, as Holding#remap_security!
+    # does. The row keeps its first external_id, which the provider still
+    # reports, so its stale cleanup keeps it.
+    def add_to_imported_holding(holding, quantity:, amount:, cost_basis:)
+      qty = holding.qty + quantity.to_d
+      total = holding.amount + amount.to_d
+      updates = { qty: qty, amount: total, price: qty.positive? ? total / qty : holding.price }
+
+      if !holding.cost_basis_locked? && holding.cost_basis.present? && cost_basis.present? && qty.positive?
+        updates[:cost_basis] = ((holding.cost_basis * holding.qty) + (cost_basis.to_d * quantity.to_d)) / qty
+      end
+
+      holding.update!(updates)
+      holding
+    end
 
     # The latest earlier holding of the security the provider reports. A
     # remapped row records that security in provider_security_id; an

@@ -16,6 +16,13 @@ class Security::SplitTest < ActiveSupport::TestCase
     assert @security.splits.new(ex_date: @ex_date, numerator: 1, denominator: 10, source: "manual").valid?
   end
 
+  test "terms larger than the integer columns are refused instead of raising" do
+    split = @security.splits.new(ex_date: @ex_date, numerator: 2**31, denominator: 1, source: "manual")
+
+    assert_not split.valid?
+    assert_nothing_raised { split.save }
+  end
+
   test "one split per security per ex-date" do
     @security.splits.create!(ex_date: @ex_date, numerator: 2, denominator: 1, source: "manual")
 

@@ -34,6 +34,57 @@ class BybitItemsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, ERB::Util.html_escape("can't be blank")
   end
 
+  test "a second and third connection are added beside the first, named apart" do
+    assert_difference -> { @family.bybit_items.count }, 2 do
+      post bybit_items_url, params: { bybit_item: { name: "", api_key: "second_key", api_secret: "s2" } }
+      post bybit_items_url, params: { bybit_item: { name: "", api_key: "third_key", api_secret: "s3" } }
+    end
+
+    assert_equal [ "Bybit", "Bybit 2" ], @family.bybit_items.order(:created_at).last(2).map(&:name)
+  end
+
+  test "a typed name is kept" do
+    post bybit_items_url, params: { bybit_item: { name: "Savings", api_key: "second_key", api_secret: "s2" } }
+
+    assert @family.bybit_items.exists?(name: "Savings")
+  end
+
+  test "the same API key cannot be connected twice" do
+    assert_no_difference -> { BybitItem.count } do
+      post bybit_items_url, params: { bybit_item: { api_key: "test_key", api_secret: "other" } }, as: :turbo_stream
+    end
+
+    assert_turbo_stream status: :unprocessable_entity, action: "replace", target: "bybit-providers-panel"
+    assert_includes response.body, I18n.t("activerecord.errors.models.bybit_item.attributes.api_key.already_connected")
+  end
+
+  test "a disconnected connection's key can be connected again" do
+    @bybit_item.update!(scheduled_for_deletion: true)
+
+    assert_difference -> { @family.bybit_items.count }, 1 do
+      post bybit_items_url, params: { bybit_item: { api_key: "test_key", api_secret: "test_secret" } }
+    end
+  end
+
+  test "a connection is renamed without touching its credentials" do
+    patch bybit_item_url(@bybit_item), params: { bybit_item: { name: "Trading" } }
+
+    @bybit_item.reload
+    assert_equal "Trading", @bybit_item.name
+    assert_equal "test_key", @bybit_item.api_key
+  end
+
+  test "the panel lists every connection and still offers another" do
+    @family.bybit_items.create!(name: "Second", api_key: "second_key", api_secret: "s2")
+
+    post sync_bybit_item_url(@bybit_item, source: "panel"), as: :turbo_stream
+
+    assert_includes response.body, "Test Bybit"
+    assert_includes response.body, "Second"
+    assert_includes response.body, ERB::Util.html_escape(I18n.t("settings.providers.exchange_connection.add_connection", provider: "Bybit"))
+    assert_select "form[action=?]", bybit_items_path
+  end
+
   test "should sync bybit item" do
     post sync_bybit_item_url(@bybit_item)
     assert_response :redirect

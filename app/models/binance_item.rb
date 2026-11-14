@@ -15,6 +15,9 @@ class BinanceItem < ApplicationRecord
 
   validates :name, presence: true
   validates :api_key, presence: true
+  # Two connections on one key import the same account twice, doubling it. Only
+  # checked when the key changes, so an older duplicate can still sync and rename.
+  validates :api_key, uniqueness: { scope: :family_id, conditions: -> { where(scheduled_for_deletion: false) }, message: :already_connected }, if: :api_key_changed?
   validates :api_secret, presence: true
 
   belongs_to :family

@@ -362,25 +362,63 @@ Phần này không chặn tính năng. Mục đích là điều chỉnh sản ph
 
 ## Trạng thái triển khai
 
-Cập nhật 13/11/2026. "Xong" nghĩa là có code và test; chưa task nào được thử với tài khoản sàn hoặc công ty chứng khoán thật.
+Cập nhật 14/11/2026, đã đối chiếu từng dòng với code và test trên nhánh `docs/vietnam-finance-plan`. "Xong" nghĩa là có code và test; chưa task nào được thử với tài khoản sàn hoặc công ty chứng khoán thật.
 
 | Task | Trạng thái | Ghi chú |
 |---|---|---|
 | 0 | Chưa làm | Cần sao kê thật từ người dùng |
-| 1 | Xong | Gợi ý `vi`, `Asia/Ho_Chi_Minh`, `DD/MM/YYYY` khi onboarding |
-| 2 | Phần lớn xong | Còn các trang của nhà cung cấp nước ngoài (Monarch, Mint, YNAB, Akahu, Up, Redbark, Fio, Monobank, Questrade, Sharesight, Trading 212, TrueLayer, CoinSpot) |
-| 3 | Xong | Tùy chọn giá P2P tham khảo không làm (endpoint không chính thức) |
-| 4, 5 | Xong | `CryptoAsset`, TRON, BSC |
-| 6 | Xong | Lịch sử P2P chỉ nhập lệnh `COMPLETED`, đọc lại 7 ngày gần nhất mỗi lần sync; khoản chưa chắc nằm trong hàng chờ Auto Matches |
-| 7 | Xong | Nhập nạp/rút Binance, Bybit, OKX, MEXC; `CryptoTransferLink` ghép theo tx hash, mã tham chiếu, rồi số lượng và ngày (chờ duyệt) |
-| 8 | Một phần | Có đọc số `1.234.567` và kiểm tra số dư; thiếu gợi ý theo từng ngân hàng và fixture thật |
+| 1 | Xong | `Family` gợi ý `vi`, VND, `Asia/Ho_Chi_Minh`, `DD/MM/YYYY` khi onboarding; gia đình ngoài Việt Nam không đổi |
+| 2 | Phần lớn xong | Còn 1.376 trên khoảng 10.650 key chưa có bản `vi` (khoảng 13%), chủ yếu là trang của nhà cung cấp nước ngoài: Questrade, Redbark, Fio, Akahu, Up, Trading 212, Sharesight, Monobank, TrueLayer, CoinSpot, Trade Republic, Plaid, SnapTrade, cùng một phần `import`, `imports`, `settings` |
+| 3 | Xong | Nhãn "tỷ giá chính thức" ở mục crypto của danh mục và trang holding stablecoin. Thiếu tỷ giá thì danh mục báo cảnh báo và loại khỏi tổng, không quy đổi 1:1. Tùy chọn giá P2P tham khảo không làm (endpoint không chính thức) |
+| 4 | Xong, còn nợ nhỏ | `CryptoAsset` gom quy tắc crypto về một chỗ, nhưng danh sách MIC crypto vẫn chỉ là hai mã Binance (`BNCX`, `XBNC`) mà các sàn khác dùng lại. `Security#crypto_base_asset` vẫn tách ticker qua `Provider::BinancePublic`. Chưa có test riêng cho `CryptoAsset` |
+| 5 | Xong | BSC qua `Onchain::EvmAdapter` (chainid 56), TRON qua `Onchain::TronAdapter` và TronGrid, người dùng tự chọn token |
+| 6 | Xong | Lịch sử P2P chỉ nhập lệnh `COMPLETED`, đọc lại 7 ngày gần nhất mỗi lần sync; khoản chưa chắc nằm trong hàng chờ Auto Matches. Chưa có test riêng cho lệnh SELL |
+| 7 | Phần lớn xong | Nạp/rút Binance, Bybit, OKX, MEXC và ví on-chain được ghép theo tx hash, mã tham chiếu, rồi số lượng và ngày (chờ duyệt). Có màn hình duyệt/từ chối trong Auto Matches. Coinbase, Kraken và CoinStats chưa ghi tx hash hay mã tham chiếu, nên chỉ ghép được theo số lượng và ngày, và chưa có test cho các nguồn này |
+| 8 | Một phần | Có đọc số `1.234.567`, gợi ý cột Nợ/Có cho sao kê Việt Nam và kiểm tra số dư đầu kỳ + phát sinh = cuối kỳ; thiếu gợi ý theo từng ngân hàng và fixture thật |
 | 9 | Chưa làm | Cần Task 0 |
-| 10, 11, 12 | Xong | Bybit, OKX, MEXC. MEXC không cho kiểm tra quyền của khóa |
+| 10, 11, 12 | Xong | Bybit, OKX, MEXC. Bybit và OKX từ chối key có quyền ghi; MEXC không cho kiểm tra quyền nên panel cảnh báo. Xem thêm [bổ sung ngày 14/11](#bổ-sung-ngày-14112026). Chưa nhập lịch sử P2P của Bybit và OKX |
 | 13 | Chưa làm | Cần tài khoản sàn có dữ liệu để kiểm tra CoinStats |
-| 14 | Một phần | Cổ tức bằng cổ phiếu, cổ phiếu thưởng và chia tách ghi qua `Security::Split` (form cho quản trị viên hệ thống). Quyền mua = lệnh mua thường. Đọc sao kê chứng khoán cần Task 0 |
-| 15, 16 | Một phần | Provider đã có; còn xác minh MIC, điều khoản SSI, nguồn NAV |
-| 17 | Xong | Hiển thị tài khoản lỗi sync, dữ liệu cũ, khoản chuyển chờ xác nhận |
-| 18 | Một phần | Có ghi chú giới hạn lịch sử trên panel và log khoảng trống dữ liệu; CoinStats được giãn nhịp theo credit |
+| 14 | Một phần | Cổ tức bằng cổ phiếu, cổ phiếu thưởng và chia tách ghi qua `Security::Split` (form cho quản trị viên hệ thống; giữ lại giá trị đã nhập khi bị từ chối). Quyền mua = lệnh mua thường. Đọc sao kê chứng khoán cần Task 0 |
+| 15 | Một phần | `Provider::SsiFastconnect` đã đăng ký và có cấu hình. MIC đã xác minh theo ISO 10383: HOSE `XSTC`, HNX `HSTC`, UPCoM `XHNX` (segment của `HSTC`). Còn rà điều khoản SSI |
+| 16 | Một phần | `Provider::Fmarket` đọc NAV qua API không chính thức của Fmarket, với mã sàn tự đặt `FMKT` (không thuộc ISO 10383). Còn chốt nguồn NAV chính thức và tần suất công bố |
+| 17 | Xong | Mục crypto của danh mục: phân bổ theo token, sàn/ví, chuỗi, mức tiếp xúc stablecoin, nguồn tỷ giá; cảnh báo thiếu giá, thiếu tỷ giá, tài khoản lỗi sync, dữ liệu cũ, khoản chuyển chờ xác nhận, lịch sử bị cắt |
+| 18 | Một phần | Có ghi chú giới hạn lịch sử trên panel, log khoảng trống dữ liệu, CoinStats được giãn nhịp theo credit. Chưa có tài liệu "việc cần làm trước khi mở cho người khác" |
+
+### Bổ sung ngày 14/11/2026
+
+Các thay đổi dưới đây đã có code và test nhưng chưa được commit:
+
+- **i18n:** thêm các key còn thiếu ở trang thiết lập Bybit/OKX/MEXC, bỏ key không dùng.
+- **Lệnh chưa quy đổi được (Bybit, OKX, MEXC):** cursor dừng ở lệnh không có giá USD, không tìm được security hoặc không nhận ra cặp; thử lại tối đa 5 lần rồi ghi `DebugLogEntry`.
+- **Holdings:** cùng một coin ở nhiều ví (spot/funding/earn…) được cộng dồn thành một holding trong `Account::ProviderImportAdapter`, áp dụng cho mọi provider. Quy tắc ghi trong `docs/llm-guides/providers.md`.
+- **Nhiều tài khoản cùng sàn (Binance, Bybit, OKX, MEXC):** thêm kết nối từ panel, đặt và đổi tên kết nối ("Bybit", "Bybit 2"…), chặn nhập trùng API key trong một gia đình.
+- **Bybit:** nhập nạp off-chain từ người dùng Bybit khác và rút off-chain, ghép cặp theo `bybit:internal:<txID>`; báo rõ khi IP máy chủ bị Bybit khóa (HTTP 403).
+- **Giá:** cache giá công khai dùng chung giữa các kết nối; nạp/rút bị thiếu giá được định giá lại ở các lần sync sau (tối đa 5 lần).
+- **Bảo mật:** mã hóa `raw_payload` của item Bybit/OKX/MEXC; thêm 6 model mới vào manifest backfill mã hóa (`CURRENT_BACKFILL_VERSION` 11).
+- **Nhỏ:** cửa sổ đọc lại nạp/rút tăng từ 3 lên 7 ngày.
+
+### Việc còn lại
+
+Cần dữ liệu hoặc tài khoản thật:
+
+- Task 0, rồi Task 8 (gợi ý theo ngân hàng, fixture), Task 9 và phần sao kê của Task 14.
+- Task 13: kiểm tra mức chi tiết của CoinStats bằng tài khoản sàn có dữ liệu.
+- Thử Bybit, OKX, MEXC bằng key thật, nhất là chuyển nội bộ Bybit: chưa xác nhận hai phía có cùng `txID` hay không.
+
+Làm được ngay:
+
+- Task 2: dịch 1.376 key `vi` còn thiếu.
+- Task 4: test riêng cho `CryptoAsset`; tách ticker không qua `Provider::BinancePublic`.
+- Task 7: ghi tx hash/mã tham chiếu cho Coinbase, Kraken, CoinStats và thêm test ghép cặp; MEXC và Binance chưa có mã tham chiếu cho chuyển nội bộ.
+- Task 10–12, từ đợt review: MEXC chưa phân trang lịch sử nạp/rút (cắt ở 1.000 bản ghi); phân trang lệnh MEXC có thể bỏ sót lệnh cùng mili giây; OKX chưa phân loại mã lỗi khi HTTP không phải 2xx; Bybit đang tin `usdValue` bằng `"0"`.
+- Task 18: viết tài liệu việc cần làm trước khi mở cho người khác.
+- Commit các thay đổi ngày 14/11 và chạy checklist trước PR.
+
+Cần quyết định hoặc rà soát:
+
+- Task 15: điều khoản lưu/hiển thị dữ liệu của SSI FastConnect.
+- Task 16: nguồn NAV chính thức thay cho API Fmarket không chính thức.
+- MEXC: có dò quyền giao dịch qua `POST /api/v3/order/test` hay không (cần thử với key thật).
 
 ## Thứ tự phát hành
 
@@ -398,5 +436,4 @@ Cập nhật 13/11/2026. "Xong" nghĩa là có code và test; chưa task nào đ
 - **Lịch sử P2P của Bybit và OKX:** chưa rõ có API hay không.
 - **CoinStats:** endpoint `/exchange/support` (kiểm tra ngày 12/11/2026) liệt kê 54 sàn, gồm cả 9 sàn trong kế hoạch: Bybit (`bybit`), OKX (`okex`, cần passphrase), MEXC (`mexcglobal`), BingX (`bingx`), Bitget (`bitget`, cần passphrase), HTX (`huobi`), Gate (`gateionative`), KuCoin (`kucoin`, cần passphrase) và Bitfinex (`bitfinex`). Còn phải kiểm tra mức độ chi tiết thực tế (lệnh giao dịch, phí, mã nạp/rút, lịch sử P2P) bằng một tài khoản sàn có dữ liệu.
 - **NAV quỹ mở:** nguồn dữ liệu và tần suất công bố.
-- **MIC:** xác minh mã ISO 10383 cho HOSE, HNX, UPCoM.
 - **Gem XLSX:** xác nhận có đủ lý do theo chính sách dependency của repo.

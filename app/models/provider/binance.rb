@@ -1,6 +1,7 @@
 class Provider::Binance
   include HTTParty
   extend SslConfigurable
+  include Provider::ExchangePriceCache
 
   class Error < StandardError; end
   class AuthenticationError < Error; end
@@ -61,9 +62,11 @@ class Provider::Binance
   # symbol e.g. "BTCUSDT"
   # Returns price string or nil on failure
   def get_spot_price(symbol)
-    response = self.class.get("/api/v3/ticker/price", query: { symbol: symbol })
-    data = handle_response(response)
-    data["price"]
+    cached_spot_price(symbol) do
+      response = self.class.get("/api/v3/ticker/price", query: { symbol: symbol })
+      data = handle_response(response)
+      data["price"].presence
+    end
   rescue StandardError => e
     Rails.logger.warn("Provider::Binance: failed to fetch price for #{symbol}: #{e.message}")
     nil
@@ -72,21 +75,21 @@ class Provider::Binance
   # Public endpoint — fetch historical kline close price for a date
   # symbol e.g. "BTCUSDT", date e.g. Date or Time
   def get_historical_price(symbol, date)
-    timestamp = date.to_time.utc.beginning_of_day.to_i * 1000
+    cached_historical_price(symbol, date) do
+      timestamp = date.to_time.utc.beginning_of_day.to_i * 1000
 
-    response = self.class.get("/api/v3/klines", query: {
-      symbol: symbol,
-      interval: "1d",
-      startTime: timestamp,
-      limit: 1
-    })
+      response = self.class.get("/api/v3/klines", query: {
+        symbol: symbol,
+        interval: "1d",
+        startTime: timestamp,
+        limit: 1
+      })
 
-    data = handle_response(response)
+      data = handle_response(response)
 
-    return nil if data.blank? || data.first.blank?
-
-    # Binance klines format: [ Open time, Open, High, Low, Close (index 4), ... ]
-    data.first[4]
+      # Binance klines format: [ Open time, Open, High, Low, Close (index 4), ... ]
+      data.first[4].presence if data.present? && data.first.present?
+    end
   rescue StandardError => e
     Rails.logger.warn("Provider::Binance: failed to fetch historical price for #{symbol} on #{date}: #{e.message}")
     nil

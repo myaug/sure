@@ -1,0 +1,65 @@
+<%# locals: (item:, provider_key:, provider_name:) %>
+<%# One API-key exchange connection: its status, actions and name. Credentials
+    are not editable here: another key could belong to another account, whose
+    history would then land in this one. %>
+<%= render DS::Disclosure.new(variant: :card) do |disclosure| %>
+  <% disclosure.with_summary_content do %>
+    <div class="flex items-center justify-between gap-3 w-full">
+      <div class="flex items-center gap-3 min-w-0">
+        <%= render ProviderLogo.new(provider_key: provider_key, class_name: "w-10 h-10 rounded-full") %>
+        <div class="min-w-0">
+          <p class="font-medium text-primary truncate"><%= item.name %></p>
+          <p class="text-xs text-secondary">
+            <%= item.syncing? ? t("settings.providers.exchange_connection.syncing") : item.sync_status_summary %>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mt-4 space-y-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <% if item.unlinked_accounts_count > 0 %>
+        <%= render DS::Link.new(
+          text: t("settings.providers.exchange_connection.setup_accounts"),
+          icon: "plus",
+          variant: "primary",
+          href: polymorphic_path([ :setup_accounts, item ]),
+          frame: :modal
+        ) %>
+      <% end %>
+      <%= render DS::Button.new(
+        text: t("settings.providers.exchange_connection.sync"),
+        icon: "refresh-cw",
+        variant: :outline,
+        size: :sm,
+        href: polymorphic_path([ :sync, item ], source: "panel"),
+        method: :post,
+        disabled: item.syncing?
+      ) %>
+      <%= render DS::Button.new(
+        text: t("settings.providers.exchange_connection.disconnect"),
+        icon: "trash-2",
+        variant: :outline_destructive,
+        size: :sm,
+        href: polymorphic_path(item),
+        method: :delete,
+        data: { turbo_confirm: t("settings.providers.exchange_connection.disconnect_confirm", name: item.name) }
+      ) %>
+    </div>
+
+    <%= styled_form_with model: item,
+                         url: polymorphic_path(item),
+                         scope: item.model_name.param_key,
+                         method: :patch,
+                         data: { turbo: true },
+                         class: "space-y-3" do |form| %>
+      <%= form.text_field :name,
+                          label: t("settings.providers.exchange_connection.name_label"),
+                          placeholder: t("settings.providers.exchange_connection.name_placeholder", provider: provider_name) %>
+      <div class="flex justify-end">
+        <%= form.submit t("settings.providers.exchange_connection.save_name") %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

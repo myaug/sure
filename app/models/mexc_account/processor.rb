@@ -84,9 +84,14 @@ class MexcAccount::Processor
 
       # Entries first: if this raises, the cursors below are not advanced and
       # the next sync retries the same range.
-      fetched.each_value { |trades| trades.sort_by { |trade| trade["time"].to_i }.each { |trade| process_trade(trade) } }
+      unconverted = fetched.flat_map do |pair, trades|
+        trades.sort_by { |trade| trade["time"].to_i }.filter_map { |trade| process_trade(trade, pair) }
+      end
+      retried, attempts = retry_unconverted_trades(mexc_account, unconverted)
 
-      store_movement_cursor(mexc_account, "scanned_until", scanned.merge(fetched.keys.index_with { now_ms }))
+      held = retried.group_by(&:scope).transform_values { |trades| trades.map(&:time_ms).min }
+      cursors = fetched.keys.index_with { |pair| held[pair] || now_ms }
+      store_trade_cursor(mexc_account, "scanned_until", scanned.merge(cursors), attempts)
     end
 
     def account
@@ -118,6 +123,7 @@ class MexcAccount::Processor
         withdrawals.uniq.each { |withdrawal| record_withdrawal(withdrawal) }
 
         store_movement_cursor(mexc_account, "last_transfer_scan", now_ms)
+        reprice_missing_movements
       end
     end
 
@@ -184,7 +190,8 @@ class MexcAccount::Processor
       [ start_ms, now_ms - Provider::Mexc::TRADES_HISTORY_MS + 60_000 ].max
     end
 
-    def process_trade(trade)
+    # Returns an UnconvertedTrade when the trade could not be imported yet, else nil.
+    def process_trade(trade, pair)
       account = mexc_account.current_account
       return unless account
 
@@ -194,19 +201,21 @@ class MexcAccount::Processor
       qty = trade["qty"].to_d
       return if qty.zero?
 
+      time_ms = trade["time"].to_i
       base, quote = split_symbol(trade["symbol"])
-      return if base.blank? || CryptoAsset.usd_stablecoin?(base)
+      return unconverted_trade(external_id, time_ms: time_ms, reason: "unknown_pair", symbol: trade["symbol"], scope: pair) if base.blank?
+      return if CryptoAsset.usd_stablecoin?(base)
 
       security = MexcAccount::SecurityResolver.resolve(base)
-      return unless security
+      return unconverted_trade(external_id, time_ms: time_ms, reason: "no_security", symbol: trade["symbol"], scope: pair) unless security
 
-      date = Time.zone.at(trade["time"].to_i / 1000).to_date
+      date = Time.zone.at(time_ms / 1000).to_date
       amount_usd = quote_to_usd(trade["quoteQty"].to_d, quote, date: date)
       price_usd = quote_to_usd(trade["price"].to_d, quote, date: date)
 
       if amount_usd.nil? || price_usd.nil?
-        Rails.logger.warn "MexcAccount::Processor - skipping trade #{trade["id"]}: could not convert #{quote} to USD"
-        return
+        Rails.logger.warn "MexcAccount::Processor - holding trade #{trade["id"]}: could not convert #{quote} to USD"
+        return unconverted_trade(external_id, time_ms: time_ms, reason: "no_usd_price", symbol: trade["symbol"], scope: pair)
       end
 
       fee = fee_in_usd(trade, base, price_usd, date: date)
@@ -229,6 +238,7 @@ class MexcAccount::Processor
           investment_activity_label: buy ? "Buy" : "Sell"
         )
       )
+      nil
     rescue StandardError => e
       Rails.logger.error "MexcAccount::Processor - failed to process trade #{trade["id"]}: #{e.message}"
       raise

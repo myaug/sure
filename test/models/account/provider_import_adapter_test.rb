@@ -778,6 +778,52 @@ class Account::ProviderImportAdapterTest < ActiveSupport::TestCase
     assert_equal account_provider.id, holding.account_provider_id
   end
 
+  test "two positions in one security from one sync add up on its single row" do
+    investment_account = accounts(:investment)
+    account_provider = AccountProvider.create!(account: investment_account, provider: plaid_accounts(:one))
+    date = Date.today - 3.days
+    position = ->(adapter, external_id, qty, amount, cost_basis) {
+      adapter.import_holding(
+        security: securities(:aapl), quantity: qty, amount: amount, currency: "USD", date: date,
+        price: amount / qty, cost_basis: cost_basis, external_id: external_id, source: "plaid",
+        account_provider_id: account_provider.id
+      )
+    }
+
+    2.times do
+      adapter = Account::ProviderImportAdapter.new(investment_account)
+      position.call(adapter, "wallet_a", 10, 1500, 100)
+      position.call(adapter, "wallet_b", 30, 4500, 140)
+
+      holding = investment_account.holdings.where(security: securities(:aapl), date: date).sole
+      assert_equal 40, holding.qty
+      assert_equal 6000, holding.amount
+      assert_equal 150, holding.price
+      assert_equal 130, holding.cost_basis, "weighted by quantity"
+      assert_equal "wallet_a", holding.external_id
+    end
+
+    # A later sync where the first position is gone replaces the row, not adds to it.
+    position.call(Account::ProviderImportAdapter.new(investment_account), "wallet_b", 30, 4500, 140)
+
+    holding = investment_account.holdings.where(security: securities(:aapl), date: date).sole
+    assert_equal 30, holding.qty
+    assert_equal 4500, holding.amount
+  end
+
+  test "importing the same position twice in one sync still replaces it" do
+    investment_account = accounts(:investment)
+    adapter = Account::ProviderImportAdapter.new(investment_account)
+    date = Date.today - 3.days
+
+    [ 10, 12 ].each do |qty|
+      adapter.import_holding(security: securities(:aapl), quantity: qty, amount: qty * 150, currency: "USD",
+                             date: date, price: 150, external_id: "wallet_a", source: "plaid")
+    end
+
+    assert_equal 12, investment_account.holdings.where(security: securities(:aapl), date: date).sole.qty
+  end
+
   test "carries a remapped security forward to the next day's holding" do
     account, adapter, account_provider = provider_holding_setup
     reported = Security.create!(ticker: "RPTD", name: "Reported Fund")
